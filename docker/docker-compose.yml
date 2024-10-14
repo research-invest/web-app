@@ -1,0 +1,54 @@
+version: '3'
+services:
+    app-nginx:
+        container_name: webapp-nginx
+        build:
+            context: .
+            dockerfile: ./images/nginx/Dockerfile
+            args:
+                ENVIRONMENT: ${ENVIRONMENT}
+        volumes:
+            - ./images/nginx/nginx.conf:/etc/nginx/nginx.conf
+            - ../:/var/www/app
+            - ./logs/nginx:/var/log/nginx
+        depends_on:
+            - app-php
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
+        ports:
+            - 80:80
+            - 443:443
+        networks:
+            - webapp
+
+    app-php:
+        container_name: webapp-php
+        build: ./images/php
+        environment:
+            APP_DEBUG: 1
+        volumes:
+            - ../:/var/www/app
+            - ./images/php/custom_php.ini:/usr/local/etc/php/conf.d/custom_php.ini
+            - ./images/supervisor/supervisord.conf:/etc/supervisor/supervisord.conf
+        depends_on:
+            - app-mysql
+        networks:
+            - webapp
+
+    app-mysql:
+        container_name: webapp-mysql
+        image: mysql:latest
+        volumes:
+            - ./data/mysql/:/var/lib/mysql
+        environment:
+            MYSQL_DATABASE: '${DB_DATABASE}'
+            MYSQL_ROOT_PASSWORD: root34root
+            MYSQL_USER: '${DB_USERNAME}'
+            MYSQL_PASSWORD: '${DB_PASSWORD}'
+        ports:
+            - "3306:3306"
+        networks:
+            - webapp
+
+networks:
+    webapp:
