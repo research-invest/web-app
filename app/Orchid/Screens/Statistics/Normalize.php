@@ -24,12 +24,13 @@ class Normalize extends Screen
     public function query(Request $request): iterable
     {
         $currencies = $request->get('currencies', ['TAOUSDT']);
+        $interval = $request->get('interval', 60);
         $tickerService = new Tickers();
         $priceChartData = [];
         $volumeChartData = [];
 
         foreach ($currencies as $currency) {
-            $result = $tickerService->getTickers($currency, 60);
+            $result = $tickerService->getTickers($currency, $interval);
             $data = collect($result);
 
             if ($data->isEmpty()) {
@@ -173,7 +174,6 @@ class Normalize extends Screen
                 'series' => $this->query(request())['volumeChartData']
             ]),
 
-            \App\Orchid\Layouts\Statistics\Normalize::class,
         ];
     }
 }
