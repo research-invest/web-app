@@ -24,7 +24,7 @@ class Normalize extends Screen
     public function query(Request $request): iterable
     {
         $currencies = $request->get('currencies', ['TAOUSDT']);
-        $interval = $request->get('interval', 60);
+        $interval = (int)$request->get('interval', 60);
         $tickerService = new Tickers();
         $priceChartData = [];
         $volumeChartData = [];
