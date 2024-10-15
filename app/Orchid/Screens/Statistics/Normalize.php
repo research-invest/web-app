@@ -12,6 +12,7 @@ use Orchid\Screen\Screen;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use App\Helpers\MathHelper;
 
 class Normalize extends Screen
 {
@@ -24,13 +25,12 @@ class Normalize extends Screen
     public function query(Request $request): iterable
     {
         $currencies = $request->get('currencies', ['TAOUSDT']);
-        $interval = (int)$request->get('interval', 60);
         $tickerService = new Tickers();
         $priceChartData = [];
         $volumeChartData = [];
 
         foreach ($currencies as $currency) {
-            $result = $tickerService->getTickers($currency, $interval);
+            $result = $tickerService->getTickers($currency, 60);
             $data = collect($result);
 
             if ($data->isEmpty()) {
@@ -45,8 +45,9 @@ class Normalize extends Screen
                 $normalizedPrice = ($price - $initialPrice) / $initialPrice * 100;
 
                 return [
-                    Carbon::parse($item['timestamp'])->timestamp * 1000,
-                    round($normalizedPrice, 2)
+                    'x' => Carbon::parse($item['timestamp'])->timestamp * 1000,
+                    'y' => round($normalizedPrice, 2),
+                    'price' => MathHelper::formatNumber($price)
                 ];
             })->values()->toArray();
 
@@ -55,8 +56,9 @@ class Normalize extends Screen
                 $normalizedVolume = ($volume - $initialVolume) / $initialVolume * 100;
 
                 return [
-                    Carbon::parse($item['timestamp'])->timestamp * 1000,
-                    round($normalizedVolume, 2)
+                    'x' => Carbon::parse($item['timestamp'])->timestamp * 1000,
+                    'y' => round($normalizedVolume, 2),
+                    'volume' => MathHelper::formatNumber($volume)
                 ];
             })->values()->toArray();
 
@@ -140,9 +142,23 @@ class Normalize extends Screen
                     ]
                 ],
                 'tooltip' => [
-                    'pointFormat' => '<span style="color:{series.color}">{series.name}</span>: <b>{point.y:.2f}%</b><br/>',
+                    'pointFormat' => '<span style="color:{series.color}">{series.name}</span>: <b>{point.y:.2f}%</b> (Цена: {point.price})<br/>',
                     'valueDecimals' => 2,
                     'split' => true
+                ],
+                'plotOptions' => [
+                    'series' => [
+                        'lineWidth' => 1,
+                        'marker' => [
+                            'enabled' => false
+                        ],
+                        'states' => [
+                            'hover' => [
+                                'lineWidth' => 1
+                            ]
+                        ],
+                        'connectNulls' => false
+                    ]
                 ],
                 'series' => $this->query(request())['priceChartData']
             ]),
@@ -167,13 +183,26 @@ class Normalize extends Screen
                     ]
                 ],
                 'tooltip' => [
-                    'pointFormat' => '<span style="color:{series.color}">{series.name}</span>: <b>{point.y:.2f}%</b><br/>',
+                    'pointFormat' => '<span style="color:{series.color}">{series.name}</span>: <b>{point.y:.2f}%</b> (Объем: {point.volume})<br/>',
                     'valueDecimals' => 2,
                     'split' => true
                 ],
+                'plotOptions' => [
+                    'series' => [
+                        'lineWidth' => 1,
+                        'marker' => [
+                            'enabled' => false
+                        ],
+                        'states' => [
+                            'hover' => [
+                                'lineWidth' => 1
+                            ]
+                        ],
+                        'connectNulls' => false
+                    ]
+                ],
                 'series' => $this->query(request())['volumeChartData']
             ]),
-
         ];
     }
 }

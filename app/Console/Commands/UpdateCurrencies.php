@@ -16,6 +16,16 @@ class UpdateCurrencies extends Command
 
     public function handle()
     {
+        $timeStart = microtime(true);
+
+        $this->update();
+
+        $this->info('Использовано памяти: ' . (memory_get_peak_usage() / 1024 / 1024) . " MB");
+        $this->info('Время выполнения в секундах: ' . ((microtime(true) - $timeStart)));
+    }
+
+    private function update()
+    {
         $currenciesService = new Currencies();
         $currencies = $currenciesService->getCurrencies();
 
@@ -36,6 +46,6 @@ class UpdateCurrencies extends Command
         }
 
         $bar->finish();
-        $this->info("\nВалюты успешно обновлены.");
+        $this->info("\nВалюты успешно обновлены.\n");
     }
 }
