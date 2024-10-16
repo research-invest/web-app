@@ -172,23 +172,25 @@ class MathHelper
 
     /**
      * Форматирование числа с автоматическим округлением
-     * 
      * @param float $number Число для форматирования
+     * @param int $round
      * @return string Отформатированное число
      */
-    public static function formatNumber($number): string
+    public static function formatNumber(float $number, int $round = 2): string
     {
         if ($number >= 1 || $number == 0) {
             return number_format($number, 2, '.', ' ');
-        } elseif ($number >= 0.0001) {
-            return number_format($number, 4, '.', '');
-        } else {
-            if ($number > 0) {
-                $significantDigits = -floor(log10($number)) + 2;
-                return sprintf("%." . $significantDigits . "f", $number);
-            } else {
-                return "0.00";
-            }
         }
+
+        if ($number >= 0.0001) {
+            return number_format($number, 4, '.', '');
+        }
+
+        if ($number > 0) {
+            $significantDigits = -floor(log10($number)) + $round;
+            return sprintf("%." . $significantDigits . "f", $number);
+        }
+
+        return '0.00';
     }
 }
