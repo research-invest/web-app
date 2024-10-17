@@ -56,12 +56,18 @@ class Normalize extends Screen
                 $volume = $item['volume'];
                 $normalizedVolume = ($volume - $initialVolume) / $initialVolume * 100;
 
+                if ($normalizedVolume <= 0.0) {
+                    return null;
+                }
+
                 return [
                     'x' => Carbon::parse($item['timestamp'])->timestamp * 1000,
                     'y' => round($normalizedVolume, 2),
                     'volume' => MathHelper::formatNumber($volume)
                 ];
-            })->values()->toArray();
+            })->filter()->values()->toArray();
+
+            array_pop($normalizedVolumeData);
 
             $priceChartData[] = [
                 'name' => $currency,
