@@ -16,7 +16,7 @@ class FuturesCalculator extends Screen
 
     public function name(): ?string
     {
-        return 'Калькулятор фьючерсов';
+        return 'Калькулятор сделки';
     }
 
     public function query(): iterable
@@ -35,6 +35,9 @@ class FuturesCalculator extends Screen
     public function layout(): iterable
     {
         return [
+
+            Layout::view('trading.futures-calculator-results'),
+
             Layout::rows([
                 Group::make([
                     Input::make('entry_price')
@@ -90,7 +93,7 @@ class FuturesCalculator extends Screen
                                 ->type('number')
                                 ->value($order['price'] ?? null)
                                 ->step('0.00000001'),
-    
+
                             Input::make("additional_orders[$index][size]")
                                 ->title('Размер (USDT)')
                                 ->type('number')
@@ -101,14 +104,13 @@ class FuturesCalculator extends Screen
                                 ->class('btn btn-danger')
                         ]);
                     })->toArray(),
-    
+
                 // Кнопка для добавления нового ордера
                 Button::make('Добавить ордер')
                     ->method('addOrder')
                     ->class('btn btn-secondary'),
             ])->title('Дополнительные ордера'),
 
-            Layout::view('trading.futures-calculator-results'),
         ];
     }
 
@@ -150,13 +152,13 @@ class FuturesCalculator extends Screen
         foreach ($additionalOrders as $order) {
             $orderPrice = (float)$order['price'];
             $orderSize = (float)$order['size'];
-            
+
             $orderContracts = $orderSize * $leverage;
             $totalContracts += $orderContracts;
             $totalSize += $orderSize;
             $totalMargin += $orderSize;
-            
-            $averagePrice = (($averagePrice * $contractSize) + ($orderPrice * $orderContracts)) / 
+
+            $averagePrice = (($averagePrice * $contractSize) + ($orderPrice * $orderContracts)) /
                            ($contractSize + $orderContracts);
         }
 
