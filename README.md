@@ -9,3 +9,6 @@ FLUSH PRIVILEGES;
 
 
 php artisan orchid:admin admin admin@admin.com e433fdSDj2jF3_e
+
+
+* * * * * cd /var/www/web-app && php artisan schedule:run >> /dev/null 2>&1

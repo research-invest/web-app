@@ -40,7 +40,11 @@ class PlatformProvider extends OrchidServiceProvider
                 ->list([
                     Menu::make('Нормализация')
                         ->icon('bs.book')
-                        ->route('platform.statistics.normalize')
+                        ->route('platform.statistics.normalize'),
+
+                    Menu::make('Хорошая динамика')
+                        ->icon('bs.book')
+                        ->route('platform.statistics.top-performing-coins')
                 ])
             ,
         ];

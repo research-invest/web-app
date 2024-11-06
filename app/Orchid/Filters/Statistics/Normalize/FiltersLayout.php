@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Orchid\Filters\Statistics;
+namespace App\Orchid\Filters\Statistics\Normalize;
 
 use Orchid\Filters\Filter;
 use Orchid\Screen\Layouts\Selection;

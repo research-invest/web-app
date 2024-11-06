@@ -4,15 +4,14 @@ declare(strict_types=1);
 
 namespace App\Orchid\Screens\Statistics;
 
-use App\Orchid\Filters\Statistics\FiltersLayout;
+use App\Helpers\MathHelper;
+use App\Orchid\Filters\Statistics\Normalize\FiltersLayout;
 use App\Orchid\Layouts\Charts\HighchartsChart;
 use App\Services\Api\Tickers;
-use Orchid\Screen\Action;
-use Orchid\Screen\Screen;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Collection;
-use App\Helpers\MathHelper;
+use Orchid\Screen\Action;
+use Orchid\Screen\Screen;
 
 class Normalize extends Screen
 {
@@ -57,7 +56,7 @@ class Normalize extends Screen
                 $normalizedVolume = ($volume - $initialVolume) / $initialVolume * 100;
 
                 if ($normalizedVolume <= 0.0) {
-                    return null;
+                    //return null;
                 }
 
                 return [
@@ -67,7 +66,7 @@ class Normalize extends Screen
                 ];
             })->filter()->values()->toArray();
 
-            array_pop($normalizedVolumeData);
+            //array_pop($normalizedVolumeData);
 
             $priceChartData[] = [
                 'name' => $currency,

@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Orchid\Filters\Statistics;
+namespace App\Orchid\Filters\Statistics\Normalize;
 
-use App\Models\Currency;
 use Illuminate\Database\Eloquent\Builder;
 use Orchid\Filters\Filter;
 use Orchid\Screen\Fields\Select;

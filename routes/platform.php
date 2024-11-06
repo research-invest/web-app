@@ -11,6 +11,7 @@ use App\Orchid\Screens\Examples\ExampleGridScreen;
 use App\Orchid\Screens\Examples\ExampleLayoutsScreen;
 use App\Orchid\Screens\Examples\ExampleScreen;
 use App\Orchid\Screens\Examples\ExampleTextEditorsScreen;
+
 use App\Orchid\Screens\PlatformScreen;
 use App\Orchid\Screens\Role\RoleEditScreen;
 use App\Orchid\Screens\Role\RoleListScreen;
@@ -37,6 +38,9 @@ Route::screen('/main', PlatformScreen::class)
 
 Route::screen('/statistics/normalize', \App\Orchid\Screens\Statistics\Normalize::class)
     ->name('platform.statistics.normalize');
+
+Route::screen('/statistics/top-performing-coins', \App\Orchid\Screens\Statistics\TopPerformingCoins::class)
+    ->name('platform.statistics.top-performing-coins');
 
 
 
