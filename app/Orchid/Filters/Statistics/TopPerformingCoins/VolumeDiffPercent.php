@@ -10,7 +10,7 @@ class VolumeDiffPercent extends Filter
 {
     public function name(): string
     {
-        return 'Процентное изменения объема';
+        return 'Процентное изменение объема';
     }
 
     public function parameters(): array
@@ -27,7 +27,7 @@ class VolumeDiffPercent extends Filter
     {
         return [
             Input::make('volume_diff_percent')
-                ->title('Процент изменения цены')
+                ->title('Процент изменения объема')
         ];
     }
 }
