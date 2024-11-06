@@ -45,8 +45,15 @@ class PlatformProvider extends OrchidServiceProvider
                     Menu::make('Хорошая динамика')
                         ->icon('bs.book')
                         ->route('platform.statistics.top-performing-coins')
-                ])
-            ,
+                ]),
+            Menu::make('Торговля')
+                ->icon('money')
+                ->title('Торговля')
+                ->list([
+                    Menu::make('Фьючерсный калькулятор')
+                        ->icon('calculator')
+                        ->route('platform.trading.futures-calculator'),
+                ]),
         ];
     }
 

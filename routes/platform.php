@@ -43,7 +43,8 @@ Route::screen('/statistics/top-performing-coins', \App\Orchid\Screens\Statistics
     ->name('platform.statistics.top-performing-coins');
 
 
-
+Route::screen('/trading/futures-calculator', \App\Orchid\Screens\Trading\FuturesCalculator::class)
+    ->name('platform.trading.futures-calculator');
 
 // Platform > Profile
 Route::screen('profile', UserProfileScreen::class)
