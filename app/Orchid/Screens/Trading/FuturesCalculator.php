@@ -2,6 +2,7 @@
 
 namespace App\Orchid\Screens\Trading;
 
+use Orchid\Screen\Fields\RadioButtons;
 use Orchid\Screen\Screen;
 use Orchid\Screen\Fields\Input;
 use Orchid\Screen\Fields\Group;
@@ -16,7 +17,7 @@ class FuturesCalculator extends Screen
 
     public function name(): ?string
     {
-        return 'Калькулятор сделки';
+        return 'Калькулятор сделок';
     }
 
     public function query(): iterable
@@ -38,7 +39,18 @@ class FuturesCalculator extends Screen
 
             Layout::view('trading.futures-calculator-results'),
 
+
+
             Layout::rows([
+                RadioButtons::make('position_type')
+                    ->title('Тип позиции')
+                    ->options([
+                        'long' => 'Лонг',
+                        'short' => 'Шорт'
+                    ])
+                    ->value($this->formData['position_type'] ?? 'long')
+                    ->required(),
+
                 Group::make([
                     Input::make('entry_price')
                         ->title('Цена входа')
@@ -74,8 +86,14 @@ class FuturesCalculator extends Screen
                         ->title('Тейк-профит (%)')
                         ->type('number')
                         ->step('0.01')
-                        ->value($this->formData['take_profit_percent'] ?? null)
-                        ->required(),
+                        ->value($this->formData['take_profit_percent'] ?? 0)
+                        ->help('Процент прибыли'),
+
+                    Input::make('target_profit_amount')
+                        ->title('Целевая прибыль ($)')
+                        ->type('number')
+                        ->value($this->formData['target_profit_amount'] ?? 0)
+                        ->help('Желаемая прибыль в долларах'),
                 ]),
 
                 Button::make('Рассчитать')
@@ -139,6 +157,9 @@ class FuturesCalculator extends Screen
         $takeProfitPercent = (float)$request->input('take_profit_percent');
         $additionalOrders = $this->formData['additional_orders'];
 
+        $positionType = $request->input('position_type', 'long');
+        $targetProfitAmount = (float)$request->input('target_profit_amount', 0);
+
         // Базовые расчеты
         $contractSize = $positionSize * $leverage;
         $margin = $positionSize;
@@ -162,19 +183,38 @@ class FuturesCalculator extends Screen
                            ($contractSize + $orderContracts);
         }
 
-        // Пересчитываем цену ликвидации с учетом средней цены
-        $maintenanceMargin = 0.005; // 0.5% (может отличаться в зависимости от биржи)
-        $liquidationPrice = $averagePrice * (1 - (1 / $leverage) + $maintenanceMargin);
+        // Пересчитываем цену ликвидации с учетом типа позиции
+        $maintenanceMargin = 0.005;
+        if ($positionType === 'long') {
+            $liquidationPrice = $averagePrice * (1 - (1 / $leverage) + $maintenanceMargin);
+            $stopLossPrice = $averagePrice * (1 - ($stopLossPercent / 100));
+            $takeProfitPrice = $averagePrice * (1 + ($takeProfitPercent / 100));
 
-        // Расчет стопов и профита
-        $stopLossPrice = $averagePrice * (1 - ($stopLossPercent / 100));
-        $takeProfitPrice = $averagePrice * (1 + ($takeProfitPercent / 100));
+            // Расчет цены для целевой прибыли в долларах
+            $targetTakeProfitPrice = $averagePrice + ($targetProfitAmount * $averagePrice / $totalContracts);
+            $targetTakeProfitPercent = (($targetTakeProfitPrice - $averagePrice) / $averagePrice) * 100;
 
-        // Расчет потенциальной прибыли/убытка
-        $potentialLoss = ($averagePrice - $stopLossPrice) * $totalContracts / $averagePrice;
-        $potentialProfit = ($takeProfitPrice - $averagePrice) * $totalContracts / $averagePrice;
+            // Расчет потенциальной прибыли/убытка для лонга
+            $potentialLoss = ($averagePrice - $stopLossPrice) * $totalContracts / $averagePrice;
+            $potentialProfit = ($takeProfitPrice - $averagePrice) * $totalContracts / $averagePrice;
+        } else {
+            $liquidationPrice = $averagePrice * (1 + (1 / $leverage) - $maintenanceMargin);
+            $stopLossPrice = $averagePrice * (1 + ($stopLossPercent / 100));
+            $takeProfitPrice = $averagePrice * (1 - ($takeProfitPercent / 100));
+
+            // Расчет цены для целевой прибыли в долларах
+            $targetTakeProfitPrice = $averagePrice - ($targetProfitAmount * $averagePrice / $totalContracts);
+            $targetTakeProfitPercent = (($averagePrice - $targetTakeProfitPrice) / $averagePrice) * 100;
+
+            // Расчет потенциальной прибыли/убытка для шорта
+            $potentialLoss = ($stopLossPrice - $averagePrice) * $totalContracts / $averagePrice;
+            $potentialProfit = ($averagePrice - $takeProfitPrice) * $totalContracts / $averagePrice;
+        }
 
         $this->result = [
+            'position_type' => $positionType,
+            'leverage' => $leverage,
+            'margin' => $totalMargin,
             'average_price' => round($averagePrice, 8),
             'total_position_size' => round($totalSize, 2),
             'total_contracts' => round($totalContracts, 2),
@@ -186,6 +226,9 @@ class FuturesCalculator extends Screen
             'potential_loss' => round($potentialLoss, 2),
             'potential_profit' => round($potentialProfit, 2),
             'risk_reward_ratio' => round(abs($potentialProfit / $potentialLoss), 2),
+            'target_profit_price' => round($targetTakeProfitPrice, 8),
+            'target_profit_percent' => round($targetTakeProfitPercent, 2),
+            'target_profit_amount' => $targetProfitAmount,
         ];
     }
 
