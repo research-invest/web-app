@@ -42,6 +42,9 @@ Route::screen('/statistics/normalize', \App\Orchid\Screens\Statistics\Normalize:
 Route::screen('/statistics/top-performing-coins', \App\Orchid\Screens\Statistics\TopPerformingCoins::class)
     ->name('platform.statistics.top-performing-coins');
 
+Route::screen('/statistics/volume-by-range', \App\Orchid\Screens\Statistics\VolumeByRange::class)
+    ->name('platform.statistics.volume-by-range');
+
 
 Route::screen('/trading/futures-calculator', \App\Orchid\Screens\Trading\FuturesCalculator::class)
     ->name('platform.trading.futures-calculator');

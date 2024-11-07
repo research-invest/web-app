@@ -193,7 +193,7 @@ class TechnicalAnalysis
     {
         $variance = 0;
         foreach ($values as $value) {
-            $variance += pow((float)$value - $mean, 2);
+            $variance += ((float)$value - $mean) ** 2;
         }
         return sqrt($variance / count($values));
     }

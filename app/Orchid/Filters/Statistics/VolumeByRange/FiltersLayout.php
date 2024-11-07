@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Orchid\Filters\Statistics\Normalize;
+namespace App\Orchid\Filters\Statistics\VolumeByRange;
 
-use App\Orchid\Filters\Statistics\MultipleCurrencyFilter;
+use App\Orchid\Filters\Statistics\SingleCurrencyFilter;
 use Orchid\Filters\Filter;
 use Orchid\Screen\Layouts\Selection;
 
@@ -19,8 +19,8 @@ class FiltersLayout extends Selection
     public function filters(): array
     {
         return [
-            MultipleCurrencyFilter::class,
-            IntervalsFilter::class,
+            SingleCurrencyFilter::class,
+            Interval::class,
         ];
     }
 }

@@ -44,7 +44,11 @@ class PlatformProvider extends OrchidServiceProvider
 
                     Menu::make('Хорошая динамика')
                         ->icon('bs.book')
-                        ->route('platform.statistics.top-performing-coins')
+                        ->route('platform.statistics.top-performing-coins'),
+
+                    Menu::make('Объем по диапазону')
+                        ->icon('bs.book')
+                        ->route('platform.statistics.volume-by-range')
                 ]),
             Menu::make('Торговля')
                 ->icon('money')

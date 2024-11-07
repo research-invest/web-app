@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Orchid\Filters\Statistics\Normalize;
+namespace App\Orchid\Filters\Statistics;
 
 use App\Models\Currency;
 use Illuminate\Database\Eloquent\Builder;
 use Orchid\Filters\Filter;
 use Orchid\Screen\Fields\Select;
 
-class CurrencyFilter extends Filter
+class MultipleCurrencyFilter extends Filter
 {
     public function name(): string
     {

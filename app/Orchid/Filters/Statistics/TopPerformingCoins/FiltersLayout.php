@@ -2,8 +2,6 @@
 
 namespace App\Orchid\Filters\Statistics\TopPerformingCoins;
 
-use App\Orchid\Filters\Statistics\Normalize\CurrencyFilter;
-use App\Orchid\Filters\Statistics\Normalize\IntervalsFilter;
 use Orchid\Filters\Filter;
 use Orchid\Screen\Layouts\Selection;
 
