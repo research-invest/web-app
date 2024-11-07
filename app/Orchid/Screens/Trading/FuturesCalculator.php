@@ -249,7 +249,11 @@ class FuturesCalculator extends Screen
         if ($currency = $request->input('currency')) {
             $analysis = new TechnicalAnalysis();
 
-            $klines = (new Tickers())->getTickers($currency, 60);
+            $klines = (new Tickers())->getTickers($currency,
+                60,
+                date('Y-m-d 00:00:00'),
+                date('Y-m-d 23:59:59'),
+            );
 
             if ($klines) {
                 $technicalAnalysis = $analysis->analyzeSignals(
