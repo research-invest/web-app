@@ -2,7 +2,11 @@
 
 namespace App\Orchid\Screens\Trading;
 
+use App\Models\Currency;
+use App\Services\Analyze\TechnicalAnalysis;
+use App\Services\Api\Tickers;
 use Orchid\Screen\Fields\RadioButtons;
+use Orchid\Screen\Fields\Select;
 use Orchid\Screen\Screen;
 use Orchid\Screen\Fields\Input;
 use Orchid\Screen\Fields\Group;
@@ -38,8 +42,6 @@ class FuturesCalculator extends Screen
         return [
 
             Layout::view('trading.futures-calculator-results'),
-
-
 
             Layout::rows([
                 RadioButtons::make('position_type')
@@ -123,11 +125,22 @@ class FuturesCalculator extends Screen
                         ]);
                     })->toArray(),
 
-                // Кнопка для добавления нового ордера
                 Button::make('Добавить ордер')
                     ->method('addOrder')
                     ->class('btn btn-secondary'),
             ])->title('Дополнительные ордера'),
+
+            Layout::rows([
+                Select::make('currency')
+                    ->fromModel(Currency::class, 'code', 'name')
+                    ->title('Выберите валюту')
+                    ->value($this->formData['currency'] ?? 0)
+                    ->empty('Все валюты'),
+
+//                Button::make('Анализировать')
+//                    ->method('analyze')
+//                    ->class('btn btn-secondary'),
+            ])->title('Анализ'),
 
         ];
     }
@@ -230,6 +243,27 @@ class FuturesCalculator extends Screen
             'target_profit_percent' => round($targetTakeProfitPercent, 2),
             'target_profit_amount' => $targetProfitAmount,
         ];
+
+        // Технический анализ
+        if ($currency = $request->input('currency')) {
+            $analysis = new TechnicalAnalysis();
+
+            $klines = (new Tickers())->getTickers($currency, 300);
+
+            if ($klines) {
+                $technicalAnalysis = $analysis->analyzeSignals(
+                    (float)end($klines)['close'],
+                    $klines
+                );
+
+                $this->result['technical_analysis'] = array_merge($technicalAnalysis, [
+                    'current_price' => (float)end($klines)['close'],
+                    'timestamp' => time(),
+                ]);
+
+                $this->result['currency'] = $currency;
+            }
+        }
     }
 
     public function removeOrder(Request $request)
