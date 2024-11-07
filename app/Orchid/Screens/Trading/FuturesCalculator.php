@@ -108,7 +108,7 @@ class FuturesCalculator extends Screen
                     Input::make('target_profit_amount')
                         ->title('Целевая прибыль ($)')
                         ->type('number')
-                        ->value($this->formData['target_profit_amount'] ?? 0)
+                        ->value($this->formData['target_profit_amount'] ?? 100)
                         ->help('Желаемая прибыль в долларах'),
                 ]),
 
