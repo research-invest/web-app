@@ -6,6 +6,7 @@ use App\Models\Currency;
 use App\Services\Analyze\TechnicalAnalysis;
 use App\Services\Api\Tickers;
 use Orchid\Screen\Fields\RadioButtons;
+use Orchid\Screen\Fields\Relation;
 use Orchid\Screen\Fields\Select;
 use Orchid\Screen\Screen;
 use Orchid\Screen\Fields\Input;
@@ -44,6 +45,19 @@ class FuturesCalculator extends Screen
             Layout::view('trading.futures-calculator-results'),
 
             Layout::rows([
+                Relation::make('currency')
+                    ->fromModel(Currency::class, 'code', 'name')
+                    ->displayAppend('namePrice')
+                    ->value($this->formData['currency'] ?? 0)
+                    ->empty('Все валюты')
+                    ->title('Выберите валюту'),
+
+//                Button::make('Анализировать')
+//                    ->method('analyze')
+//                    ->class('btn btn-secondary'),
+            ])->title('Анализ'),
+
+            Layout::rows([
                 RadioButtons::make('position_type')
                     ->title('Тип позиции')
                     ->options([
@@ -64,7 +78,7 @@ class FuturesCalculator extends Screen
                     Input::make('position_size')
                         ->title('Размер позиции (USDT)')
                         ->type('number')
-                        ->value($this->formData['position_size'] ?? null)
+                        ->value($this->formData['position_size'] ?? 1000)
                         ->required(),
 
                     Input::make('leverage')
@@ -72,7 +86,7 @@ class FuturesCalculator extends Screen
                         ->type('number')
                         ->min(1)
                         ->max(125)
-                        ->value($this->formData['leverage'] ?? null)
+                        ->value($this->formData['leverage'] ?? 3)
                         ->required(),
                 ]),
 
@@ -81,14 +95,14 @@ class FuturesCalculator extends Screen
                         ->title('Стоп-лосс (%)')
                         ->type('number')
                         ->step('0.01')
-                        ->value($this->formData['stop_loss_percent'] ?? null)
+                        ->value($this->formData['stop_loss_percent'] ?? 1)
                         ->required(),
 
                     Input::make('take_profit_percent')
                         ->title('Тейк-профит (%)')
                         ->type('number')
                         ->step('0.01')
-                        ->value($this->formData['take_profit_percent'] ?? 0)
+                        ->value($this->formData['take_profit_percent'] ?? 10)
                         ->help('Процент прибыли'),
 
                     Input::make('target_profit_amount')
@@ -129,19 +143,6 @@ class FuturesCalculator extends Screen
                     ->method('addOrder')
                     ->class('btn btn-secondary'),
             ])->title('Дополнительные ордера'),
-
-            Layout::rows([
-                Select::make('currency')
-                    ->fromModel(Currency::class, 'code', 'name')
-                    ->title('Выберите валюту')
-                    ->value($this->formData['currency'] ?? 0)
-                    ->empty('Все валюты'),
-
-//                Button::make('Анализировать')
-//                    ->method('analyze')
-//                    ->class('btn btn-secondary'),
-            ])->title('Анализ'),
-
         ];
     }
 
@@ -193,7 +194,7 @@ class FuturesCalculator extends Screen
             $totalMargin += $orderSize;
 
             $averagePrice = (($averagePrice * $contractSize) + ($orderPrice * $orderContracts)) /
-                           ($contractSize + $orderContracts);
+                ($contractSize + $orderContracts);
         }
 
         // Пересчитываем цену ликвидации с учетом типа позиции
@@ -248,7 +249,7 @@ class FuturesCalculator extends Screen
         if ($currency = $request->input('currency')) {
             $analysis = new TechnicalAnalysis();
 
-            $klines = (new Tickers())->getTickers($currency, 300);
+            $klines = (new Tickers())->getTickers($currency, 60);
 
             if ($klines) {
                 $technicalAnalysis = $analysis->analyzeSignals(
@@ -273,5 +274,29 @@ class FuturesCalculator extends Screen
             unset($this->formData['additional_orders'][$index]);
             $this->formData['additional_orders'] = array_values($this->formData['additional_orders']);
         }
+    }
+
+    public function analyze(Request $request)
+    {
+        $currency = $request->get('currency');
+        $analysis = new TechnicalAnalysis();
+
+        $klines = (new Tickers())->getTickers($currency, 60);
+
+        if ($klines) {
+            $technicalAnalysis = $analysis->analyzeSignals(
+                (float)end($klines)['close'],
+                $klines
+            );
+
+            $this->result['technical_analysis'] = array_merge($technicalAnalysis, [
+                'current_price' => (float)end($klines)['close'],
+                'timestamp' => time(),
+            ]);
+
+            $this->result['currency'] = $currency;
+            $this->formData['entry_price'] = (float)end($klines)['last_price'];
+        }
+
     }
 }
