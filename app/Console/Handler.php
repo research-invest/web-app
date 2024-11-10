@@ -9,7 +9,7 @@ class Handler
 {
     public function __invoke(Schedule $schedule): void
     {
-        $schedule->command(UpdateCurrencies::class)->everyTenMinutes();
+        $schedule->command(UpdateCurrencies::class)->everyTwoMinutes();
 
     }
 }
