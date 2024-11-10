@@ -218,7 +218,7 @@ class DealEditScreen extends Screen
             Toast::success('Сделка обновлена');
         }
 
-        return redirect()->route('platform.trading.deals');
+        return redirect()->route('platform.trading.deal.edit', $trade->id);
     }
 
     public function closeTrade(Trade $trade, Request $request)
