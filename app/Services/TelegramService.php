@@ -7,8 +7,8 @@ use Illuminate\Support\Facades\Log;
 
 class TelegramService
 {
-    private string $token;
-    private string $chatId;
+    private ?string $token;
+    private ?string $chatId;
     private string $apiUrl = 'https://api.telegram.org/bot';
 
     public function __construct()
