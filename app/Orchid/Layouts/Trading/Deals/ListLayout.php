@@ -32,7 +32,10 @@ class ListLayout extends Table
                 ),
 
             TD::make('currency', 'Пара')
-                ->render(fn (Trade $trade) => $trade->currency->name),
+                ->render(fn(Trade $trade) => Link::make($trade->currency->name)
+                    ->rawClick()
+                    ->route('platform.trading.deal.edit', $trade)
+                ),
 
             TD::make('position_type', 'Тип'),
             TD::make('position_size', 'Размер'),
