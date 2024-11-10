@@ -136,7 +136,7 @@ class Trade extends Model
     public function getCurrentRoe(?float $currentPrice = null): ?float
     {
         $pnl = $this->getUnrealizedPnL($currentPrice);
-        
+
         if ($pnl === null || $this->position_size <= 0) {
             return null;
         }
@@ -170,5 +170,53 @@ class Trade extends Model
             return $currentPrice <= $this->stop_loss_price;
         }
         return $currentPrice >= $this->stop_loss_price;
+    }
+
+    public function pnlHistory()
+    {
+        return $this->hasMany(TradePnlHistory::class);
+    }
+
+    /**
+     * Обновить PNL для всех ордеров и сохранить историю
+     */
+    public function updatePnL(float $currentPrice)
+    {
+//        $averagePrice = $this->getAverageEntryPrice();
+
+        // Обновляем PNL для каждого ордера
+        foreach ($this->orders as $order) {
+            if ($order->type === 'exit') {
+                continue; // Пропускаем ордера выхода
+            }
+
+            // Расчет количества монет в ордере
+            $quantity = $order->size / $order->price;
+
+            // Расчет нереализованного PNL для ордера
+            if ($this->position_type === 'long') {
+                $unrealizedPnl = ($currentPrice - $order->price) * $quantity;
+            } else {
+                $unrealizedPnl = ($order->price - $currentPrice) * $quantity;
+            }
+
+            // Обновляем ордер
+            $order->update([
+                'unrealized_pnl' => $unrealizedPnl,
+                'pnl_updated_at' => now()
+            ]);
+        }
+
+        // Расчет общего PNL для позиции
+        $totalUnrealizedPnl = $this->getUnrealizedPnL($currentPrice);
+        $roe = $this->getCurrentRoe($currentPrice);
+
+        // Сохраняем запись в историю
+        $this->pnlHistory()->create([
+            'price' => $currentPrice,
+            'unrealized_pnl' => $totalUnrealizedPnl,
+            'realized_pnl' => $this->realized_pnl ?? 0,
+            'roe' => $roe
+        ]);
     }
 }

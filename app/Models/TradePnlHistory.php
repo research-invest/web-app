@@ -1,0 +1,33 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Orchid\Screen\AsSource;
+
+class TradePnlHistory extends Model
+{
+    use AsSource;
+
+    protected $table = 'trade_pnl_history';
+
+    protected $fillable = [
+        'trade_id',
+        'price',
+        'unrealized_pnl',
+        'realized_pnl',
+        'roe'
+    ];
+
+    protected $casts = [
+        'price' => 'decimal:8',
+        'unrealized_pnl' => 'decimal:8',
+        'realized_pnl' => 'decimal:8',
+        'roe' => 'decimal:4'
+    ];
+
+    public function trade()
+    {
+        return $this->belongsTo(Trade::class);
+    }
+} 
