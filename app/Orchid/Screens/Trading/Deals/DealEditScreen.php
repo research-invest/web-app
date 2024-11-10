@@ -184,6 +184,13 @@ class DealEditScreen extends Screen
                 'Статистика' => [
                     Layout::view('trading.trade-stats', ['trade' => $this->trade])
                 ],
+
+                'Потенциальный P&L' => [
+                    Layout::view('trading.trade-potential-pnl', [
+                        'trade' => $this->trade,
+                        'steps' => $this->calculatePnLSteps($this->trade)
+                    ])
+                ],
             ])
         ];
     }
@@ -272,5 +279,58 @@ class DealEditScreen extends Screen
             return ($exitPrice - $entryPrice) * $size * $leverage / $entryPrice;
         }
         return ($entryPrice - $exitPrice) * $size * $leverage / $entryPrice;
+    }
+
+    /**
+     * Расчет шагов для таблицы потенциального P&L
+     */
+    private function calculatePnLSteps(Trade $trade): array
+    {
+        if (!$trade->exists) {
+            return [];
+        }
+
+        // Получаем среднюю цену входа
+        $averagePrice = $trade->orders->where('type', '!=', 'exit')
+            ->reduce(function ($carry, $order) {
+                return $carry + ($order->price * $order->size);
+            }, 0) / $trade->orders->where('type', '!=', 'exit')->sum('size');
+
+        // Определяем диапазон цен (±50% от средней цены)
+        $maxPrice = $averagePrice * 1.5;
+        $minPrice = $averagePrice * 0.5;
+
+        // Рассчитываем оптимальное количество шагов (например, 20 шагов)
+        $steps = 20;
+        $stepSize = ($maxPrice - $minPrice) / $steps;
+
+        $results = [];
+        
+        // Генерируем строки для таблицы
+        for ($i = 0; $i <= $steps; $i++) {
+            $price = $trade->position_type === 'long' ? 
+                $minPrice + ($stepSize * $i) : 
+                $maxPrice - ($stepSize * $i);
+
+            // Расчет P&L для текущей цены
+            $pnl = $trade->position_type === 'long'
+                ? ($price - $averagePrice) * $trade->position_size * $trade->leverage / $averagePrice
+                : ($averagePrice - $price) * $trade->position_size * $trade->leverage / $averagePrice;
+
+            // Расчет ROE (Return on Equity)
+            $roe = ($pnl / $trade->position_size) * 100;
+
+            $results[] = [
+                'price' => $price,
+                'pnl' => $pnl,
+                'roe' => $roe,
+                'price_change' => (($price - $averagePrice) / $averagePrice) * 100,
+                'is_current' => false, // будет обновляться в шаблоне
+                'is_tp' => abs($price - $trade->take_profit_price) < $stepSize,
+                'is_sl' => abs($price - $trade->stop_loss_price) < $stepSize,
+            ];
+        }
+
+        return $results;
     }
 }

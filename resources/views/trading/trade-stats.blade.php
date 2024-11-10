@@ -63,7 +63,7 @@
 
                     <div class="d-flex justify-content-between mb-2">
                         <span>Средняя цена позиции:</span>
-                        <strong class="text-primary">{{ number_format($averagePrice, 8) }}</strong>
+                        <strong class="text-primary">{{ number_format($trade->getAverageEntryPrice(), 8) }}</strong>
                     </div>
 
                     <div class="border-top my-2"></div>
