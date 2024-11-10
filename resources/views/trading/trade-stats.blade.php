@@ -68,23 +68,27 @@
 
                     <div class="border-top my-2"></div>
 
-                    <div class="d-flex justify-content-between mb-2">
-                        <span>Стоп-лосс:</span>
-                        <div class="text-end">
-                            <span class="text-danger">{{ number_format($trade->stop_loss_price, 8) }}</span>
-                            <br>
-                            <small class="text-muted">{{ number_format($slDistance, 2) }}% от средней</small>
+                    @if($trade->stop_loss_price)
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Стоп-лосс:</span>
+                            <div class="text-end">
+                                <span class="text-danger">{{ number_format($trade->stop_loss_price, 8) }}</span>
+                                <br>
+                                <small class="text-muted">{{ number_format($slDistance, 2) }}% от средней</small>
+                            </div>
                         </div>
-                    </div>
+                    @endif
 
-                    <div class="d-flex justify-content-between mb-2">
-                        <span>Тейк-профит:</span>
-                        <div class="text-end">
-                            <span class="text-success">{{ number_format($trade->take_profit_price, 8) }}</span>
-                            <br>
-                            <small class="text-muted">{{ number_format($tpDistance, 2) }}% от средней</small>
+                    @if($trade->take_profit_price)
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Тейк-профит:</span>
+                            <div class="text-end">
+                                <span class="text-success">{{ number_format($trade->take_profit_price, 8) }}</span>
+                                <br>
+                                <small class="text-muted">{{ number_format($tpDistance, 2) }}% от средней</small>
+                            </div>
                         </div>
-                    </div>
+                    @endif
 
                     @if($trade->exit_price)
                     <div class="border-top my-2"></div>
