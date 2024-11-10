@@ -198,7 +198,7 @@ class DealEditScreen extends Screen
     public function save(Trade $trade, Request $request)
     {
         $data = $request->get('trade');
-        
+
         // Если это новая сделка
         if (!$trade->exists) {
             $trade->fill($data);
@@ -304,10 +304,7 @@ class DealEditScreen extends Screen
         }
 
         // Получаем среднюю цену входа
-        $averagePrice = $trade->orders->where('type', '!=', 'exit')
-            ->reduce(function ($carry, $order) {
-                return $carry + ($order->price * $order->size);
-            }, 0) / $trade->orders->where('type', '!=', 'exit')->sum('size');
+        $averagePrice = $trade->getAverageEntryPrice();
 
         // Определяем диапазон цен (±50% от средней цены)
         $maxPrice = $averagePrice * 1.5;
@@ -318,11 +315,11 @@ class DealEditScreen extends Screen
         $stepSize = ($maxPrice - $minPrice) / $steps;
 
         $results = [];
-        
+
         // Генерируем строки для таблицы
         for ($i = 0; $i <= $steps; $i++) {
-            $price = $trade->position_type === 'long' ? 
-                $minPrice + ($stepSize * $i) : 
+            $price = $trade->position_type === 'long' ?
+                $minPrice + ($stepSize * $i) :
                 $maxPrice - ($stepSize * $i);
 
             // Расчет P&L для текущей цены
