@@ -40,6 +40,8 @@ class ListLayout extends Table
             TD::make('position_type', 'Тип'),
             TD::make('position_size', 'Размер'),
             TD::make('entry_price', 'Цена входа'),
+            TD::make('exit_price', 'Цена выхода'),
+            TD::make('realized_pnl', 'PNL'),
             TD::make('leverage', 'Плечо'),
             TD::make('status', 'Статутс'),
 

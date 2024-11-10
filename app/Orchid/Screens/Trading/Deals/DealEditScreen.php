@@ -92,8 +92,7 @@ class DealEditScreen extends Screen
                         ->title('Тип ордера')
                         ->options([
                             'add' => 'Дополнительный вход',
-                            'fixed' => 'Частичное закрытие',
-                            'exit' => 'Полное закрытие'
+                            'exit' => 'Частичное закрытие',
                         ])
                         ->required(),
 
