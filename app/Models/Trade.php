@@ -74,21 +74,16 @@ class Trade extends Model
             ->whereIn('type', ['entry', 'add'])
             ->get();
 
-        if ($entryOrders->isEmpty()) {
-            return (float)$this->entry_price;
+        $totalQuantity = 0;
+        $totalValue = 0;
+
+        foreach ($entryOrders as $order) {
+            $quantity = $order->size / $order->price;
+            $totalQuantity += $quantity;
+            $totalValue += $order->size;
         }
 
-        $totalSize = $entryOrders->sum('size');
-        
-        if ($totalSize <= 0) {
-            return (float)$this->entry_price;
-        }
-
-        $weightedSum = $entryOrders->reduce(function ($carry, $order) {
-            return $carry + ($order->price * $order->size);
-        }, 0);
-
-        return (float)($weightedSum / $totalSize);
+        return $totalQuantity > 0 ? $totalValue / $totalQuantity : 0;
     }
 
     /**

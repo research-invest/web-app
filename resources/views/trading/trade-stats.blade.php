@@ -45,11 +45,13 @@
                     @php
                         // Расчет средней цены позиции
                         $totalSize = $trade->orders->where('type', '!=', 'exit')->sum('size');
-                        $weightedSum = $trade->orders->where('type', '!=', 'exit')
-                            ->reduce(function ($carry, $order) {
-                                return $carry + ($order->price * $order->size);
-                            }, 0);
-                        $averagePrice = $totalSize > 0 ? $weightedSum / $totalSize : $trade->entry_price;
+//                        $weightedSum = $trade->orders->where('type', '!=', 'exit')
+//                            ->reduce(function ($carry, $order) {
+//                                return $carry + ($order->price * $order->size);
+//                            }, 0);
+//                        $averagePrice = $totalSize > 0 ? $weightedSum / $totalSize : $trade->entry_price;
+//
+                        $averagePrice = $trade->getAverageEntryPrice();
 
                         // Расчет расстояния до уровней в процентах
                         $slDistance = abs(($trade->stop_loss_price - $averagePrice) / $averagePrice * 100);
@@ -63,7 +65,7 @@
 
                     <div class="d-flex justify-content-between mb-2">
                         <span>Средняя цена позиции:</span>
-                        <strong class="text-primary">{{ number_format($trade->getAverageEntryPrice(), 8) }}</strong>
+                        <strong class="text-primary">{{ number_format($averagePrice, 8) }}</strong>
                     </div>
 
                     <div class="border-top my-2"></div>

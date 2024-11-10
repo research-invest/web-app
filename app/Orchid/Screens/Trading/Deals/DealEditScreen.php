@@ -198,14 +198,27 @@ class DealEditScreen extends Screen
     public function save(Trade $trade, Request $request)
     {
         $data = $request->get('trade');
+        
+        // Если это новая сделка
+        if (!$trade->exists) {
+            $trade->fill($data);
+            $trade->save();
 
-        $trade->fill($data)->save();
+            // Создаем первый ордер при создании сделки
+            $trade->orders()->create([
+                'price' => $trade->entry_price,
+                'size' => $trade->position_size,
+                'type' => 'entry',
+                'executed_at' => now()
+            ]);
 
-        Toast::success('Сделка сохранена');
+            Toast::success('Сделка создана');
+        } else {
+            $trade->fill($data)->save();
+            Toast::success('Сделка обновлена');
+        }
 
-//        return redirect()->route('platform.trading.deals');
-        return redirect()->route('platform.trading.deal.edit', $trade->id);
-
+        return redirect()->route('platform.trading.deals');
     }
 
     public function closeTrade(Trade $trade, Request $request)
