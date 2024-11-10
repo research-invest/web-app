@@ -50,7 +50,7 @@
                                 return $carry + ($order->price * $order->size);
                             }, 0);
                         $averagePrice = $totalSize > 0 ? $weightedSum / $totalSize : $trade->entry_price;
-                        
+
                         // Расчет расстояния до уровней в процентах
                         $slDistance = abs(($trade->stop_loss_price - $averagePrice) / $averagePrice * 100);
                         $tpDistance = abs(($trade->take_profit_price - $averagePrice) / $averagePrice * 100);
@@ -178,6 +178,19 @@
         </div>
     </div>
 
+    <div class="row mt-3">
+        <div class="col-12">
+            <div class="alert {{ $riskPercent > 2 ? 'alert-danger' : 'alert-success' }}">
+                <i class="fas fa-shield-alt"></i>
+                @if($riskPercent > 2)
+                    <strong>Внимание!</strong> Риск на сделку превышает рекомендуемые 2% от депозита.
+                @else
+                    Риск на сделку находится в пределах рекомендуемых значений (до 2% от депозита).
+                @endif
+            </div>
+        </div>
+    </div>
+
     <div class="row mt-4">
         <div class="col-12">
             <h5 class="mb-3">Метрики риска</h5>
@@ -242,7 +255,7 @@
                         <strong class="text-success">{{ number_format($potentialProfit, 2) }} USDT</strong>
                     </div>
                     <div class="d-flex justify-content-between">
-                        <span>Прибыль от д��позита:</span>
+                        <span>Прибыль от депозита:</span>
                         <strong class="text-success">{{ number_format($profitPercent, 2) }}%</strong>
                     </div>
                 </div>
@@ -281,16 +294,5 @@
         </div>
     </div>
 
-    <div class="row mt-3">
-        <div class="col-12">
-            <div class="alert {{ $riskPercent > 2 ? 'alert-danger' : 'alert-success' }}">
-                <i class="fas fa-shield-alt"></i>
-                @if($riskPercent > 2)
-                    <strong>Внимание!</strong> Риск на сделку превышает рекомендуемые 2% от депозита.
-                @else
-                    Риск на сделку находится в пределах рекомендуемых значений (до 2% от депозита).
-                @endif
-            </div>
-        </div>
-    </div>
+
 </div>
