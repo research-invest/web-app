@@ -54,6 +54,10 @@ class PlatformProvider extends OrchidServiceProvider
                 ->icon('money')
                 ->title('Торговля')
                 ->list([
+                    Menu::make('Сделки')
+                        ->icon('briefcase')
+                        ->route('platform.trading.deals'),
+
                     Menu::make('Калькулятор сделок')
                         ->icon('calculator')
                         ->route('platform.trading.futures-calculator'),

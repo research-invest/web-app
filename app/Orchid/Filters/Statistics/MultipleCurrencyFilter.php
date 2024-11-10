@@ -29,6 +29,7 @@ class MultipleCurrencyFilter extends Filter
         return [
             Select::make('currencies')
                 ->fromModel(Currency::class, 'code', 'name')
+                ->displayAppend('namePrice')
                 ->multiple()
                 ->title('Выберите валюты')
                 ->empty('Все валюты')

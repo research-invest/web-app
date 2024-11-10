@@ -29,6 +29,7 @@ class SingleCurrencyFilter extends Filter
         return [
             Select::make('currency')
                 ->fromModel(Currency::class, 'code', 'name')
+                ->displayAppend('namePrice')
                 ->title('Выберите валюты')
                 ->empty('Все валюты')
         ];

@@ -21,6 +21,11 @@ use App\Orchid\Screens\User\UserProfileScreen;
 use Illuminate\Support\Facades\Route;
 use Tabuna\Breadcrumbs\Trail;
 
+use \App\Orchid\Screens\Trading\Deals\DealsListScreen;
+use \App\Orchid\Screens\Trading\Deals\DealEditScreen;
+use \App\Orchid\Screens\Trading\Deals\DealCloseScreen;
+
+
 /*
 |--------------------------------------------------------------------------
 | Dashboard Routes
@@ -48,6 +53,39 @@ Route::screen('/statistics/volume-by-range', \App\Orchid\Screens\Statistics\Volu
 
 Route::screen('/trading/futures-calculator', \App\Orchid\Screens\Trading\FuturesCalculator::class)
     ->name('platform.trading.futures-calculator');
+
+
+
+Route::screen('/trading/deals', DealsListScreen::class)
+->name('platform.trading.deals')
+->breadcrumbs(fn (Trail $trail) =>
+    $trail->parent('platform.index')
+        ->push('Журнал сделок', route('platform.trading.deals'))
+);
+
+Route::screen('/trading/deals/create', DealEditScreen::class)
+->name('platform.trading.deal.create')
+->breadcrumbs(fn (Trail $trail) =>
+    $trail
+        ->parent('platform.trading.deals')
+        ->push('Новая сделка')
+);
+
+Route::screen('/trading/deals/{trade}/edit', DealEditScreen::class)
+->name('platform.trading.deal.edit')
+->breadcrumbs(fn (Trail $trail, $trade) =>
+    $trail
+        ->parent('platform.trading.deals')
+        ->push('Редактирование сделки #' . $trade->id)
+);
+
+Route::screen('trading/deals/{trade}/close', DealCloseScreen::class)
+    ->name('platform.trading.deal.close')
+    ->breadcrumbs(fn (Trail $trail, $trade) =>
+        $trail
+            ->parent('platform.trading.deal.edit', $trade)
+            ->push('Закрытие сделки')
+    );
 
 // Platform > Profile
 Route::screen('profile', UserProfileScreen::class)
