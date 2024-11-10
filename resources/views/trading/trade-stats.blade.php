@@ -116,9 +116,12 @@
                         @php
                             // Здесь можно добавить расчет текущего P&L
                             $currentPrice = $trade->currency->last_price ?? $trade->entry_price;
+//                            $unrealizedPnl = $trade->position_type === 'long'
+//                                ? ($currentPrice - $trade->entry_price) * $trade->position_size * $trade->leverage / $trade->entry_price
+//                                : ($trade->entry_price - $currentPrice) * $trade->position_size * $trade->leverage / $trade->entry_price;
                             $unrealizedPnl = $trade->position_type === 'long'
-                                ? ($currentPrice - $trade->entry_price) * $trade->position_size * $trade->leverage / $trade->entry_price
-                                : ($trade->entry_price - $currentPrice) * $trade->position_size * $trade->leverage / $trade->entry_price;
+                                ? ($currentPrice - $averagePrice) * $trade->position_size * $trade->leverage / $averagePrice
+                                : ($averagePrice - $currentPrice) * $trade->position_size * $trade->leverage / $averagePrice;
                         @endphp
                         <div class="d-flex justify-content-between mb-2">
                             <span>Текущая цена:</span>
