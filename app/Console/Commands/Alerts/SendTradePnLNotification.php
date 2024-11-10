@@ -3,7 +3,7 @@
  * php artisan trades:notify-pnl
  */
 
-namespace App\Console\Commands;
+namespace App\Console\Commands\Alerts;
 
 use App\Models\Trade;
 use App\Services\TelegramService;
@@ -45,6 +45,9 @@ class SendTradePnLNotification extends Command
 
         $totalPnl = 0;
 
+        /**
+         * @var Trade $trade
+         */
         foreach ($trades as $trade) {
             $currentPrice = $trade->currency->last_price ?? $trade->entry_price;
             $unrealizedPnl = $trade->getUnrealizedPnL($currentPrice);

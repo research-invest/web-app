@@ -52,10 +52,13 @@
 //                        $averagePrice = $totalSize > 0 ? $weightedSum / $totalSize : $trade->entry_price;
 //
                         $averagePrice = $trade->getAverageEntryPrice();
+                        $slDistance = $tpDistance = 0;
 
-                        // Расчет расстояния до уровней в процентах
-                        $slDistance = abs(($trade->stop_loss_price - $averagePrice) / $averagePrice * 100);
-                        $tpDistance = abs(($trade->take_profit_price - $averagePrice) / $averagePrice * 100);
+                        if($averagePrice){
+                            // Расчет расстояния до уровней в процентах
+                            $slDistance = abs(($trade->stop_loss_price - $averagePrice) / $averagePrice * 100);
+                            $tpDistance = abs(($trade->take_profit_price - $averagePrice) / $averagePrice * 100);
+                        }
                     @endphp
 
                     <div class="d-flex justify-content-between mb-2">
@@ -93,21 +96,21 @@
                     @endif
 
                     @if($trade->exit_price)
-                    <div class="border-top my-2"></div>
-                    <div class="d-flex justify-content-between">
-                        <span>Цена выхода:</span>
-                        <strong class="{{ $trade->realized_pnl > 0 ? 'text-success' : 'text-danger' }}">
-                            {{ number_format($trade->exit_price, 8) }}
-                        </strong>
-                    </div>
+                        <div class="border-top my-2"></div>
+                        <div class="d-flex justify-content-between">
+                            <span>Цена выхода:</span>
+                            <strong class="{{ $trade->realized_pnl > 0 ? 'text-success' : 'text-danger' }}">
+                                {{ number_format($trade->exit_price, 8) }}
+                            </strong>
+                        </div>
                     @endif
 
                     @if($trade->status === 'open')
-                    <div class="border-top my-2"></div>
-                    <div class="small text-muted">
-                        <i class="fas fa-info-circle"></i>
-                        Средняя цена учитывает все входы в позицию
-                    </div>
+                        <div class="border-top my-2"></div>
+                        <div class="small text-muted">
+                            <i class="fas fa-info-circle"></i>
+                            Средняя цена учитывает все входы в позицию
+                        </div>
                     @endif
                 </div>
             </div>
@@ -188,122 +191,128 @@
     </div>
 
     @php
-        // Расчет риска в USDT (от входа до стоп-лосса)
-        $riskAmount = $trade->position_type === 'long'
-            ? ($trade->entry_price - $trade->stop_loss_price) * $trade->position_size * $trade->leverage / $trade->entry_price
-            : ($trade->stop_loss_price - $trade->entry_price) * $trade->position_size * $trade->leverage / $trade->entry_price;
+        $riskPercent = 0;
+        if($trade->exists) {
+            // Расчет риска в USDT (от входа до стоп-лосса)
+            $riskAmount = $trade->position_type === 'long'
+                ? ($trade->entry_price - $trade->stop_loss_price) * $trade->position_size * $trade->leverage / $trade->entry_price
+                : ($trade->stop_loss_price - $trade->entry_price) * $trade->position_size * $trade->leverage / $trade->entry_price;
 
-        // Риск в процентах от депозита
-        $riskPercent = abs($riskAmount / $trade->position_size * 100);
+            // Риск в процентах от депозита
+            $riskPercent = abs($riskAmount / $trade->position_size * 100);
 
-        // Расстояние до стопа в процентах
-        $stopDistance = abs($trade->entry_price - $trade->stop_loss_price) / $trade->entry_price * 100;
+            // Расстояние до стопа в процентах
+            $stopDistance = abs($trade->entry_price - $trade->stop_loss_price) / $trade->entry_price * 100;
+        }
     @endphp
 
-    <div class="row mt-3">
-        <div class="col-12">
-            <div class="alert {{ $riskPercent > 2 ? 'alert-danger' : 'alert-success' }}">
-                <i class="fas fa-shield-alt"></i>
-                @if($riskPercent > 2)
-                    <strong>Внимание!</strong> Риск на сделку превышает рекомендуемые 2% от депозита.
-                @else
-                    Риск на сделку находится в пределах рекомендуемых значений (до 2% от депозита).
-                @endif
-            </div>
-        </div>
-    </div>
+    @if($riskPercent)
 
-    <div class="row mt-4">
-        <div class="col-12">
-            <h5 class="mb-3">Метрики риска</h5>
-        </div>
-
-        <div class="col-md-4">
-            <div class="card border-danger mb-3">
-                <div class="card-header">Риск на сделку</div>
-                <div class="card-body">
-
-
-                    <div class="d-flex justify-content-between mb-2">
-                        <span>Риск (USDT):</span>
-                        <strong class="text-danger">{{ number_format(abs($riskAmount), 2) }}</strong>
-                    </div>
-                    <div class="d-flex justify-content-between mb-2">
-                        <span>Риск от депозита:</span>
-                        <strong class="text-danger">{{ number_format($riskPercent, 2) }}%</strong>
-                    </div>
-                    <div class="d-flex justify-content-between">
-                        <span>Расстояние до стопа:</span>
-                        <strong>{{ number_format($stopDistance, 2) }}%</strong>
-                    </div>
+        <div class="row mt-3">
+            <div class="col-12">
+                <div class="alert {{ $riskPercent > 2 ? 'alert-danger' : 'alert-success' }}">
+                    <i class="fas fa-shield-alt"></i>
+                    @if($riskPercent > 2)
+                        <strong>Внимание!</strong> Риск на сделку превышает рекомендуемые 2% от депозита.
+                    @else
+                        Риск на сделку находится в пределах рекомендуемых значений (до 2% от депозита).
+                    @endif
                 </div>
             </div>
         </div>
 
-        <div class="col-md-4">
-            <div class="card border-success mb-3">
-                <div class="card-header">Соотношение риск/прибыль</div>
-                <div class="card-body">
-                    @php
-                        // Потенциальная прибыль (от входа до тейк-профита)
-                        $potentialProfit = $trade->position_type === 'long'
-                            ? ($trade->take_profit_price - $trade->entry_price) * $trade->position_size * $trade->leverage / $trade->entry_price
-                            : ($trade->entry_price - $trade->take_profit_price) * $trade->position_size * $trade->leverage / $trade->entry_price;
+        <div class="row mt-4">
+            <div class="col-12">
+                <h5 class="mb-3">Метрики риска</h5>
+            </div>
 
-                        // Соотношение риск/прибыль (RR ratio)
-                        $rrRatio = abs($potentialProfit / $riskAmount);
+            <div class="col-md-4">
+                <div class="card border-danger mb-3">
+                    <div class="card-header">Риск на сделку</div>
+                    <div class="card-body">
 
-                        // Ожидаемая прибыль в процентах
-                        $profitPercent = abs($potentialProfit / $trade->position_size * 100);
-                    @endphp
 
-                    <div class="d-flex justify-content-between mb-2">
-                        <span>Risk/Reward:</span>
-                        <strong>1 : {{ number_format($rrRatio, 2) }}</strong>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Риск (USDT):</span>
+                            <strong class="text-danger">{{ number_format(abs($riskAmount), 2) }}</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Риск от депозита:</span>
+                            <strong class="text-danger">{{ number_format($riskPercent, 2) }}%</strong>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Расстояние до стопа:</span>
+                            <strong>{{ number_format($stopDistance, 2) }}%</strong>
+                        </div>
                     </div>
-                    <div class="d-flex justify-content-between mb-2">
-                        <span>Потенциальная прибыль:</span>
-                        <strong class="text-success">{{ number_format($potentialProfit, 2) }} USDT</strong>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card border-success mb-3">
+                    <div class="card-header">Соотношение риск/прибыль</div>
+                    <div class="card-body">
+                        @php
+                            // Потенциальная прибыль (от входа до тейк-профита)
+                            $potentialProfit = $trade->position_type === 'long'
+                                ? ($trade->take_profit_price - $trade->entry_price) * $trade->position_size * $trade->leverage / $trade->entry_price
+                                : ($trade->entry_price - $trade->take_profit_price) * $trade->position_size * $trade->leverage / $trade->entry_price;
+
+                            // Соотношение риск/прибыль (RR ratio)
+                            $rrRatio = abs($potentialProfit / $riskAmount);
+
+                            // Ожидаемая прибыль в процентах
+                            $profitPercent = abs($potentialProfit / $trade->position_size * 100);
+                        @endphp
+
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Risk/Reward:</span>
+                            <strong>1 : {{ number_format($rrRatio, 2) }}</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Потенциальная прибыль:</span>
+                            <strong class="text-success">{{ number_format($potentialProfit, 2) }} USDT</strong>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Прибыль от депозита:</span>
+                            <strong class="text-success">{{ number_format($profitPercent, 2) }}%</strong>
+                        </div>
                     </div>
-                    <div class="d-flex justify-content-between">
-                        <span>Прибыль от депозита:</span>
-                        <strong class="text-success">{{ number_format($profitPercent, 2) }}%</strong>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card border-warning mb-3">
+                    <div class="card-header">Дополнительные метрики</div>
+                    <div class="card-body">
+                        @php
+                            // Эффективное плечо (с учетом расстояния до стопа)
+                            $effectiveLeverage = $trade->leverage * (1 / ($stopDistance / 100));
+
+                            // Максимальная просадка
+                            $maxDrawdown = $trade->position_type === 'long'
+                                ? ($trade->low_price ?? $trade->entry_price) - $trade->entry_price
+                                : $trade->entry_price - ($trade->high_price ?? $trade->entry_price);
+                            $maxDrawdownPercent = abs($maxDrawdown / $trade->entry_price * 100);
+                        @endphp
+
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Эффективное плечо:</span>
+                            <strong>{{ number_format($effectiveLeverage, 2) }}x</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Макс. просадка:</span>
+                            <strong class="text-danger">{{ number_format($maxDrawdownPercent, 2) }}%</strong>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Вероятность успеха:</span>
+                            <strong>{{ number_format(100 * ($rrRatio / ($rrRatio + 1)), 1) }}%</strong>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-
-        <div class="col-md-4">
-            <div class="card border-warning mb-3">
-                <div class="card-header">Дополнительные метрики</div>
-                <div class="card-body">
-                    @php
-                        // Эффективное плечо (с учетом расстояния до стопа)
-                        $effectiveLeverage = $trade->leverage * (1 / ($stopDistance / 100));
-
-                        // Максимальная просадка
-                        $maxDrawdown = $trade->position_type === 'long'
-                            ? ($trade->low_price ?? $trade->entry_price) - $trade->entry_price
-                            : $trade->entry_price - ($trade->high_price ?? $trade->entry_price);
-                        $maxDrawdownPercent = abs($maxDrawdown / $trade->entry_price * 100);
-                    @endphp
-
-                    <div class="d-flex justify-content-between mb-2">
-                        <span>Эффективное плечо:</span>
-                        <strong>{{ number_format($effectiveLeverage, 2) }}x</strong>
-                    </div>
-                    <div class="d-flex justify-content-between mb-2">
-                        <span>Макс. просадка:</span>
-                        <strong class="text-danger">{{ number_format($maxDrawdownPercent, 2) }}%</strong>
-                    </div>
-                    <div class="d-flex justify-content-between">
-                        <span>Вероятность успеха:</span>
-                        <strong>{{ number_format(100 * ($rrRatio / ($rrRatio + 1)), 1) }}%</strong>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    @endif
 
 
 </div>

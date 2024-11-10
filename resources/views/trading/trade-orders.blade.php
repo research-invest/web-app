@@ -29,8 +29,11 @@
                             @case('add')
                                 <span class="badge bg-info">Доп. вход</span>
                                 @break
-                            @case('exit')
+                            @case('fixed')
                                 <span class="badge bg-warning">Частичный выход</span>
+                                @break
+                            @case('exit')
+                                <span class="badge bg-success">Закрытие сделки</span>
                                 @break
                         @endswitch
                     </td>
