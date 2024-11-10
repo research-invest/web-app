@@ -178,6 +178,19 @@
         </div>
     </div>
 
+    @php
+        // Расчет риска в USDT (от входа до стоп-лосса)
+        $riskAmount = $trade->position_type === 'long'
+            ? ($trade->entry_price - $trade->stop_loss_price) * $trade->position_size * $trade->leverage / $trade->entry_price
+            : ($trade->stop_loss_price - $trade->entry_price) * $trade->position_size * $trade->leverage / $trade->entry_price;
+
+        // Риск в процентах от депозита
+        $riskPercent = abs($riskAmount / $trade->position_size * 100);
+
+        // Расстояние до стопа в процентах
+        $stopDistance = abs($trade->entry_price - $trade->stop_loss_price) / $trade->entry_price * 100;
+    @endphp
+
     <div class="row mt-3">
         <div class="col-12">
             <div class="alert {{ $riskPercent > 2 ? 'alert-danger' : 'alert-success' }}">
@@ -200,18 +213,7 @@
             <div class="card border-danger mb-3">
                 <div class="card-header">Риск на сделку</div>
                 <div class="card-body">
-                    @php
-                        // Расчет риска в USDT (от входа до стоп-лосса)
-                        $riskAmount = $trade->position_type === 'long'
-                            ? ($trade->entry_price - $trade->stop_loss_price) * $trade->position_size * $trade->leverage / $trade->entry_price
-                            : ($trade->stop_loss_price - $trade->entry_price) * $trade->position_size * $trade->leverage / $trade->entry_price;
 
-                        // Риск в процентах от депозита
-                        $riskPercent = abs($riskAmount / $trade->position_size * 100);
-
-                        // Расстояние до стопа в процентах
-                        $stopDistance = abs($trade->entry_price - $trade->stop_loss_price) / $trade->entry_price * 100;
-                    @endphp
 
                     <div class="d-flex justify-content-between mb-2">
                         <span>Риск (USDT):</span>
