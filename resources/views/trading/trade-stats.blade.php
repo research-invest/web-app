@@ -68,7 +68,7 @@
 
                     <div class="border-top my-2"></div>
 
-                    @if($trade->stop_loss_price)
+                    @if($trade->stop_loss_price > 0)
                         <div class="d-flex justify-content-between mb-2">
                             <span>Стоп-лосс:</span>
                             <div class="text-end">
@@ -79,7 +79,7 @@
                         </div>
                     @endif
 
-                    @if($trade->take_profit_price)
+                    @if($trade->take_profit_price > 0)
                         <div class="d-flex justify-content-between mb-2">
                             <span>Тейк-профит:</span>
                             <div class="text-end">
