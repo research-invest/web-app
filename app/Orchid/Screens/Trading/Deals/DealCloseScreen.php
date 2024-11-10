@@ -77,11 +77,13 @@ class DealCloseScreen extends Screen
         $exitPrice = $request->input('exit_price');
         $closeReason = $request->input('close_reason');
 
+        $averagePrice = $trade->getAverageEntryPrice();
+
         // Расчет P&L
         if ($trade->position_type === 'long') {
-            $pnl = ($exitPrice - $trade->entry_price) * $trade->position_size * $trade->leverage / $trade->entry_price;
+            $pnl = ($exitPrice - $averagePrice) * $trade->position_size * $trade->leverage / $averagePrice;
         } else {
-            $pnl = ($trade->entry_price - $exitPrice) * $trade->position_size * $trade->leverage / $trade->entry_price;
+            $pnl = ($averagePrice - $exitPrice) * $trade->position_size * $trade->leverage / $averagePrice;
         }
 
         // Обновляем сделку
