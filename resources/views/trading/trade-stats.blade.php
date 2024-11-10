@@ -38,24 +38,69 @@
         {{-- Цены и уровни --}}
         <div class="col-md-4">
             <div class="card border-warning mb-3">
-                <div class="card-header">Цены и уровни</div>
+                <div class="card-header">
+                    <i class="fas fa-chart-line"></i> Цены и уровни
+                </div>
                 <div class="card-body">
+                    @php
+                        // Расчет средней цены позиции
+                        $totalSize = $trade->orders->where('type', '!=', 'exit')->sum('size');
+                        $weightedSum = $trade->orders->where('type', '!=', 'exit')
+                            ->reduce(function ($carry, $order) {
+                                return $carry + ($order->price * $order->size);
+                            }, 0);
+                        $averagePrice = $totalSize > 0 ? $weightedSum / $totalSize : $trade->entry_price;
+                        
+                        // Расчет расстояния до уровней в процентах
+                        $slDistance = abs(($trade->stop_loss_price - $averagePrice) / $averagePrice * 100);
+                        $tpDistance = abs(($trade->take_profit_price - $averagePrice) / $averagePrice * 100);
+                    @endphp
+
                     <div class="d-flex justify-content-between mb-2">
-                        <span>Цена входа:</span>
+                        <span>Начальная цена входа:</span>
                         <strong>{{ number_format($trade->entry_price, 8) }}</strong>
                     </div>
+
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Средняя цена позиции:</span>
+                        <strong class="text-primary">{{ number_format($averagePrice, 8) }}</strong>
+                    </div>
+
+                    <div class="border-top my-2"></div>
+
                     <div class="d-flex justify-content-between mb-2">
                         <span>Стоп-лосс:</span>
-                        <span class="text-danger">{{ number_format($trade->stop_loss_price, 8) }}</span>
+                        <div class="text-end">
+                            <span class="text-danger">{{ number_format($trade->stop_loss_price, 8) }}</span>
+                            <br>
+                            <small class="text-muted">{{ number_format($slDistance, 2) }}% от средней</small>
+                        </div>
                     </div>
+
                     <div class="d-flex justify-content-between mb-2">
                         <span>Тейк-профит:</span>
-                        <span class="text-success">{{ number_format($trade->take_profit_price, 8) }}</span>
+                        <div class="text-end">
+                            <span class="text-success">{{ number_format($trade->take_profit_price, 8) }}</span>
+                            <br>
+                            <small class="text-muted">{{ number_format($tpDistance, 2) }}% от средней</small>
+                        </div>
                     </div>
+
                     @if($trade->exit_price)
+                    <div class="border-top my-2"></div>
                     <div class="d-flex justify-content-between">
                         <span>Цена выхода:</span>
-                        <strong>{{ number_format($trade->exit_price, 8) }}</strong>
+                        <strong class="{{ $trade->realized_pnl > 0 ? 'text-success' : 'text-danger' }}">
+                            {{ number_format($trade->exit_price, 8) }}
+                        </strong>
+                    </div>
+                    @endif
+
+                    @if($trade->status === 'open')
+                    <div class="border-top my-2"></div>
+                    <div class="small text-muted">
+                        <i class="fas fa-info-circle"></i>
+                        Средняя цена учитывает все входы в позицию
                     </div>
                     @endif
                 </div>
@@ -197,7 +242,7 @@
                         <strong class="text-success">{{ number_format($potentialProfit, 2) }} USDT</strong>
                     </div>
                     <div class="d-flex justify-content-between">
-                        <span>Прибыль от депозита:</span>
+                        <span>Прибыль от д��позита:</span>
                         <strong class="text-success">{{ number_format($profitPercent, 2) }}%</strong>
                     </div>
                 </div>
