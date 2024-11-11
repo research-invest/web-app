@@ -33,13 +33,14 @@ class FuturesCalculator extends Screen
 
             if ($trade) {
                 $this->formData = [
-                    'currency' => $trade->currency_id,
+                    'currency' => $trade->currency->code,
                     'position_type' => $trade->position_type,
                     'entry_price' => $trade->entry_price,
                     'position_size' => $trade->position_size,
                     'leverage' => $trade->leverage,
                     'stop_loss_percent' => $this->calculateStopLossPercent($trade),
                     'take_profit_percent' => $this->calculateTakeProfitPercent($trade),
+                    'target_profit_amount' => $trade->target_profit_amount,
                     'additional_orders' => $trade->orders()
                         ->where('type', 'add')
                         ->get()
