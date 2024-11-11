@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Orchid\Screens;
 
+use App\Services\PnlAnalyticsService;
 use Orchid\Screen\Screen;
 use Orchid\Support\Facades\Layout;
 
@@ -16,7 +17,11 @@ class PlatformScreen extends Screen
      */
     public function query(): iterable
     {
-        return [];
+        $analyticsService = new PnlAnalyticsService();
+
+        return [
+            'chartData' => $analyticsService->getChartData()
+        ];
     }
 
     /**
@@ -53,8 +58,7 @@ class PlatformScreen extends Screen
     public function layout(): iterable
     {
         return [
-            Layout::view('platform::partials.update-assets'),
-            Layout::view('platform::partials.welcome'),
+            Layout::view('dashboard.pnl-chart'),
         ];
     }
 }
