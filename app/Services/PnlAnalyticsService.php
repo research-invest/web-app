@@ -11,23 +11,30 @@ class PnlAnalyticsService
     // Целевой дневной PNL в USD
     private const int DAILY_TARGET = 100;
 
-    public function getChartData(int $days = 30): array
+    private function getActualPnl($startDate, $endDate): array
     {
-        $endDate = Carbon::now();
-        $startDate = Carbon::now()->subDays($days);
-
-        // Получаем фактический PNL по дням
-        $actualPnl = DB::table('trade_pnl_history')
+        return DB::table('trades')
             ->select(
-                DB::raw('DATE(created_at) as date'),
-                DB::raw('SUM(realized_pnl + unrealized_pnl) as daily_pnl')
+                DB::raw('DATE(closed_at) as date'),
+                DB::raw('SUM(realized_pnl) as daily_pnl')
             )
-            ->whereBetween('created_at', [$startDate, $endDate])
+            ->where('status', 'closed')
+            ->whereNotNull('closed_at')
+            ->whereBetween('closed_at', [$startDate, $endDate])
             ->groupBy('date')
             ->get()
             ->keyBy('date')
             ->map(fn($item) => $item->daily_pnl)
             ->toArray();
+    }
+
+    public function getChartData(int $days = 30): array
+    {
+        $endDate = Carbon::now();
+        $startDate = Carbon::now()->subDays($days);
+
+        // Получаем фактический PNL только по закрытым сделкам
+        $actualPnl = $this->getActualPnl($startDate, $endDate);
 
         $labels = [];
         $actualData = [];
