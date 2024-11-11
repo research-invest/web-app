@@ -35,7 +35,7 @@ class FuturesCalculator extends Screen
                 $this->formData = [
                     'currency' => $trade->currency->code,
                     'position_type' => $trade->position_type,
-                    'entry_price' => $trade->entry_price,
+                    'entry_price' => $trade->getAverageEntryPrice(),
                     'position_size' => $trade->position_size,
                     'leverage' => $trade->leverage,
                     'stop_loss_percent' => $this->calculateStopLossPercent($trade),
