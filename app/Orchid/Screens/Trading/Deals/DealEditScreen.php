@@ -10,6 +10,7 @@ use App\Models\Trade;
 use Illuminate\Http\Request;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\ModalToggle;
+use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Fields\CheckBox;
 use Orchid\Screen\Fields\Group;
 use Orchid\Screen\Fields\Input;
@@ -68,6 +69,11 @@ class DealEditScreen extends Screen
                 ->confirm('Уверены?')
                 ->class('btn btn-danger')
                 ->canSee($this->trade->exists),
+
+            Link::make('Калькулятор')
+                ->icon('calculator')
+                ->route('platform.trading.futures-calculator', ['trade_id' => $this->trade->id])
+                ->class('btn btn-info')
         ];
     }
 
@@ -295,7 +301,7 @@ class DealEditScreen extends Screen
     }
 
     /**
-     * Расчет шагов для таблицы потенциального P&L
+     * Расч��т шагов для таблицы потенциального P&L
      */
     private function calculatePnLSteps(Trade $trade): array
     {

@@ -3,6 +3,7 @@
 namespace App\Orchid\Screens\Trading;
 
 use App\Models\Currency;
+use App\Models\Trade;
 use App\Services\Analyze\TechnicalAnalysis;
 use App\Services\Api\Tickers;
 use Orchid\Screen\Fields\RadioButtons;
@@ -25,8 +26,32 @@ class FuturesCalculator extends Screen
         return 'Калькулятор сделок';
     }
 
-    public function query(): iterable
+    public function query(Request $request): iterable
     {
+        if ($tradeId = $request->get('trade_id')) {
+            $trade = Trade::with('orders')->find($tradeId);
+
+            if ($trade) {
+                $this->formData = [
+                    'currency' => $trade->currency_id,
+                    'position_type' => $trade->position_type,
+                    'entry_price' => $trade->entry_price,
+                    'position_size' => $trade->position_size,
+                    'leverage' => $trade->leverage,
+                    'stop_loss_percent' => $this->calculateStopLossPercent($trade),
+                    'take_profit_percent' => $this->calculateTakeProfitPercent($trade),
+                    'additional_orders' => $trade->orders()
+                        ->where('type', 'add')
+                        ->get()
+                        ->map(fn($order) => [
+                            'price' => $order->price,
+                            'size' => $order->size
+                        ])
+                        ->toArray()
+                ];
+            }
+        }
+
         return [
             'result' => $this->result,
             'formData' => $this->formData
@@ -86,7 +111,7 @@ class FuturesCalculator extends Screen
                         ->type('number')
                         ->min(1)
                         ->max(125)
-                        ->value($this->formData['leverage'] ?? 3)
+                        ->value($this->formData['leverage'] ?? 5)
                         ->required(),
                 ]),
 
@@ -108,7 +133,7 @@ class FuturesCalculator extends Screen
                     Input::make('target_profit_amount')
                         ->title('Целевая прибыль ($)')
                         ->type('number')
-                        ->value($this->formData['target_profit_amount'] ?? 100)
+                        ->value($this->formData['target_profit_amount'] ?? 110)
                         ->help('Желаемая прибыль в долларах'),
                 ]),
 
@@ -302,5 +327,31 @@ class FuturesCalculator extends Screen
             $this->formData['entry_price'] = (float)end($klines)['last_price'];
         }
 
+    }
+
+    private function calculateStopLossPercent(Trade $trade): float
+    {
+        if (!$trade->stop_loss_price || !$trade->entry_price) {
+            return 1.0;
+        }
+
+        if ($trade->position_type === 'long') {
+            return round(($trade->entry_price - $trade->stop_loss_price) / $trade->entry_price * 100, 2);
+        }
+
+        return round(($trade->stop_loss_price - $trade->entry_price) / $trade->entry_price * 100, 2);
+    }
+
+    private function calculateTakeProfitPercent(Trade $trade): float
+    {
+        if (!$trade->take_profit_price || !$trade->entry_price) {
+            return 10.0;
+        }
+
+        if ($trade->position_type === 'long') {
+            return round(($trade->take_profit_price - $trade->entry_price) / $trade->entry_price * 100, 2);
+        }
+
+        return round(($trade->entry_price - $trade->take_profit_price) / $trade->entry_price * 100, 2);
     }
 }
