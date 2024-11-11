@@ -301,7 +301,7 @@ class DealEditScreen extends Screen
     }
 
     /**
-     * Расчт шагов для таблицы потенциального P&L
+     * Расчет шагов для таблицы потенциального P&L
      */
     private function calculatePnLSteps(Trade $trade): array
     {
