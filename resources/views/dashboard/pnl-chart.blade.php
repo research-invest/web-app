@@ -44,12 +44,12 @@
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="/assets/chart.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const ctx = document.getElementById('pnlChart').getContext('2d');
     const chartData = @json($chartData);
-    
+
     new Chart(ctx, {
         type: 'line',
         data: {
@@ -89,4 +89,4 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
-</script> 
+</script>
