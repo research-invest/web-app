@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Orchid\Filters\Filterable;
 use Orchid\Screen\AsSource;
 
@@ -12,7 +13,7 @@ use Orchid\Screen\AsSource;
  */
 class Trade extends Model
 {
-    use AsSource, Filterable;
+    use AsSource, Filterable, SoftDeletes;
 
     protected $fillable = [
         'currency_id',
@@ -222,7 +223,7 @@ class Trade extends Model
 
     /**
      * Получить цену ликвидации
-     * 
+     *
      * Формула для расчета:
      * Long: Entry Price * (1 - 1/leverage)
      * Short: Entry Price * (1 + 1/leverage)

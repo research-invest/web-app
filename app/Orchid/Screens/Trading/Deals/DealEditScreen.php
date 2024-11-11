@@ -56,7 +56,6 @@ class DealEditScreen extends Screen
                 ->class('btn btn-primary')
                 ->canSee($this->trade->exists && $this->trade->status === 'open'),
 
-
             Button::make('Закрыть сделку')
                 ->icon('check')
                 ->method('closeTrade')
@@ -72,6 +71,7 @@ class DealEditScreen extends Screen
 
             Link::make('Калькулятор')
                 ->icon('calculator')
+                ->target('_blank')
                 ->route('platform.trading.futures-calculator', ['trade_id' => $this->trade->id])
                 ->class('btn btn-info')
         ];
