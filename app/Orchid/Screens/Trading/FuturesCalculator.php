@@ -28,7 +28,10 @@ class FuturesCalculator extends Screen
 
     public function query(Request $request): iterable
     {
-        if ($tradeId = $request->get('trade_id')) {
+
+        $calculatorInitKey = 'calculator_initialized_' . $request->get('trade_id');
+
+        if (!session()->has($calculatorInitKey) &&  $tradeId = $request->get('trade_id')) {
             $trade = Trade::with('orders')->find($tradeId);
 
             if ($trade) {
@@ -50,6 +53,7 @@ class FuturesCalculator extends Screen
                         ])
                         ->toArray()
                 ];
+             session([$calculatorInitKey => true]);
             }
         }
 
