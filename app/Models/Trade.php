@@ -219,4 +219,47 @@ class Trade extends Model
             'roe' => $roe
         ]);
     }
+
+    /**
+     * Получить цену ликвидации
+     * 
+     * Формула для расчета:
+     * Long: Entry Price * (1 - 1/leverage)
+     * Short: Entry Price * (1 + 1/leverage)
+     *
+     * @return float
+     */
+    public function getLiquidationPrice(): float
+    {
+        $averagePrice = $this->getAverageEntryPrice();
+        $maintenanceMargin = 1 / $this->leverage; // Упрощенная формула, может отличаться на разных биржах
+
+        if ($this->position_type === 'long') {
+            return $averagePrice * (1 - $maintenanceMargin);
+        }
+
+        return $averagePrice * (1 + $maintenanceMargin);
+    }
+
+    /**
+     * Получить расстояние до ликвидации в процентах
+     *
+     * @param float|null $currentPrice
+     * @return float|null
+     */
+    public function getDistanceToLiquidation(?float $currentPrice = null): ?float
+    {
+        if (!$currentPrice) {
+            return null;
+        }
+
+        $liquidationPrice = $this->getLiquidationPrice();
+        $averagePrice = $this->getAverageEntryPrice();
+
+        if ($this->position_type === 'long') {
+            return (($currentPrice - $liquidationPrice) / $averagePrice) * 100;
+        }
+
+        return (($liquidationPrice - $currentPrice) / $averagePrice) * 100;
+    }
 }

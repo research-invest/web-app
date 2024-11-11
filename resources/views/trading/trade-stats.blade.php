@@ -112,6 +112,20 @@
                             Средняя цена учитывает все входы в позицию
                         </div>
                     @endif
+
+                    {{-- В блоке "Цены и уровни" добавим информацию о ликвидации --}}
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Цена ликвидации:</span>
+                        <div class="text-end">
+                            <span class="text-danger">{{ number_format($trade->getLiquidationPrice(), 8) }}</span>
+                            @if($trade->currency->last_price)
+                                <br>
+                                <small class="text-muted">
+                                    До ликвидации: {{ number_format($trade->getDistanceToLiquidation($trade->currency->last_price), 2) }}%
+                                </small>
+                            </div>
+                        @endif
+                    </div>
                 </div>
             </div>
         </div>
