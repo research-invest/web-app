@@ -2,13 +2,13 @@
     $idContainer = Illuminate\Support\Str::random(10);
 @endphp
 
-<div id="highcharts-container-{{ $idContainer }}" style="width: 100%; height: auto;"></div>
+<div id="highcharts-container-{{ $idContainer }}" style="width: 100%;"></div>
 
 <script>
     if (typeof window.highchartsLoaded === 'undefined') {
         window.highchartsLoaded = true;
         var script = document.createElement('script');
-        script.src = "https://code.highcharts.com/highcharts.js";
+        script.src = "/assets/highcharts/js/highcharts-min.js";
         script.onload = function() {
             initializeChart_{{ $idContainer }}();
         };
