@@ -4,7 +4,7 @@
             <div class="card border-info">
                 <div class="card-body">
                     <h6 class="card-title">Торговых дней</h6>
-                    <h4>{{ $chartData['summary']['tradingDays'] }} [{{ $chartData['summary']['totalDays'] }}])</h4>
+                    <h4>{{ $chartData['summary']['tradingDays'] }} [{{ $chartData['summary']['totalDays'] }}]</h4>
                 </div>
             </div>
         </div>
