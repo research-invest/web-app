@@ -13,7 +13,7 @@ class PnlAnalyticsService
     public function getChartData(): array
     {
         $firstTradeDate = DB::table('trades')
-            ->where('status', 'closed')
+//            ->where('status', 'closed')
             ->whereNotNull('closed_at')
             ->min('closed_at');
 
@@ -67,16 +67,11 @@ class PnlAnalyticsService
         $actualData = [];
         $plannedData = [];
         $cumulativeActual = 0;
-        $cumulativePlanned = 0;
-        $tradingDays = 0;
+        $totalDays = 0;
 
         for ($date = $startDate->copy(); $date <= $endDate; $date->addDay()) {
             $dateStr = $date->format('Y-m-d');
-
-            // Если в этот день были закрытые сделки, увеличиваем счетчик торговых дней
-            if (isset($actualPnl[$dateStr])) {
-                $tradingDays++;
-            }
+            $totalDays++;
 
             $labels[] = $date->format('d.m');
 
@@ -84,9 +79,8 @@ class PnlAnalyticsService
             $cumulativeActual += ($actualPnl[$dateStr] ?? 0);
             $actualData[] = round($cumulativeActual, 2);
 
-            // Плановый PNL (считаем только по торговым дням)
-            $cumulativePlanned = $tradingDays * self::DAILY_TARGET;
-            $plannedData[] = round($cumulativePlanned, 2);
+            // Плановый PNL (каждый день +DAILY_TARGET)
+            $plannedData[] = round($totalDays * self::DAILY_TARGET, 2);
         }
 
         return [
@@ -106,10 +100,11 @@ class PnlAnalyticsService
                 ]
             ],
             'summary' => [
-                'tradingDays' => $tradingDays,
+                'totalDays' => $totalDays,
+                'tradingDays' => count($actualPnl),
                 'totalPnl' => round($cumulativeActual, 2),
-                'targetPnl' => round($cumulativePlanned, 2),
-                'difference' => round($cumulativeActual - $cumulativePlanned, 2)
+                'targetPnl' => round($totalDays * self::DAILY_TARGET, 2),
+                'difference' => round($cumulativeActual - ($totalDays * self::DAILY_TARGET), 2)
             ]
         ];
     }
