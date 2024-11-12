@@ -1,3 +1,13 @@
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        if (window.location.search.includes('trade_id')) {
+            let url = new URL(window.location.href);
+            url.searchParams.delete('trade_id');
+            window.history.replaceState({}, '', url);
+        }
+    });
+</script>
+
 @if(!empty($result))
     <div class="bg-white rounded shadow-sm p-4 mb-3">
         <div class="row">
