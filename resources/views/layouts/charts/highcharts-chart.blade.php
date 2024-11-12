@@ -2,7 +2,7 @@
     $idContainer = Illuminate\Support\Str::random(10);
 @endphp
 
-<div id="highcharts-container-{{ $idContainer }}" style="width: 100%; height: 70vh;"></div>
+<div id="highcharts-container-{{ $idContainer }}" style="width: 100%;  min-height: 70vh;"></div>
 
 <script>
     if (typeof window.highchartsLoaded === 'undefined') {

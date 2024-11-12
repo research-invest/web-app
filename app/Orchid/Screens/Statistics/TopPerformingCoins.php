@@ -85,7 +85,8 @@ class TopPerformingCoins extends Screen
             FiltersLayout::class,
             new HighchartsChart([
                 'chart' => [
-                    'type' => 'bar'
+                    'type' => 'bar',
+                    'height' => '150%',
                 ],
                 'title' => [
                     'text' => 'Сравнение изменений цены и объема',
