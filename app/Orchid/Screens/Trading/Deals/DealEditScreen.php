@@ -7,6 +7,8 @@ namespace App\Orchid\Screens\Trading\Deals;
 
 use App\Models\Currency;
 use App\Models\Trade;
+use App\Orchid\Layouts\Charts\HighchartsChart;
+use App\Services\RiskManagement\PositionCalculator;
 use Illuminate\Http\Request;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\ModalToggle;
@@ -197,8 +199,23 @@ class DealEditScreen extends Screen
                         'steps' => $this->calculatePnLSteps($this->trade)
                     ])
                 ],
+
+                'Управление рисками' => [
+                    new HighchartsChart(
+                        $this->getRiskManagementChart()
+                    ),
+                ],
             ])
         ];
+    }
+
+    private function getRiskManagementChart(): array
+    {
+        $calculator = new PositionCalculator(
+            trade: $this->trade,
+        );
+
+        return $calculator->getChartConfig();
     }
 
     public function save(Trade $trade, Request $request)
