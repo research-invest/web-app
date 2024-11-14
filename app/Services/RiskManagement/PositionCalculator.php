@@ -40,7 +40,7 @@ class PositionCalculator
 
             if ($this->trade->isTypeShort()) {
                 $averagePrice = $this->calculateAveragePrice($currentPrice, $priceUp, $positionSize, $positionSize);
-                $profit = $this->calculateProfit($priceDown, $positionSize);
+                $profit = $this->calculateProfit($priceDown);
 
                 $upTrendPoints[] = [
                     'x' => $x,
@@ -62,7 +62,7 @@ class PositionCalculator
             } else {
                 // Для лонга
                 $averagePrice = $this->calculateAveragePrice($currentPrice, $priceDown, $positionSize, $positionSize);
-                $profit = $this->calculateProfit($priceUp, $positionSize);
+                $profit = $this->calculateProfit($priceUp);
 
                 $upTrendPoints[] = [
                     'x' => $x,
@@ -87,7 +87,7 @@ class PositionCalculator
         return [
             'chart' => [
                 'type' => 'line',
-                'height' => 800
+                'height' => 600
             ],
             'title' => [
                 'text' => "Ценовые уровни: {$this->trade->currency->symbol}",
@@ -237,16 +237,22 @@ class PositionCalculator
         return (($entryPrice * $entrySize) + ($newPrice * $additionalSize)) / $totalSize;
     }
 
-    private function calculateProfit(float $exitPrice, float $positionSize): float
+    private function calculateProfit(float $exitPrice): float
     {
-        $entryPrice = (float)$this->trade->getAverageEntryPrice();
+        $entryPrice = (float)$this->trade->entry_price;
+        $positionSize = (float)$this->trade->position_size;
         $leverage = (float)$this->trade->leverage;
 
         if ($this->trade->isTypeLong()) {
-            return ($exitPrice - $entryPrice) * $positionSize * $leverage;
+            $priceChange = ($exitPrice - $entryPrice) / $entryPrice; // Процент изменения цены
         } else {
-            return ($entryPrice - $exitPrice) * $positionSize * $leverage;
+            $priceChange = ($entryPrice - $exitPrice) / $entryPrice; // Для шорта наоборот
         }
+
+        // Прибыль = Размер позиции * Процент изменения цены * Плечо
+        $profit = $positionSize * $priceChange * $leverage;
+
+        return round($profit, 2); // Округляем до 2 знаков после запятой
     }
 
     private function getBuyPointsHistory(): array
