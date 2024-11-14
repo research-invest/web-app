@@ -20,27 +20,28 @@ class PnlAnalyticsService
         // Если нет закрытых сделок, возвращаем пустой график
         if (!$firstTradeDate) {
             return [
-                'labels' => [],
-                'datasets' => [
-                    [
-                        'label' => 'Фактический P&L',
-                        'data' => [],
-                        'borderColor' => 'rgb(75, 192, 192)',
-                        'tension' => 0.1
-                    ],
-                    [
-                        'label' => 'Плановый P&L',
-                        'data' => [],
-                        'borderColor' => 'rgb(255, 99, 132)',
-                        'tension' => 0.1
-                    ]
-                ],
                 'summary' => [
                     'tradingDays' => 0,
                     'totalPnl' => 0,
                     'targetPnl' => 0,
                     'difference' => 0
-                ]
+                ],
+                'graph' => [
+                    'chart' => [
+                        'type' => 'line'
+                    ],
+                    'title' => [
+                        'text' => 'Плановый vs Фактический P&L'
+                    ],
+                    'xAxis' => [
+                        'categories' => []
+                    ],
+                    'yAxis' => [
+                        'title' => [
+                            'text' => 'USD'
+                        ]
+                    ]
+                ],
             ];
         }
 
@@ -84,28 +85,44 @@ class PnlAnalyticsService
         }
 
         return [
-            'labels' => $labels,
-            'datasets' => [
-                [
-                    'label' => 'Фактический P&L',
-                    'data' => $actualData,
-                    'borderColor' => 'rgb(75, 192, 192)',
-                    'tension' => 0.1
-                ],
-                [
-                    'label' => 'Плановый P&L',
-                    'data' => $plannedData,
-                    'borderColor' => 'rgb(255, 99, 132)',
-                    'tension' => 0.1
-                ]
-            ],
             'summary' => [
                 'totalDays' => $totalDays,
                 'tradingDays' => count($actualPnl),
                 'totalPnl' => round($cumulativeActual, 2),
                 'targetPnl' => round($totalDays * self::DAILY_TARGET, 2),
                 'difference' => round($cumulativeActual - ($totalDays * self::DAILY_TARGET), 2)
-            ]
+            ],
+
+            'graph' => [
+                'chart' => [
+                    'type' => 'line'
+                ],
+                'title' => [
+                    'text' => 'Плановый vs Фактический P&L'
+                ],
+                'xAxis' => [
+                    'categories' => $labels
+                ],
+                'yAxis' => [
+                    'title' => [
+                        'text' => 'USD'
+                    ]
+                ],
+                'series' => [
+                    [
+                        'name' => 'Плановый P&L',
+                        'data' => $plannedData
+                    ],
+                    [
+                        'name' => 'Фактический P&L',
+                        'data' => $actualData
+                    ]
+                ],
+                'tooltip' => [
+                    'valuePrefix' => '',
+                    'valueSuffix' => ' USD'
+                ]
+            ],
         ];
     }
 }

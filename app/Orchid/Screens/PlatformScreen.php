@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Orchid\Screens;
 
+use App\Orchid\Layouts\Charts\HighchartsChart;
 use App\Services\PnlAnalyticsService;
 use Orchid\Screen\Screen;
 use Orchid\Support\Facades\Layout;
@@ -59,6 +60,11 @@ class PlatformScreen extends Screen
     {
         return [
             Layout::view('dashboard.pnl-chart'),
+
+            new HighchartsChart(
+                $this->query()['chartData']['graph']
+            ),
+
         ];
     }
 }
