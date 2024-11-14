@@ -3,7 +3,7 @@
 @endphp
 
 <div id="highcharts-container-{{ $idContainer }}" style="width: 100%;  min-height: 70vh;"></div>
-
+<script src="/assets/highcharts/js/accessibility.js"></script>
 <script>
     if (typeof window.highchartsLoaded === 'undefined') {
         window.highchartsLoaded = true;
