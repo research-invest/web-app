@@ -1,10 +1,11 @@
 <?php
-
-namespace App\Console\Commands;
+/**
+ * php artisan trades:check-levels
+ */
+namespace App\Console\Commands\Alerts;
 
 use App\Models\Trade;
 use App\Services\RiskManagement\PositionCalculator;
-use App\Services\TelegramService;
 use Illuminate\Console\Command;
 
 class CheckTradeLevels extends Command
@@ -12,7 +13,7 @@ class CheckTradeLevels extends Command
     protected $signature = 'trades:check-levels';
     protected $description = '';
 
-    public function handle(TelegramService $telegram)
+    public function handle()
     {
         Trade::with('currency')
             ->where('status', 'open')
@@ -21,6 +22,6 @@ class CheckTradeLevels extends Command
                 $calculator->checkPriceLevels($trade->currency->last_price);
             });
 
-        $this->info('Price levels checked successfully');
+        $this->info('Проверка уровней успеднения пройдена');
     }
 }
