@@ -211,6 +211,10 @@ class DealEditScreen extends Screen
 
     private function getRiskManagementChart(): array
     {
+        if(!$this->trade->exist){
+            return [];
+        }
+
         $calculator = new PositionCalculator(
             trade: $this->trade,
         );

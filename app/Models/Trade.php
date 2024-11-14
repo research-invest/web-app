@@ -46,7 +46,7 @@ class Trade extends Model
 
     public function currency()
     {
-        return $this->belongsTo(Currency::class);
+        return $this->belongsTo(Currency::class)->withDefault();
     }
 
     public function orders()
@@ -233,6 +233,10 @@ class Trade extends Model
      */
     public function getLiquidationPrice(): float
     {
+        if(!$this->leverage){
+            return 0;
+        }
+
         $averagePrice = $this->getAverageEntryPrice();
         $maintenanceMargin = 1 / $this->leverage; // Упрощенная формула, может отличаться на разных биржах
 
