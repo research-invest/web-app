@@ -277,7 +277,7 @@ class PositionCalculator
 
     private function calculateProfit(float $exitPrice): float
     {
-        $entryPrice = (float)$this->trade->entry_price;
+        $entryPrice = $this->trade->getAverageEntryPrice();
         $positionSize = (float)$this->trade->position_size;
         $leverage = (float)$this->trade->leverage;
 
