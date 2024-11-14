@@ -47,9 +47,12 @@ class DealEditScreen extends Screen
     public function commandBar(): iterable
     {
         return [
-            Button::make('Сохранить')
-                ->icon('save')
-                ->method('save'),
+
+            Link::make('Калькулятор')
+                ->icon('calculator')
+                ->target('_blank')
+                ->route('platform.trading.futures-calculator', ['trade_id' => $this->trade->id])
+                ->class('btn btn-info'),
 
             ModalToggle::make('Добавить ордер')
                 ->modal('addOrderModal')
@@ -57,6 +60,10 @@ class DealEditScreen extends Screen
                 ->icon('plus')
                 ->class('btn btn-primary')
                 ->canSee($this->trade->exists && $this->trade->status === 'open'),
+
+            Button::make('Сохранить')
+                ->icon('save')
+                ->method('save'),
 
             Button::make('Закрыть сделку')
                 ->icon('check')
@@ -71,11 +78,6 @@ class DealEditScreen extends Screen
                 ->class('btn btn-danger')
                 ->canSee($this->trade->exists),
 
-            Link::make('Калькулятор')
-                ->icon('calculator')
-                ->target('_blank')
-                ->route('platform.trading.futures-calculator', ['trade_id' => $this->trade->id])
-                ->class('btn btn-info')
         ];
     }
 
