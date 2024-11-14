@@ -22,7 +22,7 @@ class PositionCalculator
     {
         $currentPrice = (float)$this->trade->currency->last_price;
         $positionSize = $this->trade->position_size;
-        $priceStep = $currentPrice * 0.10;
+        $priceStep = $currentPrice * 0.05;
         $levelsCount = 5;
 
         // Получаем историю точек
@@ -47,7 +47,7 @@ class PositionCalculator
                     'y' => $priceUp,
                     'dataLabels' => [
                         'enabled' => true,
-                        'format' => "Усреднение: {y:.2f} (ср. $averagePrice)"
+                        'format' => "Усреднение: {y:.2f} ($averagePrice)"
                     ]
                 ];
 
@@ -56,7 +56,7 @@ class PositionCalculator
                     'y' => $priceDown,
                     'dataLabels' => [
                         'enabled' => true,
-                        'format' => "Продажа: {y:.2f} (приб. $profit)"
+                        'format' => "Продажа: {y:.2f} ($profit)"
                     ]
                 ];
             } else {
@@ -69,7 +69,7 @@ class PositionCalculator
                     'y' => $priceUp,
                     'dataLabels' => [
                         'enabled' => true,
-                        'format' => "Продажа: {y:.2f} (приб. $profit)"
+                        'format' => "Продажа: {y:.2f} ($profit)"
                     ]
                 ];
 
@@ -78,7 +78,7 @@ class PositionCalculator
                     'y' => $priceDown,
                     'dataLabels' => [
                         'enabled' => true,
-                        'format' => "Усреднение: {y:.2f} (ср. $averagePrice})"
+                        'format' => "Усреднение: {y:.2f} ($averagePrice})"
                     ]
                 ];
             }
@@ -87,7 +87,7 @@ class PositionCalculator
         return [
             'chart' => [
                 'type' => 'line',
-                'height' => 600
+                'height' => 400
             ],
             'title' => [
                 'text' => "Ценовые уровни: {$this->trade->currency->symbol}",
@@ -104,6 +104,30 @@ class PositionCalculator
                 ],
                 'labels' => [
                     'format' => '{value:.8f}'
+                ]
+            ],
+            'plotOptions' => [
+                'series' => [
+                    'states' => [
+                        'hover' => [
+                            'enabled' => false
+                        ],
+                        'inactive' => [
+                            'opacity' => 1
+                        ]
+                    ],
+                    'stickyTracking' => false,
+                    'enableMouseTracking' => false
+                ],
+                'line' => [
+                    'marker' => [
+                        'enabled' => true,
+                        'states' => [
+                            'hover' => [
+                                'enabled' => false
+                            ]
+                        ]
+                    ]
                 ]
             ],
             'tooltip' => [
