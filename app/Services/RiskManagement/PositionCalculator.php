@@ -21,147 +21,73 @@ class PositionCalculator
     public function getChartConfig(): array
     {
         $currentPrice = (float)$this->trade->currency->last_price;
-        $entryPrice = (float)$this->trade->entry_price;
-        $positionSize = (float)$this->trade->position_size;
+        $positionSize = $this->trade->position_size;
         $priceStep = $currentPrice * 0.10;
         $levelsCount = 5;
-        $buyHistory = $this->getBuyPointsHistory(); // Добавить эту строку
 
-        // Генерируем точки для линий тренда
+        // Получаем историю точек
+        $historyPoints = $this->getBuyPointsHistory();
+
+        // Генерируем точки для линий тренда от центральной точки
         $upTrendPoints = [];
         $downTrendPoints = [];
+        $centerX = 0.5;
 
-        // Для шорта: расчет прибыли при продаже
-        // Для лонга: расчет средней цены при усреднении
-        for ($i = 0; $i <= $levelsCount; $i++) {
-            $x = 0.5 + ($i/10);
+        for ($i = 1; $i <= $levelsCount; $i++) {
+            $x = $centerX + ($i / 10);
             $priceUp = $currentPrice + ($priceStep * $i);
             $priceDown = $currentPrice - ($priceStep * $i);
 
             if ($this->trade->isTypeShort()) {
-                // Для шорта: верхняя линия показывает точки усреднения
-                $averagePrice = $this->calculateAveragePrice($entryPrice, $priceUp, $positionSize, $positionSize);
+                $averagePrice = $this->calculateAveragePrice($currentPrice, $priceUp, $positionSize, $positionSize);
+                $profit = $this->calculateProfit($priceDown, $positionSize);
+
                 $upTrendPoints[] = [
                     'x' => $x,
                     'y' => $priceUp,
-                    'averagePrice' => $averagePrice,
-                    'tooltip' => sprintf(
-                        "Усреднение:\nЦена: %.2f\nСредняя цена: %.2f",
-                        $priceUp,
-                        $averagePrice
-                    )
+                    'dataLabels' => [
+                        'enabled' => true,
+                        'format' => "Усреднение: {y:.2f} (ср. $averagePrice)"
+                    ]
                 ];
 
-                // Нижняя линия показывает потенциальную прибыль
-                $profit = $this->calculateProfit($priceDown, $positionSize);
                 $downTrendPoints[] = [
                     'x' => $x,
                     'y' => $priceDown,
-                    'profit' => $profit,
-                    'tooltip' => sprintf(
-                        "Продажа:\nЦена: %.2f\nПрибыль: %.2f USDT",
-                        $priceDown,
-                        $profit
-                    )
+                    'dataLabels' => [
+                        'enabled' => true,
+                        'format' => "Продажа: {y:.2f} (приб. $profit)"
+                    ]
                 ];
             } else {
-                // Для лонга: нижняя линия показывает точки усреднения
-                $averagePrice = $this->calculateAveragePrice($entryPrice, $priceDown, $positionSize, $positionSize);
-                $downTrendPoints[] = [
-                    'x' => $x,
-                    'y' => $priceDown,
-                    'averagePrice' => $averagePrice,
-                    'tooltip' => sprintf(
-                        "Усреднение:\nЦена: %.2f\nСредняя цена: %.2f",
-                        $priceDown,
-                        $averagePrice
-                    )
-                ];
-
-                // Верхняя линия показывает потенциальную прибыль
+                // Для лонга
+                $averagePrice = $this->calculateAveragePrice($currentPrice, $priceDown, $positionSize, $positionSize);
                 $profit = $this->calculateProfit($priceUp, $positionSize);
+
                 $upTrendPoints[] = [
                     'x' => $x,
                     'y' => $priceUp,
-                    'profit' => $profit,
-                    'tooltip' => sprintf(
-                        "Продажа:\nЦена: %.2f\nПрибыль: %.2f USDT",
-                        $priceUp,
-                        $profit
-                    )
+                    'dataLabels' => [
+                        'enabled' => true,
+                        'format' => "Продажа: {y:.2f} (приб. $profit)"
+                    ]
+                ];
+
+                $downTrendPoints[] = [
+                    'x' => $x,
+                    'y' => $priceDown,
+                    'dataLabels' => [
+                        'enabled' => true,
+                        'format' => "Усреднение: {y:.2f} (ср. $averagePrice})"
+                    ]
                 ];
             }
         }
 
-        $series = [
-            // Текущая цена (горизонтальная линия)
-            [
-                'name' => 'Текущая цена',
-                'data' => [[0, $currentPrice], [1, $currentPrice]],
-                'color' => '#666666',
-                'lineWidth' => 2
-            ],
-            // История входов и усреднений (линия слева)
-            [
-                'name' => 'История входов',
-                'data' => $buyHistory['linePoints'],
-                'color' => '#f77',
-                'lineWidth' => 2,
-                'marker' => [
-                    'enabled' => true,
-                    'radius' => 6
-                ],
-                'dataLabels' => [
-                    'enabled' => true,
-                    'format' => 'Закуп: {y:.2f}',
-                    'align' => 'left',
-                    'x' => 10
-                ]
-            ],
-            // Линия тренда вверх
-            [
-                'name' => 'Тренд вверх',
-                'data' => array_map(function($point) {
-                    return [
-                        'x' => $point['x'],
-                        'y' => $point['y'],
-                        'dataLabels' => [
-                            'enabled' => true,
-                            'format' => $this->trade->isTypeShort()
-                                ? 'Усреднение: {y:.2f} (ср. ' . number_format($point['averagePrice'], 2) . ')'
-                                : 'Продажа: {y:.2f} (приб. ' . number_format($point['profit'], 2) . ')'
-                        ]
-                    ];
-                }, $upTrendPoints),
-                'color' => '#22bb33',
-                'dashStyle' => 'shortdash',
-                'lineWidth' => 1
-            ],
-            // Линия тренда вниз
-            [
-                'name' => 'Тренд вниз',
-                'data' => array_map(function($point) {
-                    return [
-                        'x' => $point['x'],
-                        'y' => $point['y'],
-                        'dataLabels' => [
-                            'enabled' => true,
-                            'format' => $this->trade->isTypeShort()
-                                ? 'Продажа: {y:.2f} (приб. ' . number_format($point['profit'], 2) . ')'
-                                : 'Усреднение: {y:.2f} (ср. ' . number_format($point['averagePrice'], 2) . ')'
-                        ]
-                    ];
-                }, $downTrendPoints),
-                'color' => '#f77',
-                'dashStyle' => 'shortdash',
-                'lineWidth' => 1
-            ]
-        ];
-
         return [
             'chart' => [
                 'type' => 'line',
-                'height' => 400
+                'height' => 800
             ],
             'title' => [
                 'text' => "Ценовые уровни: {$this->trade->currency->symbol}",
@@ -184,7 +110,32 @@ class PositionCalculator
                 'shared' => true,
                 'valueDecimals' => 8
             ],
-            'series' => $series,
+            'series' => [
+                [
+                    'name' => 'История и текущая цена',
+                    'data' => $historyPoints,
+                    'color' => '#666666',
+                    'lineWidth' => 2,
+                    'marker' => [
+                        'enabled' => true,
+                        'radius' => 6
+                    ]
+                ],
+                [
+                    'name' => 'Тренд вверх',
+                    'data' => $upTrendPoints,
+                    'color' => '#22bb33',
+                    'dashStyle' => 'shortdash',
+                    'lineWidth' => 1
+                ],
+                [
+                    'name' => 'Тренд вниз',
+                    'data' => $downTrendPoints,
+                    'color' => '#f77',
+                    'dashStyle' => 'shortdash',
+                    'lineWidth' => 1
+                ]
+            ],
             'credits' => [
                 'enabled' => false
             ]
@@ -230,11 +181,11 @@ class PositionCalculator
     {
         $profit = $this->calculateProfit($currentPrice);
         $message = "🎯 Достигнута целевая цена\n" .
-                  "Символ: {$this->trade->currency->symbol}\n" .
-                  "Позиция: " . ($this->trade->isTypeLong() ? 'Лонг' : 'Шорт') . "\n" .
-                  "Текущая цена: $currentPrice\n" .
-                  "Целевая цена: {$this->trade->take_profit_price}\n" .
-                  "Потенциальная прибыль: $profit USDT";
+            "Символ: {$this->trade->currency->symbol}\n" .
+            "Позиция: " . ($this->trade->isTypeLong() ? 'Лонг' : 'Шорт') . "\n" .
+            "Текущая цена: $currentPrice\n" .
+            "Целевая цена: {$this->trade->take_profit_price}\n" .
+            "Потенциальная прибыль: $profit USDT";
 
         $this->telegram->sendMessage($message);
     }
@@ -242,11 +193,11 @@ class PositionCalculator
     private function sendAveragingAlert(array $level): void
     {
         $message = "🔄 Сигнал на усреднение\n" .
-                  "Символ: {$this->trade->currency->symbol}\n" .
-                  "Позиция: " . ($this->trade->isTypeLong() ? 'Лонг' : 'Шорт') . "\n" .
-                  "Уровень цены: {$level['price']}\n" .
-                  "Рекомендуемый объем: {$level['recommendedSize']} USDT\n" .
-                  "Уровень: {$level['level']}";
+            "Символ: {$this->trade->currency->symbol}\n" .
+            "Позиция: " . ($this->trade->isTypeLong() ? 'Лонг' : 'Шорт') . "\n" .
+            "Уровень цены: {$level['price']}\n" .
+            "Рекомендуемый объем: {$level['recommendedSize']} USDT\n" .
+            "Уровень: {$level['level']}";
 
         $this->telegram->sendMessage($message);
     }
@@ -280,61 +231,6 @@ class PositionCalculator
         }
     }
 
-    private function generatePlotLines(): array
-    {
-        $entryPrice = (float)$this->trade->entry_price;
-        $positionSize = (float)$this->trade->position_size;
-        $plotLines = [];
-
-        // Настройки для ценовых уровней
-        $levelsCount = 5;
-        $priceStepPercent = 10; // 10% шаг
-
-        // Генерируем уровни для продажи (вверх)
-        for ($i = 1; $i <= $levelsCount; $i++) {
-            $price = $entryPrice * (1 + ($priceStepPercent * $i) / 100);
-            $averagePrice = $this->calculateAveragePrice($entryPrice, $price, $positionSize, $positionSize);
-
-            $plotLines[] = [
-                'value' => $price,
-                'color' => '#22bb33',
-                'width' => 1,
-                'dashStyle' => 'shortdash',
-                'label' => [
-                    'text' => sprintf(
-                        'Продажа: %.2f (Ср. %.2f)',
-                        $price,
-                        $averagePrice
-                    ),
-                    'style' => ['color' => '#22bb33']
-                ]
-            ];
-        }
-
-        // Генерируем уровни для усреднения (вниз)
-        for ($i = 1; $i <= $levelsCount; $i++) {
-            $price = $entryPrice * (1 - ($priceStepPercent * $i) / 100);
-            $averagePrice = $this->calculateAveragePrice($entryPrice, $price, $positionSize, $positionSize);
-
-            $plotLines[] = [
-                'value' => $price,
-                'color' => '#f77',
-                'width' => 1,
-                'dashStyle' => 'shortdash',
-                'label' => [
-                    'text' => sprintf(
-                        'Усреднение: %.2f (Ср. %.2f)',
-                        $price,
-                        $averagePrice
-                    ),
-                    'style' => ['color' => '#f77']
-                ]
-            ];
-        }
-
-        return $plotLines;
-    }
-
     private function calculateAveragePrice(float $entryPrice, float $newPrice, float $entrySize, float $additionalSize): float
     {
         $totalSize = $entrySize + $additionalSize;
@@ -343,7 +239,7 @@ class PositionCalculator
 
     private function calculateProfit(float $exitPrice, float $positionSize): float
     {
-        $entryPrice = (float)$this->trade->entry_price;
+        $entryPrice = (float)$this->trade->getAverageEntryPrice();
         $leverage = (float)$this->trade->leverage;
 
         if ($this->trade->isTypeLong()) {
@@ -353,32 +249,21 @@ class PositionCalculator
         }
     }
 
-    private function calculateTrendLine(string $direction): float
-    {
-        $entryPrice = $this->trade->entry_price;
-        $trendPercentage = 5; // Можно вынести в конфиг
-
-        if ($direction === 'up') {
-            return $entryPrice * (1 + $trendPercentage / 100);
-        }
-
-        return $entryPrice * (1 - $trendPercentage / 100);
-    }
-
     private function getBuyPointsHistory(): array
     {
         $points = [];
-        $linePoints = [];
-        $x = 0.2; // Начальная позиция слева
-        $xStep = 0.05; // Шаг между точками
+        $x = 0.1; // Начинаем слева
+        $centerX = 0.5; // Центральная точка
 
-        // Добавляем начальную точку входа
+        // Начальная точка входа
         $points[] = [
             'x' => $x,
             'y' => (float)$this->trade->entry_price,
-            'type' => 'entry'
+            'dataLabels' => [
+                'enabled' => true,
+                'format' => 'Вход: {y:.2f}'
+            ]
         ];
-        $linePoints[] = [$x, (float)$this->trade->entry_price];
 
         // Получаем все ордера усреднения в хронологическом порядке
         $averagingOrders = $this->trade->orders()
@@ -386,19 +271,31 @@ class PositionCalculator
             ->orderBy('created_at')
             ->get();
 
+        // Распределяем точки между началом и центром
+        $stepX = ($centerX - $x) / (count($averagingOrders) + 1);
+
         foreach ($averagingOrders as $order) {
-            $x += $xStep;
+            $x += $stepX;
             $points[] = [
                 'x' => $x,
                 'y' => (float)$order->price,
-                'type' => 'averaging'
+                'dataLabels' => [
+                    'enabled' => true,
+                    'format' => 'Закуп: {y:.2f}'
+                ]
             ];
-            $linePoints[] = [$x, (float)$order->price];
         }
 
-        return [
-            'points' => $points,
-            'linePoints' => $linePoints
+        // Добавляем текущую цену в центр
+        $points[] = [
+            'x' => $centerX,
+            'y' => (float)$this->trade->currency->last_price,
+            'dataLabels' => [
+                'enabled' => true,
+                'format' => 'Текущая: {y:.2f}'
+            ]
         ];
+
+        return $points;
     }
 }
