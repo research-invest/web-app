@@ -9,6 +9,7 @@ use Orchid\Screen\AsSource;
 
 /**
  *
+ * @property  string $position_type
  * @property  Currency $currency
  */
 class Trade extends Model
@@ -121,7 +122,7 @@ class Trade extends Model
         $averagePrice = $this->getAverageEntryPrice();
         $currentSize = $this->getCurrentPositionSize();
 
-        if ($this->position_type === 'long') {
+        if ($this->isTypeLong()) {
             return ($currentPrice - $averagePrice) * $currentSize * $this->leverage / $averagePrice;
         }
 
@@ -153,7 +154,7 @@ class Trade extends Model
      */
     public function isTakeProfitReached(float $currentPrice): bool
     {
-        if ($this->position_type === 'long') {
+        if ($this->isTypeLong()) {
             return $currentPrice >= $this->take_profit_price;
         }
         return $currentPrice <= $this->take_profit_price;
@@ -167,7 +168,7 @@ class Trade extends Model
      */
     public function isStopLossReached(float $currentPrice): bool
     {
-        if ($this->position_type === 'long') {
+        if ($this->isTypeLong()) {
             return $currentPrice <= $this->stop_loss_price;
         }
         return $currentPrice >= $this->stop_loss_price;
@@ -195,7 +196,7 @@ class Trade extends Model
             $quantity = $order->size / $order->price;
 
             // Расчет нереализованного PNL для ордера
-            if ($this->position_type === 'long') {
+            if ($this->isTypeLong()) {
                 $unrealizedPnl = ($currentPrice - $order->price) * $quantity;
             } else {
                 $unrealizedPnl = ($order->price - $currentPrice) * $quantity;
@@ -235,7 +236,7 @@ class Trade extends Model
         $averagePrice = $this->getAverageEntryPrice();
         $maintenanceMargin = 1 / $this->leverage; // Упрощенная формула, может отличаться на разных биржах
 
-        if ($this->position_type === 'long') {
+        if ($this->isTypeLong()) {
             return $averagePrice * (1 - $maintenanceMargin);
         }
 
@@ -257,10 +258,20 @@ class Trade extends Model
         $liquidationPrice = $this->getLiquidationPrice();
         $averagePrice = $this->getAverageEntryPrice();
 
-        if ($this->position_type === 'long') {
+        if ($this->isTypeLong()) {
             return (($currentPrice - $liquidationPrice) / $averagePrice) * 100;
         }
 
         return (($liquidationPrice - $currentPrice) / $averagePrice) * 100;
+    }
+
+    public function isTypeLong(): bool
+    {
+        return $this->position_type === 'long';
+    }
+
+    public function isTypeShort(): bool
+    {
+        return $this->position_type === 'short';
     }
 }

@@ -341,12 +341,12 @@ class DealEditScreen extends Screen
 
         // Генерируем строки для таблицы
         for ($i = 0; $i <= $steps; $i++) {
-            $price = $trade->position_type === 'long' ?
+            $price = $trade->isTypeLong() ?
                 $minPrice + ($stepSize * $i) :
                 $maxPrice - ($stepSize * $i);
 
             // Расчет P&L для текущей цены
-            $pnl = $trade->position_type === 'long'
+            $pnl = $trade->isTypeLong()
                 ? ($price - $averagePrice) * $trade->position_size * $trade->leverage / $averagePrice
                 : ($averagePrice - $price) * $trade->position_size * $trade->leverage / $averagePrice;
 
