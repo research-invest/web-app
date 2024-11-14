@@ -195,17 +195,15 @@ class DealEditScreen extends Screen
                     Layout::view('trading.trade-stats', ['trade' => $this->trade])
                 ],
 
-                'Потенциальный P&L' => [
-                    Layout::view('trading.trade-potential-pnl', [
-                        'trade' => $this->trade,
-                        'steps' => $this->calculatePnLSteps($this->trade)
-                    ])
-                ],
-
-                'Управление рисками' => [
+                'P&L' => [
                     new HighchartsChart(
                         $this->getRiskManagementChart()
                     ),
+
+                    Layout::view('trading.trade-potential-pnl', [
+                        'trade' => $this->trade,
+                        'steps' => $this->calculatePnLSteps($this->trade)
+                    ]),
                 ],
             ])
         ];
