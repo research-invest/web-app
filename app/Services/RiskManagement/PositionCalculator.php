@@ -186,13 +186,24 @@ class PositionCalculator
 
     private function isTargetPriceReached(float $currentPrice): bool
     {
-        $targetPrice = $this->trade->take_profit_price;
+        $targetProfit = $this->trade->target_profit_amount;
+        $entryPrice = (float)$this->trade->getAverageEntryPrice();
+        $positionSize = (float)$this->trade->position_size;
+        $leverage = (float)$this->trade->leverage;
 
+        // Вычисляем необходимое изменение цены для достижения целевой прибыли
+        $requiredPriceChange = ($targetProfit / ($positionSize * $leverage));
+
+        // Вычисляем целевой курс в зависимости от типа позиции
         if ($this->trade->isTypeLong()) {
+            // Для лонга: целевая цена = цена входа + необходимое изменение
+            $targetPrice = $entryPrice * (1 + $requiredPriceChange);
             return $currentPrice >= $targetPrice;
+        } else {
+            // Для шорта: целевая цена = цена входа - необходимое изменение
+            $targetPrice = $entryPrice * (1 - $requiredPriceChange);
+            return $currentPrice <= $targetPrice;
         }
-
-        return $currentPrice <= $targetPrice;
     }
 
     private function isPriceLevelReached(float $currentPrice, float $levelPrice): bool
