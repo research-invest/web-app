@@ -224,7 +224,7 @@ return [
      */
 
     'notifications' => [
-        'enabled'  => true,
+        'enabled'  => false,
         'interval' => 60,
     ],
 
@@ -263,7 +263,7 @@ return [
      */
 
     'turbo' => [
-        'cache'   => true,
+        'cache'   => false,
     ],
 
     /*

@@ -138,7 +138,10 @@ class PositionCalculator
             ],
             'credits' => [
                 'enabled' => false
-            ]
+            ],
+            'accessibility' => [
+                'enabled' => false
+            ],
         ];
     }
 

@@ -213,7 +213,7 @@ class DealEditScreen extends Screen
 
     private function getRiskManagementChart(): array
     {
-        if(!$this->trade->exist){
+        if (!$this->trade->exists) {
             return [];
         }
 
