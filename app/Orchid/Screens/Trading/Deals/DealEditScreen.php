@@ -48,9 +48,14 @@ class DealEditScreen extends Screen
     {
         return [
 
+            Button::make('Сохранить')
+                ->icon('save')
+                ->method('save'),
+
             Link::make('Калькулятор')
                 ->icon('calculator')
                 ->target('_blank')
+                ->canSee($this->trade->exists)
                 ->route('platform.trading.futures-calculator', ['trade_id' => $this->trade->id])
                 ->class('btn btn-info'),
 
@@ -61,9 +66,6 @@ class DealEditScreen extends Screen
                 ->class('btn btn-primary')
                 ->canSee($this->trade->exists && $this->trade->status === 'open'),
 
-            Button::make('Сохранить')
-                ->icon('save')
-                ->method('save'),
 
             Button::make('Закрыть сделку')
                 ->icon('check')
@@ -71,12 +73,12 @@ class DealEditScreen extends Screen
                 ->class('btn btn-warning')
                 ->canSee($this->trade->exists && $this->trade->status === 'open'),
 
-            Button::make('Удалить')
-                ->icon('trash')
-                ->method('remove')
-                ->confirm('Уверены?')
-                ->class('btn btn-danger')
-                ->canSee($this->trade->exists),
+//            Button::make('Удалить')
+//                ->icon('trash')
+//                ->method('remove')
+//                ->confirm('Уверены?')
+//                ->class('btn btn-danger')
+//                ->canSee($this->trade->exists),
 
         ];
     }
