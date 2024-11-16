@@ -151,6 +151,7 @@ class DealEditScreen extends Screen
                             Input::make('trade.leverage')
                                 ->title('Плечо')
                                 ->type('number')
+                                ->value($this->trade->exists ? $this->trade->leverage : 5)
                                 ->min(1)
                                 ->max(125)
                                 ->required(),
@@ -160,16 +161,19 @@ class DealEditScreen extends Screen
                             Input::make('trade.stop_loss_price')
                                 ->title('Стоп-лосс')
                                 ->type('number')
+                                ->value($this->trade->exists ? $this->trade->stop_loss_price : 10)
                                 ->step('0.00000001')
                                 ->required(),
 
                             Input::make('trade.take_profit_price')
                                 ->title('Тейк-профит')
                                 ->type('number')
+                                ->value($this->trade->exists ? $this->trade->take_profit_price : 10)
                                 ->step('0.00000001')
                                 ->required(),
 
                             Input::make('trade.target_profit_amount')
+                                ->value($this->trade->exists ? $this->trade->target_profit_amount : 100)
                                 ->title('Целевая прибыль ($)')
                                 ->type('number'),
                         ]),
