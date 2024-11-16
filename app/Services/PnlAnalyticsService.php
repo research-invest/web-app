@@ -56,6 +56,7 @@ class PnlAnalyticsService
             )
             ->where('status', 'closed')
             ->whereNotNull('closed_at')
+            ->whereNull('deleted_at')
             ->whereBetween('closed_at', [$startDate, $endDate])
             ->groupBy('date')
             ->get()
