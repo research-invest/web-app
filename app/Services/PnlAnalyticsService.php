@@ -84,7 +84,7 @@ class PnlAnalyticsService
 
             // Плановый PNL с учетом выходных
             $dailyTarget = $date->isWeekend() ? self::DAILY_TARGET_WEEKEND : self::DAILY_TARGET;
-            $plannedData[] = round($plannedData[count($plannedData) - 1] ?? 0 + $dailyTarget, 2);
+            $plannedData[] = round($totalDays * $dailyTarget, 2);
         }
 
         return [
