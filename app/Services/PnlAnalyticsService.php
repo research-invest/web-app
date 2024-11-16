@@ -8,7 +8,8 @@ use Illuminate\Support\Facades\DB;
 
 class PnlAnalyticsService
 {
-    private const DAILY_TARGET = 100;
+    private const int DAILY_TARGET = 100;
+    private const int DAILY_TARGET_WEEKEND = 50;
 
     public function getChartData(): array
     {
@@ -81,8 +82,9 @@ class PnlAnalyticsService
             $cumulativeActual += ($actualPnl[$dateStr] ?? 0);
             $actualData[] = round($cumulativeActual, 2);
 
-            // Плановый PNL (каждый день +DAILY_TARGET)
-            $plannedData[] = round($totalDays * self::DAILY_TARGET, 2);
+            // Плановый PNL с учетом выходных
+            $dailyTarget = $date->isWeekend() ? self::DAILY_TARGET_WEEKEND : self::DAILY_TARGET;
+            $plannedData[] = round($plannedData[count($plannedData) - 1] ?? 0 + $dailyTarget, 2);
         }
 
         return [
