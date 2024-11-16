@@ -5,9 +5,12 @@ declare(strict_types=1);
 namespace App\Orchid\Screens\Trading\Deals;
 
 use App\Models\Trade;
+use App\Models\Transaction\Review;
 use App\Orchid\Layouts\Trading\Deals\ListLayout;
+use Illuminate\Http\Request;
 use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Screen;
+use Orchid\Support\Facades\Toast;
 
 class DealsListScreen extends Screen
 {
@@ -71,6 +74,15 @@ class DealsListScreen extends Screen
         return [
             ListLayout::class,
         ];
+    }
+
+    public function remove(Request $request)
+    {
+        Trade::findOrFail($request->get('id'))->delete();
+
+        Toast::success('Сделка удалена');
+
+        return redirect()->route('platform.trading.deals');
     }
 
 }

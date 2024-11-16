@@ -6,6 +6,7 @@ namespace App\Orchid\Layouts\Trading\Deals;
 
 use App\Helpers\StringHelper;
 use App\Models\Trade;
+use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\DropDown;
 use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Layouts\Table;
@@ -70,6 +71,13 @@ class ListLayout extends Table
                         Link::make(__('Изменить'))
                             ->route('platform.trading.deal.edit', $trade->id)
                             ->icon('bs.pencil'),
+
+                        Button::make(__('Delete'))
+                            ->icon('bs.trash3')
+                            ->confirm('Вы уверены?')
+                            ->method('remove', [
+                                'id' => $trade->id,
+                            ]),
                     ])),
         ];
     }

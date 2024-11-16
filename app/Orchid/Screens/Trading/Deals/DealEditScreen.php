@@ -259,15 +259,6 @@ class DealEditScreen extends Screen
         return redirect()->route('platform.trading.deal.close', $trade->id);
     }
 
-    public function remove(Trade $trade)
-    {
-        $trade->delete();
-
-        Toast::success('Сделка удалена');
-
-        return redirect()->route('platform.trading.deals');
-    }
-
 
     /**
      * Добавление нового ордера
