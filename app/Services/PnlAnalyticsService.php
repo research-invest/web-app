@@ -68,7 +68,7 @@ class PnlAnalyticsService
         // Формируем данные для графика
         $labels = [];
         $actualData = [];
-        $plannedData = [];
+        $plannedData = [0];
         $cumulativeActual = 0;
         $totalDays = 0;
 
@@ -84,7 +84,7 @@ class PnlAnalyticsService
 
             // Плановый PNL с учетом выходных
             $dailyTarget = $date->isWeekend() ? self::DAILY_TARGET_WEEKEND : self::DAILY_TARGET;
-            $plannedData[] = round($totalDays * $dailyTarget, 2);
+            $plannedData[] = round($plannedData[count($plannedData) - 1] + $dailyTarget, 2);
         }
 
         $targetPnl = round($this->calculateTargetPnl($startDate, $endDate), 2);
