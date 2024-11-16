@@ -87,13 +87,15 @@ class PnlAnalyticsService
             $plannedData[] = round($totalDays * $dailyTarget, 2);
         }
 
+        $targetPnl = round($this->calculateTargetPnl($startDate, $endDate), 2);
+
         return [
             'summary' => [
                 'totalDays' => $totalDays,
                 'tradingDays' => count($actualPnl),
                 'totalPnl' => round($cumulativeActual, 2),
-                'targetPnl' => round($totalDays * self::DAILY_TARGET, 2),
-                'difference' => round($cumulativeActual - ($totalDays * self::DAILY_TARGET), 2)
+                'targetPnl' => $targetPnl,
+                'difference' => round($cumulativeActual - $targetPnl, 2)
             ],
 
             'graph' => [
@@ -127,5 +129,14 @@ class PnlAnalyticsService
                 ]
             ],
         ];
+    }
+
+    private function calculateTargetPnl(Carbon $startDate, Carbon $endDate): float
+    {
+        $targetPnl = 0;
+        for ($date = $startDate->copy(); $date <= $endDate; $date->addDay()) {
+            $targetPnl += $date->isWeekend() ? 50 : 100;
+        }
+        return $targetPnl;
     }
 }
