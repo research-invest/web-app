@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Orchid\Screens\Trading\Deals;
 
 use App\Models\Trade;
-use App\Models\Transaction\Review;
 use App\Orchid\Layouts\Trading\Deals\ListLayout;
 use Illuminate\Http\Request;
 use Orchid\Screen\Actions\Link;
@@ -23,7 +22,8 @@ class DealsListScreen extends Screen
     {
         return [
             'trades' => Trade::filters()
-                ->paginate(30),
+                ->latest()
+                ->paginate(20),
         ];
     }
 
