@@ -142,9 +142,10 @@ class PnlAnalyticsService
 
     public function getPnlHistoryChart(Trade $trade)
     {
-        $historiesData = $labels = [];
+        $unrealizedData = $roeData = $labels = [];
         foreach ($trade->pnlHistory as $history) {
-            $historiesData[] = (float)$history->unrealized_pnl;
+            $unrealizedData[] = (float)$history->unrealized_pnl;
+            $roeData[] = (float)$history->roe;
             $labels[] = $history->price;
         }
 
@@ -160,18 +161,22 @@ class PnlAnalyticsService
             ],
             'yAxis' => [
                 'title' => [
-                    'text' => 'USD'
+                    'text' => ''
                 ]
             ],
             'series' => [
                 [
-                    'name' => 'История P&L',
-                    'data' => $historiesData
+                    'name' => 'Нереализованный P&L',
+                    'data' => $unrealizedData
+                ],
+                [
+                    'name' => 'roe',
+                    'data' => $roeData
                 ],
             ],
             'tooltip' => [
                 'valuePrefix' => '',
-                'valueSuffix' => ' USD'
+                'valueSuffix' => ' '
             ]
         ];
     }

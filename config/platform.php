@@ -128,7 +128,8 @@ return [
     'resource' => [
         'stylesheets' => [],
         'scripts'     => [
-//            'https://code.highcharts.com/highcharts.js'
+            '/assets/highcharts/js/highcharts-min.js',
+        //    'https://code.highcharts.com/highcharts.js'
         ],
     ],
 
