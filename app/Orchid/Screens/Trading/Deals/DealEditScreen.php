@@ -8,6 +8,7 @@ namespace App\Orchid\Screens\Trading\Deals;
 use App\Models\Currency;
 use App\Models\Trade;
 use App\Orchid\Layouts\Charts\HighchartsChart;
+use App\Services\PnlAnalyticsService;
 use App\Services\RiskManagement\PositionCalculator;
 use Illuminate\Http\Request;
 use Orchid\Screen\Actions\Button;
@@ -206,6 +207,10 @@ class DealEditScreen extends Screen
                         $this->getRiskManagementChart()
                     ),
 
+                    new HighchartsChart(
+                        $this->getPnlHistoryChart()
+                    ),
+
                     Layout::view('trading.trade-potential-pnl', [
                         'trade' => $this->trade,
                         'steps' => $this->calculatePnLSteps($this->trade)
@@ -226,6 +231,15 @@ class DealEditScreen extends Screen
         );
 
         return $calculator->getChartConfig();
+    }
+
+    private function getPnlHistoryChart(): array
+    {
+        if (!$this->trade->exists) {
+            return [];
+        }
+
+        return (new PnlAnalyticsService())->getPnlHistoryChart(trade: $this->trade);
     }
 
     public function save(Trade $trade, Request $request)

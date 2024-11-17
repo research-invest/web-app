@@ -139,4 +139,40 @@ class PnlAnalyticsService
         }
         return $targetPnl;
     }
+
+    public function getPnlHistoryChart(Trade $trade)
+    {
+        $historiesData = $labels = [];
+        foreach ($trade->pnlHistory as $history) {
+            $historiesData[] = (float)$history->unrealized_pnl;
+            $labels[] = $history->price;
+        }
+
+        return [
+            'chart' => [
+                'type' => 'line'
+            ],
+            'title' => [
+                'text' => 'История P&L'
+            ],
+            'xAxis' => [
+                'categories' => $labels
+            ],
+            'yAxis' => [
+                'title' => [
+                    'text' => 'USD'
+                ]
+            ],
+            'series' => [
+                [
+                    'name' => 'История P&L',
+                    'data' => $historiesData
+                ],
+            ],
+            'tooltip' => [
+                'valuePrefix' => '',
+                'valueSuffix' => ' USD'
+            ]
+        ];
+    }
 }

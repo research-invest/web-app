@@ -13,6 +13,7 @@ use Orchid\Screen\AsSource;
  * @property  float $target_profit_amount
  * @property  string $position_type
  * @property  Currency $currency
+ * @property  TradePnlHistory[] $pnlHistory
  */
 class Trade extends Model
 {
@@ -54,6 +55,11 @@ class Trade extends Model
     public function orders()
     {
         return $this->hasMany(TradeOrder::class);
+    }
+
+    public function pnlHistory()
+    {
+        return $this->hasMany(TradePnlHistory::class);
     }
 
     public function getCurrentPnLAttribute()
@@ -174,11 +180,6 @@ class Trade extends Model
             return $currentPrice <= $this->stop_loss_price;
         }
         return $currentPrice >= $this->stop_loss_price;
-    }
-
-    public function pnlHistory()
-    {
-        return $this->hasMany(TradePnlHistory::class);
     }
 
     /**

@@ -5,6 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Orchid\Screen\AsSource;
 
+/**
+ * @property float $price
+ * @property float $roe
+ * @property float $unrealized_pnl
+ */
 class TradePnlHistory extends Model
 {
     use AsSource;
@@ -30,4 +35,4 @@ class TradePnlHistory extends Model
     {
         return $this->belongsTo(Trade::class);
     }
-} 
+}
