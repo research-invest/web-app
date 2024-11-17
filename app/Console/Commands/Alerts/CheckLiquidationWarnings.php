@@ -95,7 +95,7 @@ class CheckLiquidationWarnings extends Command
         $liquidationPrice = $trade->getLiquidationPrice();
 
         $message = "{$emoji} <b>{$level}: Риск ликвидации!</b>\n\n";
-        $message .= "🔸 Пара: <b>{$trade->currency->symbol}</b>\n";
+        $message .= "🔸 Пара: <b>{$trade->currency->name}</b>\n";
         $message .= "🔸 Тип: " . ($trade->position_type === 'long' ? 'LONG' : 'SHORT') . "\n";
         $message .= "🔸 Плечо: {$trade->leverage}x\n\n";
 

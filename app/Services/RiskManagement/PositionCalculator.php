@@ -90,7 +90,7 @@ class PositionCalculator
                 'height' => 400
             ],
             'title' => [
-                'text' => "Ценовые уровни: {$this->trade->currency->symbol}",
+                'text' => "Ценовые уровни: {$this->trade->currency->name}",
                 'align' => 'left'
             ],
             'xAxis' => [
@@ -219,7 +219,7 @@ class PositionCalculator
     {
         $profit = $this->calculateProfit($currentPrice);
         $message = "🎯 Достигнута целевая цена\n" .
-            "Символ: {$this->trade->currency->symbol}\n" .
+            "Символ: {$this->trade->currency->name}\n" .
             "Позиция: " . ($this->trade->isTypeLong() ? 'Лонг' : 'Шорт') . "\n" .
             "Текущая цена: $currentPrice\n" .
             "Целевая цена: {$this->trade->take_profit_price}\n" .
@@ -231,7 +231,7 @@ class PositionCalculator
     private function sendAveragingAlert(array $level): void
     {
         $message = "🔄 Сигнал на усреднение\n" .
-            "Символ: {$this->trade->currency->symbol}\n" .
+            "Символ: {$this->trade->currency->name}\n" .
             "Позиция: " . ($this->trade->isTypeLong() ? 'Лонг' : 'Шорт') . "\n" .
             "Уровень цены: {$level['price']}\n" .
             "Рекомендуемый объем: {$level['recommendedSize']} USDT\n" .

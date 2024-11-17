@@ -7,7 +7,7 @@ namespace App\Console\Commands\Alerts;
 
 use App\Helpers\Development;
 use App\Helpers\TelegramHelper;
-use App\Services\Tron\TronService;
+use App\Services\TelegramService;
 use Illuminate\Console\Command;
 
 class TestTelegramBot extends Command
@@ -27,6 +27,15 @@ class TestTelegramBot extends Command
      */
     protected $description = '';
 
+
+    private TelegramService $telegram;
+
+    public function __construct(TelegramService $telegram)
+    {
+        parent::__construct();
+        $this->telegram = $telegram;
+    }
+
     /**
      * Execute the console command.
      */
@@ -34,7 +43,7 @@ class TestTelegramBot extends Command
     {
         $timeStart = microtime(true);
 
-        TelegramHelper::sendMessage('Привет, это тестовое сообщение от бота ❤️');
+        $this->telegram->sendMessage('Привет, это тестовое сообщение от бота ❤️');
 
         $this->info('Использовано памяти: ' . Development::getPeakMemoryUsageInMb());
         $this->info('Время выполнения в секундах: ' . Development::getFormatDiffMicroTime($timeStart));

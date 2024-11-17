@@ -55,11 +55,11 @@ class SendTradePnLNotification extends Command
             $liquidationPrice = $trade->getLiquidationPrice();
             $distanceToLiquidation = $trade->getDistanceToLiquidation($currentPrice);
             $totalPnl += $unrealizedPnl;
-    
+
             $emoji = $unrealizedPnl >= 0 ? '📈' : '📉';
             $direction = $trade->position_type === 'long' ? 'LONG' : 'SHORT';
-    
-            $message .= "{$emoji} <b>{$trade->currency->symbol}</b> {$direction}\n";
+
+            $message .= "{$emoji} <b>{$trade->currency->name}</b> {$direction}\n";
             $message .= "💰 PNL: " . number_format($unrealizedPnl, 2) . " USDT\n";
             $message .= "📊 ROE: " . number_format($roe, 2) . "%\n";
             $message .= "💵 Средняя цена: " . number_format($trade->getAverageEntryPrice(), 8) . "\n";
