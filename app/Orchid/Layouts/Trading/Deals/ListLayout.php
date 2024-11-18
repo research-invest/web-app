@@ -41,6 +41,10 @@ class ListLayout extends Table
             TD::make('position_type', 'Тип'),
             TD::make('position_size', 'Размер'),
             TD::make('entry_price', 'Цена входа'),
+
+            TD::make('price', 'Текущая цена')
+                ->render(fn(Trade $trade) => $trade->currency->last_price),
+
             TD::make('exit_price', 'Цена выхода'),
             TD::make('pnl', 'PNL')
                 ->render(function (Trade $trade) {
