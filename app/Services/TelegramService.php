@@ -33,7 +33,7 @@ class TelegramService
         }
     }
 
-    public function sendPhoto(string $caption, $image): void
+    public function sendPhoto(string $caption, $image, $chatId = null): void
     {
         // Если $image это URL
         if (filter_var($image, FILTER_VALIDATE_URL)) {
@@ -49,7 +49,7 @@ class TelegramService
             $response = Http::attach(
                 'photo', $image, 'chart.png'
             )->post($this->apiUrl . $this->token . '/sendPhoto', [
-                'chat_id' => $this->chatId,
+                'chat_id' => $chatId ?: $this->chatId,
                 'caption' => $caption,
                 'parse_mode' => 'HTML'
             ]);

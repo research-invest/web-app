@@ -53,7 +53,8 @@ class SendIndexChart extends Command
 
         $this->telegram->sendPhoto(
             "Композитный индекс $currency\nВремя: " . now()->format('Y-m-d H:i:s'),
-            $imageData
+            $imageData,
+            '-1002321524146'
         );
     }
 }
