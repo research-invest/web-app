@@ -8,20 +8,37 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use App\Services\TelegramService;
 use App\Services\IndexCalculator;
+use App\Services\ChartGenerator;
 use App\Services\Api\Tickers;
-use Illuminate\Support\Facades\Http;
 
 class SendIndexChart extends Command
 {
     protected $signature = 'index:send-chart';
     protected $description = '';
 
-    public function handle(TelegramService $telegram)
+
+    private TelegramService $telegram;
+
+    public function __construct(TelegramService $telegram)
+    {
+        parent::__construct();
+        $this->telegram = $telegram;
+    }
+
+    public function handle()
+    {
+        $this->send('BTCUSDT');
+        $this->send('TAOUSDT');
+
+        $this->info('Индексы успешно отправлены в телеграмм');
+    }
+
+    private function send(string $currency)
     {
         // Получаем данные для индекса
         $tickerService = new Tickers();
         $indexCalculator = new IndexCalculator();
-        $currency = 'BTCUSDT';
+        $chartGenerator = new ChartGenerator();
 
         $data3m = $tickerService->getTickers($currency, 180);
         $data15m = $tickerService->getTickers($currency, 900);
@@ -30,38 +47,12 @@ class SendIndexChart extends Command
         // Рассчитываем индекс
         $indexData = $indexCalculator->calculateIndex($data3m, $data15m, $data1h);
 
-        // Формируем данные для графика
-        $chartData = json_encode([
-            'title' => [
-                'text' => 'Композитный индекс ' . $currency
-            ],
-            'series' => [[
-                'data' => array_map(function ($item) {
-                    return [$item['timestamp'], $item['score']];
-                }, $indexData)
-            ]]
-        ]);
+        // Генерируем изображение
+        $imageData = $chartGenerator->generateIndexChart($indexData);
 
-        // Используем Export Server Highcharts для создания изображения
-        $response = Http::post('https://export.highcharts.com/', [
-            'async' => false,
-            'type' => 'png',
-            'width' => 800,
-            'options' => $chartData
-        ]);
-
-        if ($response->successful()) {
-            $imageData = $response->body();
-
-            // Отправляем изображение в Telegram
-            $telegram->sendPhoto(
-                "Композитный индекс $currency\nВремя: " . now()->format('Y-m-d H:i:s'),
-                $imageData
-            );
-
-            dd($imageData);
-
-        }
-
+        $this->telegram->sendPhoto(
+            "Композитный индекс $currency\nВремя: " . now()->format('Y-m-d H:i:s'),
+            $imageData
+        );
     }
 }

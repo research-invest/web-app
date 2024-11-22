@@ -10,7 +10,9 @@
         "laravel/tinker": "^2.9",
         "orchid/platform": "^14.36",
         "orchid/icons": "^2.2",
-        "opcodesio/log-viewer": "^3.10"
+        "opcodesio/log-viewer": "^3.10",
+        "ext-gd": "*",
+        "ext-imagick": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
