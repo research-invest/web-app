@@ -28,8 +28,8 @@ class SendIndexChart extends Command
     public function handle()
     {
         $this->send('BTCUSDT');
-        $this->send('TAOUSDT');
-        $this->send('DOGEUSDT');
+//        $this->send('TAOUSDT');
+//        $this->send('DOGEUSDT');
 
         $this->info('Индексы успешно отправлены в телеграмм');
     }
