@@ -53,7 +53,11 @@ class PlatformProvider extends OrchidServiceProvider
 
                     Menu::make('Объем по диапазону')
                         ->icon('bs.book')
-                        ->route('platform.statistics.volume-by-range')
+                        ->route('platform.statistics.volume-by-range'),
+
+                    Menu::make('Композитный индекс')
+                        ->icon('bs.book')
+                        ->route('platform.composite-index')
                 ]),
             Menu::make('Торговля')
                 ->icon('money')

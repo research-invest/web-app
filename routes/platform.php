@@ -24,6 +24,7 @@ use Tabuna\Breadcrumbs\Trail;
 use \App\Orchid\Screens\Trading\Deals\DealsListScreen;
 use \App\Orchid\Screens\Trading\Deals\DealEditScreen;
 use \App\Orchid\Screens\Trading\Deals\DealCloseScreen;
+use App\Orchid\Screens\Statistics\CompositeIndex;
 
 
 /*
@@ -50,6 +51,9 @@ Route::screen('/statistics/top-performing-coins', \App\Orchid\Screens\Statistics
 Route::screen('/statistics/volume-by-range', \App\Orchid\Screens\Statistics\VolumeByRange::class)
     ->name('platform.statistics.volume-by-range');
 
+
+Route::screen('/statistics/composite-index', CompositeIndex::class)
+    ->name('platform.composite-index');
 
 Route::screen('/trading/futures-calculator', \App\Orchid\Screens\Trading\FuturesCalculator::class)
     ->name('platform.trading.futures-calculator');
