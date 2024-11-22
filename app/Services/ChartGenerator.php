@@ -5,28 +5,26 @@ namespace App\Services;
 use Imagick;
 use ImagickDraw;
 use ImagickPixel;
+use Carbon\Carbon;
 
 class ChartGenerator
 {
     private int $width = 800;
     private int $height = 400;
-    private int $padding = 40;
+    private int $padding = 60;
 
     public function generateIndexChart(array $indexData): string
     {
-        // Создаем объекты Imagick
         $image = new Imagick();
         $draw = new ImagickDraw();
 
-        // Создаем пустое изображение
         $image->newImage($this->width, $this->height, new ImagickPixel('white'));
         $image->setImageFormat('png');
 
-        // Настраиваем шрифт
         $draw->setFontSize(12);
         $draw->setFontWeight(400);
 
-        // Получаем мин/макс значения для масштабирования
+        // Получаем мин/макс значения
         $scores = array_column($indexData, 'score');
         $maxScore = max($scores);
         $minScore = min($scores);
@@ -34,6 +32,9 @@ class ChartGenerator
 
         // Рисуем сетку и оси
         $this->drawGrid($draw, $maxScore, $minScore);
+
+        // Добавляем временные метки
+        $this->drawTimeLabels($draw, $indexData);
 
         // Рассчитываем точки для графика
         $points = [];
@@ -47,18 +48,19 @@ class ChartGenerator
             $points[] = ['x' => $x, 'y' => $y];
         }
 
+        // Создаем градиентную заливку
+        $this->drawGradientFill($image, $draw, $points);
+
         // Рисуем линии графика
         for ($i = 1, $iMax = count($points); $i < $iMax; $i++) {
             $draw->setStrokeWidth(2);
 
-            // Определяем цвет линии (зеленый если растет, красный если падает)
             if ($points[$i]['y'] < $points[$i-1]['y']) {
-                $draw->setStrokeColor(new ImagickPixel('green'));
+                $draw->setStrokeColor(new ImagickPixel('rgb(0,150,0)'));
             } else {
-                $draw->setStrokeColor(new ImagickPixel('red'));
+                $draw->setStrokeColor(new ImagickPixel('rgb(150,0,0)'));
             }
 
-            // Рисуем линию
             $draw->line(
                 $points[$i-1]['x'],
                 $points[$i-1]['y'],
@@ -76,13 +78,9 @@ class ChartGenerator
             'Композитный индекс'
         );
 
-        // Применяем все нарисованное к изображению
         $image->drawImage($draw);
 
-        // Получаем бинарные данные изображения
         $imageBlob = $image->getImageBlob();
-
-        // Очищаем ресурсы
         $draw->clear();
         $image->clear();
 
@@ -91,18 +89,15 @@ class ChartGenerator
 
     private function drawGrid(ImagickDraw $draw, float $maxValue, float $minValue): void
     {
-        // Настройки для сетки
-        $draw->setStrokeColor(new ImagickPixel('rgb(200,200,200)'));
+        $draw->setStrokeColor(new ImagickPixel('rgb(220,220,220)'));
         $draw->setStrokeWidth(1);
 
-        // Горизонтальные линии и метки
         $steps = 5;
         $valueStep = ($maxValue - $minValue) / $steps;
 
         for ($i = 0; $i <= $steps; $i++) {
             $y = $this->padding + ($i * ($this->height - 2 * $this->padding) / $steps);
 
-            // Рисуем горизонтальную линию
             $draw->line(
                 $this->padding,
                 $y,
@@ -110,7 +105,6 @@ class ChartGenerator
                 $y
             );
 
-            // Добавляем метку значения
             $value = number_format($maxValue - ($i * $valueStep), 2);
             $draw->setFillColor(new ImagickPixel('black'));
             $draw->annotation(
@@ -128,5 +122,78 @@ class ChartGenerator
             $this->padding,
             $this->height - $this->padding
         );
+    }
+
+    private function drawTimeLabels(ImagickDraw $draw, array $indexData): void
+    {
+        $draw->setFillColor(new ImagickPixel('black'));
+        $draw->setFontSize(9);
+
+        $plotWidth = $this->width - (2 * $this->padding);
+        $timeLabelsCount = 5; // Количество меток времени
+        $step = floor(count($indexData) / $timeLabelsCount);
+
+        for ($i = 0; $i < count($indexData); $i += $step) {
+            if (isset($indexData[$i])) {
+                $x = $this->padding + ($i * $plotWidth / (count($indexData) - 1));
+                $time = Carbon::parse($indexData[$i]['timestamp'])->format('H:i');
+
+                // Поворачиваем текст для лучшей читаемости
+                $draw->setTextAlignment(\Imagick::ALIGN_CENTER);
+                $draw->annotation(
+                    $x,
+                    $this->height - ($this->padding / 2),
+                    $time
+                );
+            }
+        }
+    }
+
+    private function drawGradientFill(Imagick $image, ImagickDraw $draw, array $points): void
+    {
+        try {
+            // Определяем тренд по последним точкам
+            $lastIndex = count($points) - 1;
+            $startY = $points[0]['y'];
+            $endY = $points[$lastIndex]['y'];
+
+            // Если последняя точка выше первой - тренд растущий
+            $isUptrend = $endY < $startY; // Y-координаты инвертированы в графике
+
+            $polygon = new ImagickDraw();
+
+            // Выбираем цвет в зависимости от тренда
+            if ($isUptrend) {
+                $polygon->setFillColor(new ImagickPixel('rgba(0,150,0,0.1)')); // Зеленый для роста
+            } else {
+                $polygon->setFillColor(new ImagickPixel('rgba(150,0,0,0.1)')); // Красный для падения
+            }
+
+            $polygon->setStrokeOpacity(0);
+
+            // Начинаем путь
+            $polygon->pathStart();
+
+            // Двигаемся к начальной точке (нижний левый угол)
+            $polygon->pathMoveToAbsolute($this->padding, $this->height - $this->padding);
+
+            // Рисуем линию через все точки графика
+            foreach ($points as $point) {
+                $polygon->pathLineToAbsolute($point['x'], $point['y']);
+            }
+
+            // Линия к нижнему правому углу
+            $polygon->pathLineToAbsolute($this->width - $this->padding, $this->height - $this->padding);
+
+            // Замыкаем путь
+            $polygon->pathClose();
+
+            // Рисуем заполненный путь
+            $image->drawImage($polygon);
+
+            $polygon->clear();
+        } catch (\Exception $e) {
+            // Если что-то пошло не так, просто пропускаем заливку
+        }
     }
 }
