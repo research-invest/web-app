@@ -32,4 +32,27 @@ class TelegramService
             return false;
         }
     }
+
+    public function sendPhoto(string $caption, $image): void
+    {
+        // Если $image это URL
+        if (filter_var($image, FILTER_VALIDATE_URL)) {
+            $response = Http::post($this->apiUrl . $this->token . '/sendPhoto', [
+                'chat_id' => $this->chatId,
+                'caption' => $caption,
+                'photo' => $image,
+                'parse_mode' => 'HTML'
+            ]);
+        }
+        // Если $image это локальный файл или бинарные данные
+        else {
+            $response = Http::attach(
+                'photo', $image, 'chart.png'
+            )->post($this->apiUrl . $this->token . '/sendPhoto', [
+                'chat_id' => $this->chatId,
+                'caption' => $caption,
+                'parse_mode' => 'HTML'
+            ]);
+        }
+    }
 }

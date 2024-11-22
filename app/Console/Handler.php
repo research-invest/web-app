@@ -6,6 +6,7 @@ use App\Console\Commands\Alerts\CheckLiquidationWarnings;
 use App\Console\Commands\Alerts\CheckTradeLevels;
 use App\Console\Commands\Alerts\FreeSpaceAlert;
 use App\Console\Commands\Alerts\SendTradePnLNotification;
+use App\Console\Commands\SendIndexChart;
 use App\Console\Commands\UpdateCurrencies;
 use App\Console\Commands\UpdateTradesPnL;
 use Illuminate\Console\Scheduling\Schedule;
@@ -20,5 +21,6 @@ class Handler
         $schedule->command(SendTradePnLNotification::class)->everyTenMinutes();
         $schedule->command(CheckLiquidationWarnings::class)->everyFiveMinutes();
         $schedule->command(FreeSpaceAlert::class)->hourly();
+//        $schedule->command(SendIndexChart::class)->hourly();
     }
 }
