@@ -21,6 +21,6 @@ class Handler
         $schedule->command(SendTradePnLNotification::class)->everyTenMinutes();
         $schedule->command(CheckLiquidationWarnings::class)->everyFiveMinutes();
         $schedule->command(FreeSpaceAlert::class)->hourly();
-        $schedule->command(SendIndexChart::class)->everyFiveMinutes();
+        $schedule->command(SendIndexChart::class)->everyThreeMinutes();
     }
 }
