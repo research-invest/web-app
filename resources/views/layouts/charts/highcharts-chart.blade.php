@@ -14,10 +14,14 @@
         var script = document.createElement('script');
         script.src = "/assets/highcharts/js/highcharts-min.js";
         script.onload = function() {
-            initializeChart_{{ $idContainer }}();
+            //initializeChart_{{ $idContainer }}();
         };
         document.head.appendChild(script);
     } else {
-        initializeChart_{{ $idContainer }}();
+       // initializeChart_{{ $idContainer }}();
     }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        initializeChart_{{ $idContainer }}();
+    });
 </script>
