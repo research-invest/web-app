@@ -78,7 +78,7 @@ class PositionCalculator
                     'y' => $priceDown,
                     'dataLabels' => [
                         'enabled' => true,
-                        'format' => "Усреднение: {y:.2f} ($averagePrice})"
+                        'format' => "Усреднение: {y:.2f} ($averagePrice)"
                     ]
                 ];
             }
