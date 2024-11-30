@@ -33,14 +33,11 @@ class SendSmartMoneyAlert extends Command
 
     private function send(string $currency)
     {
-        // Получаем данные для индекса
-        $tickerService = new Tickers();
-        $data1h = $tickerService->getTickers($currency, 3600);
-        $smStrategy = new SmartMoneyStrategy();
-        $analise = $smStrategy->analyze($data1h);
+        $data = (new Tickers())->getTickers($currency, 1800);
+        $analise = (new SmartMoneyStrategy())->analyze($data);
 
-        if ($analise['is_accumulation']) {
-            $this->telegram->sendMessage($analise['message']);
+        if ($analise) {
+            $this->telegram->sendMessage($currency . ' ' . $analise['message']);
         }
     }
 }

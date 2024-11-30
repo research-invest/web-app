@@ -20,25 +20,43 @@ class SmartMoneyStrategy
         $volumes = array_column($candles, 'volume');
         $highs = array_column($candles, 'high');
         $lows = array_column($candles, 'low');
+        $closes = array_column($candles, 'close');
 
-        // Рассчитываем средний объем
-        $volumeMA = $this->calculateMovingAverage($volumes, $this->periodLength);
+        // Определяем тренд за последние N свечей
+        $trendUp = $closes[array_key_last($closes)] > $closes[array_key_last($closes) - 10];
 
-        // Проверяем условия для зоны накопления
-        $lastIndex = count($candles) - 1;
+        // Проверяем условия
+        $volumeCondition = $this->checkVolumeCondition($volumes);
+        $priceCondition = $this->checkPriceRange($highs, $lows);
 
-        $highVolume = $volumes[$lastIndex] > ($volumeMA * $this->volumeThreshold);
-        $priceRange = ($highs[$lastIndex] - $lows[$lastIndex]) / $lows[$lastIndex] * 100;
-        $tightRange = $priceRange < $this->priceRangeThreshold;
+        // Получаем значения для сообщения
+        $lastVolumeRatio = $volumes[array_key_last($volumes)] / $this->calculateMovingAverage($volumes, $this->periodLength);
+        $lastPriceRange = ($highs[array_key_last($highs)] - $lows[array_key_last($lows)]) / $lows[array_key_last($lows)] * 100;
 
-        $isAccumulation = $highVolume && $tightRange;
+        // Определяем тип зоны
+        if ($volumeCondition && $priceCondition) {
+            if ($trendUp) {
+                return [
+                    'type' => 'distribution',
+                    'message' => sprintf(
+                        'Возможная зона распределения (сигнал для SHORT). Объем превышает средний в %.2fx, диапазон цены: %.2f%%',
+                        $lastVolumeRatio,
+                        $lastPriceRange
+                    )
+                ];
+            }
 
-        return [
-            'is_accumulation' => $isAccumulation,
-            'volume_ratio' => $volumes[$lastIndex] / $volumeMA,
-            'price_range' => $priceRange,
-            'message' => $this->generateAlert($isAccumulation, $volumes[$lastIndex] / $volumeMA, $priceRange)
-        ];
+            return [
+                'type' => 'accumulation',
+                'message' => sprintf(
+                    'Возможная зона накопления (сигнал для LONG). Объем превышает средний в %.2fx, диапазон цены: %.2f%%',
+                    $lastVolumeRatio,
+                    $lastPriceRange
+                )
+            ];
+        }
+
+        return [];
     }
 
     private function calculateMovingAverage(array $data, int $period): float
@@ -72,5 +90,19 @@ class SmartMoneyStrategy
     public function setPeriodLength(int $length): void
     {
         $this->periodLength = $length;
+    }
+
+    private function checkVolumeCondition(array $volumes): bool
+    {
+        $lastIndex = count($volumes) - 1;
+        $volumeMA = $this->calculateMovingAverage($volumes, $this->periodLength);
+        return $volumes[$lastIndex] > ($volumeMA * $this->volumeThreshold);
+    }
+
+    private function checkPriceRange(array $highs, array $lows): bool
+    {
+        $lastIndex = count($highs) - 1;
+        $priceRange = ($highs[$lastIndex] - $lows[$lastIndex]) / $lows[$lastIndex] * 100;
+        return $priceRange < $this->priceRangeThreshold;
     }
 }
