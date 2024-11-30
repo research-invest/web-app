@@ -2,6 +2,8 @@
 
 namespace App\Services\Analyze;
 
+use App\Services\Strategy\SmartMoneyStrategy;
+
 class TechnicalAnalysis
 {
     public function analyzeEntry(string $symbol, array $klines)
@@ -352,5 +354,18 @@ class TechnicalAnalysis
         }
 
         return $recommendation;
+    }
+
+    private function analyzeSmartMoney(array $candles): array
+    {
+        $strategy = new SmartMoneyStrategy();
+        return $strategy->analyze($candles);
+    }
+
+    public function analyze(array $candles): array
+    {
+        return [
+            'smart_money' => $this->analyzeSmartMoney($candles)
+        ];
     }
 }
