@@ -18,6 +18,10 @@ return new class extends Migration
 
             $table->unique(['user_id', 'currency_id']);
         });
+
+        Schema::table('users', function (Blueprint $table) {
+            $table->string('telegram_chat_id')->nullable();
+        });
     }
 
     public function down()

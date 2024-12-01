@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Console\Commands\Alerts\CheckFavoritePairs;
 use App\Console\Commands\Alerts\CheckLiquidationWarnings;
 use App\Console\Commands\Alerts\CheckTradeLevels;
 use App\Console\Commands\Alerts\FreeSpaceAlert;
@@ -24,5 +25,6 @@ class Handler
         $schedule->command(FreeSpaceAlert::class)->hourly();
         $schedule->command(SendSmartMoneyAlert::class)->everyThirtyMinutes();
 //        $schedule->command(SendIndexChart::class)->everyThreeMinutes();
+//        $schedule->command(CheckFavoritePairs::class)->everyThirtyMinutes();
     }
 }

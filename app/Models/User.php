@@ -7,6 +7,11 @@ use Orchid\Filters\Types\Where;
 use Orchid\Filters\Types\WhereDateStartEnd;
 use Orchid\Platform\Models\User as Authenticatable;
 
+/**
+ * @var string $name
+ * @var string $email
+ * @var string $telegram_chat_id
+ */
 class User extends Authenticatable
 {
     /**
@@ -66,4 +71,9 @@ class User extends Authenticatable
         'updated_at',
         'created_at',
     ];
+
+    public function favorites()
+    {
+        return $this->hasMany(CurrencyFavorite::class);
+    }
 }
