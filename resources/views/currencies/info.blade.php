@@ -1,9 +1,9 @@
 <div class="bg-white rounded shadow-sm p-4">
     <div class="row">
         <div class="col-md-6">
-            <h3>{{ $currency->name }} ({{ $currency->symbol }})</h3>
+            <h3>{{ $currency->name }} ({{ $currency->code }})</h3>
             <div class="mt-3">
-                <p><strong>Текущая цена:</strong> {{ $currency->current_price }}</p>
+                <p><strong>Текущая цена:</strong> {{ $currency->last_price }}</p>
                 <p><strong>Рыночная капитализация:</strong> {{ $currency->market_cap }}</p>
                 <p><strong>Объем за 24ч:</strong> {{ $currency->volume_24h }}</p>
             </div>
@@ -22,4 +22,4 @@
             </div>
         </div>
     </div>
-</div> 
+</div>

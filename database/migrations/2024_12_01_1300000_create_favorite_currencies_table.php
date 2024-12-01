@@ -8,6 +8,8 @@ return new class extends Migration
 {
     public function up()
     {
+        Schema::dropColumns('currencies', ['is_favorite']);
+
         Schema::create('currencies_favorites', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
