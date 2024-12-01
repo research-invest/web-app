@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use App\Orchid\Screens\Currency\CurrencyEditScreen;
+use App\Orchid\Screens\Currency\CurrencyListScreen;
 use App\Orchid\Screens\Examples\ExampleActionsScreen;
 use App\Orchid\Screens\Examples\ExampleCardsScreen;
 use App\Orchid\Screens\Examples\ExampleChartsScreen;
@@ -90,6 +92,18 @@ Route::screen('trading/deals/{trade}/close', DealCloseScreen::class)
             ->parent('platform.trading.deal.edit', $trade)
             ->push('Закрытие сделки')
     );
+
+Route::screen('currencies/{currency}/edit', CurrencyEditScreen::class)
+    ->name('platform.currencies.edit')
+    ->breadcrumbs(fn (Trail $trail, $currency) => $trail
+        ->parent('platform.currencies')
+        ->push($currency->name, route('platform.currencies.edit', $currency)));
+
+Route::screen('currencies', CurrencyListScreen::class)
+    ->name('platform.currencies')
+    ->breadcrumbs(fn (Trail $trail) => $trail
+        ->parent('platform.index')
+        ->push('Валюты', route('platform.currencies')));
 
 // Platform > Profile
 Route::screen('profile', UserProfileScreen::class)

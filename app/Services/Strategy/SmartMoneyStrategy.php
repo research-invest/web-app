@@ -29,12 +29,13 @@ class SmartMoneyStrategy
         $volumeCondition = $this->checkVolumeCondition($volumes);
         $priceCondition = $this->checkPriceRange($highs, $lows);
 
-        // Получаем значения для сообщения
-        $lastVolumeRatio = $volumes[array_key_last($volumes)] / $this->calculateMovingAverage($volumes, $this->periodLength);
-        $lastPriceRange = ($highs[array_key_last($highs)] - $lows[array_key_last($lows)]) / $lows[array_key_last($lows)] * 100;
-
         // Определяем тип зоны
         if ($volumeCondition && $priceCondition) {
+
+            // Получаем значения для сообщения
+            $lastVolumeRatio = $volumes[array_key_last($volumes)] / $this->calculateMovingAverage($volumes, $this->periodLength);
+            $lastPriceRange = ($highs[array_key_last($highs)] - $lows[array_key_last($lows)]) / $lows[array_key_last($lows)] * 100;
+
             if ($trendUp) {
                 return [
                     'type' => 'distribution',

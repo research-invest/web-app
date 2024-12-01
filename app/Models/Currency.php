@@ -4,6 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Orchid\Filters\Filterable;
+use Orchid\Filters\Types\Like;
+use Orchid\Filters\Types\Where;
+use Orchid\Filters\Types\WhereDateStartEnd;
 use Orchid\Screen\AsSource;
 
 /**
@@ -26,4 +29,43 @@ class Currency extends BaseModel
         return sprintf('%s (%s)', $this->name, $this->last_price);
     }
 
+
+    /**
+     * The attributes for which you can use filters in url.
+     *
+     * @var array
+     */
+    protected $allowedFilters = [
+        'id'         => Where::class,
+        'name'       => Like::class,
+        'updated_at' => WhereDateStartEnd::class,
+        'created_at' => WhereDateStartEnd::class,
+    ];
+
+    /**
+     * The attributes for which can use sort in url.
+     *
+     * @var array
+     */
+    protected $allowedSorts = [
+        'id',
+        'name',
+        'updated_at',
+        'created_at',
+    ];
+
+
+    public function isFavorite()
+    {
+        if (!auth()->check()) {
+            return false;
+        }
+
+        return $this->favorites()->where('user_id', auth()->id())->exists();
+    }
+
+    public function favorites()
+    {
+        return $this->hasMany(CurrencyFavorite::class);
+    }
 }

@@ -39,6 +39,11 @@ class PlatformProvider extends OrchidServiceProvider
                 ->rawClick()
                 ->route('platform.index'),
 
+            Menu::make('Валюты')
+                ->icon('dollar')
+                ->rawClick()
+                ->route('platform.currencies'),
+
             Menu::make('Статистика')
                 ->icon('bs.book')
                 ->title('Статистика')
