@@ -44,6 +44,8 @@ class CurrenciesListLayout extends Table
                 ->render(fn (Currency $currency) => Link::make($currency->name)
                     ->route('platform.currencies.edit', $currency->id)),
 
+            TD::make('last_price', 'Цена'),
+
             TD::make('created_at', __('Created'))
                 ->usingComponent(DateTimeSplit::class)
                 ->align(TD::ALIGN_RIGHT)
@@ -53,7 +55,10 @@ class CurrenciesListLayout extends Table
             TD::make('updated_at', __('Last edit'))
                 ->usingComponent(DateTimeSplit::class)
                 ->align(TD::ALIGN_RIGHT)
+                ->defaultHidden()
                 ->sort(),
+
+            TD::make('exchange', 'Источник'),
 
             TD::make(__('Actions'))
                 ->align(TD::ALIGN_CENTER)
