@@ -17,11 +17,11 @@ class TelegramService
         $this->chatId = config('services.telegram.chat_id');
     }
 
-    public function sendMessage(string $message): bool
+    public function sendMessage(string $message, $chatId = null): bool
     {
         try {
             $response = Http::post($this->apiUrl . $this->token . '/sendMessage', [
-                'chat_id' => $this->chatId,
+                'chat_id' => $chatId ?: $this->chatId,
                 'text' => $message,
                 'parse_mode' => 'HTML'
             ]);
@@ -38,7 +38,7 @@ class TelegramService
         // Если $image это URL
         if (filter_var($image, FILTER_VALIDATE_URL)) {
             $response = Http::post($this->apiUrl . $this->token . '/sendPhoto', [
-                'chat_id' => $this->chatId,
+                'chat_id' => $chatId ?: $this->chatId,
                 'caption' => $caption,
                 'photo' => $image,
                 'parse_mode' => 'HTML'
