@@ -44,6 +44,8 @@ class CurrenciesListLayout extends Table
                 ->render(fn (Currency $currency) => Link::make($currency->name)
                     ->route('platform.currencies.edit', $currency->id)),
 
+            TD::make('code', 'Код'),
+
             TD::make('last_price', 'Цена'),
 
             TD::make('created_at', __('Created'))
@@ -58,7 +60,8 @@ class CurrenciesListLayout extends Table
                 ->defaultHidden()
                 ->sort(),
 
-            TD::make('exchange', 'Источник'),
+            TD::make('exchange', 'Источник')
+                ->defaultHidden(),
 
             TD::make(__('Actions'))
                 ->align(TD::ALIGN_CENTER)
