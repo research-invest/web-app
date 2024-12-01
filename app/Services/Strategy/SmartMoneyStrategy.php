@@ -60,22 +60,47 @@ class SmartMoneyStrategy
         return [];
     }
 
+    public function analyzeV2(array $candles): array
+    {
+        // Проверяем, есть ли достаточно свечей для анализа
+        if (count($candles) < 20) {
+            return [
+                'accumulation' => 'Недостаточно данных',
+                'volume_delta' => '0',
+                'trend' => 'Неопределен',
+                'recommendation' => 'Недостаточно данных для анализа',
+                'recommendation_type' => 'info'
+            ];
+        }
+
+        // Анализируем последние 20 свечей
+        $recentCandles = array_slice($candles, -20);
+
+        // Рассчитываем дельту объема
+        $volumeDelta = $this->calculateVolumeDelta($recentCandles);
+
+        // Определяем тренд
+        $trend = $this->determineTrend($recentCandles);
+
+        // Определяем накопление/распределение
+        $accumulation = $this->determineAccumulation($recentCandles);
+
+        // Формируем рекомендацию
+        $recommendation = $this->generateRecommendation($trend, $volumeDelta, $accumulation);
+
+        return [
+            'accumulation' => $accumulation,
+            'volume_delta' => number_format($volumeDelta, 2),
+            'trend' => $trend,
+            'recommendation' => $recommendation['text'],
+            'recommendation_type' => $recommendation['type']
+        ];
+    }
+
     private function calculateMovingAverage(array $data, int $period): float
     {
         $windowData = array_slice($data, -$period);
         return array_sum($windowData) / count($windowData);
-    }
-
-    private function generateAlert(bool $isAccumulation, float $volumeRatio, float $priceRange): string
-    {
-        if ($isAccumulation) {
-            return sprintf(
-                "Обнаружена зона накопления! Объем превышает средний в %.2f раз, ценовой диапазон: %.2f%%",
-                $volumeRatio,
-                $priceRange
-            );
-        }
-        return 'Зона накопления не обнаружена';
     }
 
     public function setVolumeThreshold(float $threshold): void
@@ -105,5 +130,87 @@ class SmartMoneyStrategy
         $lastIndex = count($highs) - 1;
         $priceRange = ($highs[$lastIndex] - $lows[$lastIndex]) / $lows[$lastIndex] * 100;
         return $priceRange < $this->priceRangeThreshold;
+    }
+
+    private function calculateVolumeDelta(array $candles): float
+    {
+        $buyVolume = 0;
+        $sellVolume = 0;
+
+        foreach ($candles as $candle) {
+            if ($candle['close'] > $candle['open']) {
+                $buyVolume += $candle['volume'];
+            } else {
+                $sellVolume += $candle['volume'];
+            }
+        }
+
+        return $buyVolume - $sellVolume;
+    }
+
+    private function determineTrend(array $candles): string
+    {
+        $firstPrice = $candles[0]['close'];
+        $lastPrice = end($candles)['close'];
+        $priceChange = (($lastPrice - $firstPrice) / $firstPrice) * 100;
+
+        if ($priceChange > 3) {
+            return 'Восходящий';
+        }
+
+        if ($priceChange < -3) {
+            return 'Нисходящий';
+        }
+        return 'Боковой';
+    }
+
+    private function determineAccumulation(array $candles): string
+    {
+        $highVolumeBars = 0;
+        $averageVolume = array_sum(array_column($candles, 'volume')) / count($candles);
+
+        foreach ($candles as $candle) {
+            if ($candle['volume'] > $averageVolume * 1.5) {
+                $highVolumeBars++;
+            }
+        }
+
+        if ($highVolumeBars >= 5) {
+            return 'Активное накопление';
+        }
+
+        if ($highVolumeBars >= 3) {
+            return 'Умеренное накопление';
+        }
+        return 'Распределение';
+    }
+
+    private function generateRecommendation(string $trend, float $volumeDelta, string $accumulation): array
+    {
+        if ($trend === 'Восходящий' && $volumeDelta > 0 && str_contains($accumulation, 'накопление')) {
+            return [
+                'text' => 'Сильный сигнал на покупку. Наблюдается восходящий тренд с подтверждением объемом.',
+                'type' => 'success'
+            ];
+        }
+
+        if ($trend === 'Нисходящий' && $volumeDelta < 0) {
+            return [
+                'text' => 'Рекомендуется воздержаться от покупок. Нисходящий тренд с давлением продаж.',
+                'type' => 'danger'
+            ];
+        }
+
+        if ($trend === 'Боковой') {
+            return [
+                'text' => 'Рекомендуется дождаться более четких сигналов. Рынок в боковом движении.',
+                'type' => 'warning'
+            ];
+        }
+
+        return [
+            'text' => 'Смешанные сигналы. Требуется дополнительный анализ.',
+            'type' => 'info'
+        ];
     }
 }

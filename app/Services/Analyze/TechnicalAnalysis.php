@@ -94,40 +94,6 @@ class TechnicalAnalysis
     }
 
     /**
-     * Расчет RSI (Relative Strength Index)
-     * Период по умолчанию - 14
-     */
-    public function calculateRSI(array $klines, int $period = 14): array
-    {
-        $rsi = [];
-        $gains = [];
-        $losses = [];
-
-        // Вычисляем изменения цены
-        for ($i = 1, $iMax = count($klines); $i < $iMax; $i++) {
-            $change = $klines[$i]['close'] - $klines[$i-1]['close'];
-            $gains[] = max($change, 0);
-            $losses[] = abs(min($change, 0));
-
-            if ($i >= $period) {
-                $avgGain = array_sum(array_slice($gains, -$period)) / $period;
-                $avgLoss = array_sum(array_slice($losses, -$period)) / $period;
-
-                if ($avgLoss == 0) {
-                    $rsi[] = 100;
-                } else {
-                    $rs = $avgGain / $avgLoss;
-                    $rsi[] = 100 - (100 / (1 + $rs));
-                }
-            } else {
-                $rsi[] = null;
-            }
-        }
-
-        return $rsi;
-    }
-
-    /**
      * Расчет полос Боллинджера
      * Период по умолчанию - 20, множитель - 2
      */
@@ -334,9 +300,9 @@ class TechnicalAnalysis
 
         if ($totalStrength >= 1.5) {
             $hasResistance = isset($signals['bollinger']) &&
-                            $signals['bollinger']['data']['band'] === 'upper';
+                $signals['bollinger']['data']['band'] === 'upper';
             $hasSupport = isset($signals['bollinger']) &&
-                         $signals['bollinger']['data']['band'] === 'lower';
+                $signals['bollinger']['data']['band'] === 'lower';
 
             if ($hasSupport && isset($signals['volume'])) {
                 $recommendation = [
@@ -366,6 +332,183 @@ class TechnicalAnalysis
     {
         return [
             'smart_money' => $this->analyzeSmartMoney($candles)
+        ];
+    }
+
+    public function analyzeV2(array $candles): array
+    {
+        if (empty($candles)) {
+            return [];
+        }
+
+        // Получаем последние цены закрытия
+        $closePrices = array_column($candles, 'close');
+
+        // Рассчитываем индикаторы
+        $rsi = $this->calculateRSI($closePrices);
+        $macd = $this->calculateMACD($closePrices);
+        $ma50 = $this->calculateMA($closePrices, 50);
+        $ma200 = $this->calculateMA($closePrices, 200);
+
+        // Определяем общий сигнал
+        $signal = $this->determineSignal($rsi, $macd, $ma50, $ma200, end($closePrices));
+
+        return [
+            'rsi' => number_format($rsi, 2),
+            'macd' => number_format($macd, 2),
+            'ma50' => number_format($ma50, 2),
+            'ma200' => number_format($ma200, 2),
+            'signal_type' => $signal['type'],
+            'signal_message' => $signal['message']
+        ];
+    }
+
+    private function calculateRSI(array $prices, int $period = 14): float
+    {
+        if (count($prices) < $period + 1) {
+            return 50.0;
+        }
+
+        $gains = [];
+        $losses = [];
+
+        for ($i = 1, $iMax = count($prices); $i < $iMax; $i++) {
+            $difference = $prices[$i] - $prices[$i - 1];
+            if ($difference >= 0) {
+                $gains[] = $difference;
+                $losses[] = 0;
+            } else {
+                $gains[] = 0;
+                $losses[] = abs($difference);
+            }
+        }
+
+        $avgGain = array_sum(array_slice($gains, -$period)) / $period;
+        $avgLoss = array_sum(array_slice($losses, -$period)) / $period;
+
+        if ($avgLoss == 0) {
+            return 100;
+        }
+
+        $rs = $avgGain / $avgLoss;
+        return 100 - (100 / (1 + $rs));
+    }
+
+
+
+    /**
+     * Расчет RSI (Relative Strength Index)
+     * Период по умолчанию - 14
+     */
+    public function calculateRSIOLD(array $klines, int $period = 14): array
+    {
+        $rsi = [];
+        $gains = [];
+        $losses = [];
+
+        // Вычисляем изменения цены
+        for ($i = 1, $iMax = count($klines); $i < $iMax; $i++) {
+            $change = $klines[$i]['close'] - $klines[$i - 1]['close'];
+            $gains[] = max($change, 0);
+            $losses[] = abs(min($change, 0));
+
+            if ($i >= $period) {
+                $avgGain = array_sum(array_slice($gains, -$period)) / $period;
+                $avgLoss = array_sum(array_slice($losses, -$period)) / $period;
+
+                if ($avgLoss == 0) {
+                    $rsi[] = 100;
+                } else {
+                    $rs = $avgGain / $avgLoss;
+                    $rsi[] = 100 - (100 / (1 + $rs));
+                }
+            } else {
+                $rsi[] = null;
+            }
+        }
+
+        return $rsi;
+    }
+
+    private function calculateMACD(array $prices): float
+    {
+        $ema12 = $this->calculateEMA($prices, 12);
+        $ema26 = $this->calculateEMA($prices, 26);
+
+        return $ema12 - $ema26;
+    }
+
+    private function calculateMA(array $prices, int $period): float
+    {
+        if (count($prices) < $period) {
+            return end($prices);
+        }
+
+        $relevantPrices = array_slice($prices, -$period);
+        return array_sum($relevantPrices) / $period;
+    }
+
+    private function calculateEMA(array $prices, int $period): float
+    {
+        if (count($prices) < $period) {
+            return end($prices);
+        }
+
+        $multiplier = 2 / ($period + 1);
+        $ema = array_sum(array_slice($prices, 0, $period)) / $period;
+
+        for ($i = $period, $iMax = count($prices); $i < $iMax; $i++) {
+            $ema = ($prices[$i] - $ema) * $multiplier + $ema;
+        }
+
+        return $ema;
+    }
+
+    private function determineSignal(float $rsi, float $macd, float $ma50, float $ma200, float $currentPrice): array
+    {
+        // RSI условия
+        $isOverbought = $rsi > 70;
+        $isOversold = $rsi < 30;
+
+        // MA условия
+        $isAboveMA50 = $currentPrice > $ma50;
+        $isAboveMA200 = $currentPrice > $ma200;
+
+        // MACD условие
+        $isPositiveMACD = $macd > 0;
+
+        // Определение сигнала
+        if ($isOverbought && !$isPositiveMACD) {
+            return [
+                'type' => 'danger',
+                'message' => 'Сильный сигнал на продажу. RSI показывает перекупленность.'
+            ];
+        }
+
+        if ($isOversold && $isPositiveMACD) {
+            return [
+                'type' => 'success',
+                'message' => 'Сильный сигнал на покупку. RSI показывает перепроданность.'
+            ];
+        }
+
+        if ($isAboveMA50 && $isAboveMA200 && $isPositiveMACD) {
+            return [
+                'type' => 'success',
+                'message' => 'Восходящий тренд. Рекомендуется покупка.'
+            ];
+        }
+
+        if (!$isAboveMA50 && !$isAboveMA200 && !$isPositiveMACD) {
+            return [
+                'type' => 'danger',
+                'message' => 'Нисходящий тренд. Рекомендуется продажа.'
+            ];
+        }
+
+        return [
+            'type' => 'warning',
+            'message' => 'Смешанные сигналы. Рекомендуется подождать.'
         ];
     }
 }

@@ -20,6 +20,9 @@ use Orchid\Support\Facades\Toast;
 
 class CurrencyEditScreen extends Screen
 {
+    /**
+     * @var Currency
+     */
     public $currency;
 
     private $technicalAnalysisService;
@@ -50,8 +53,28 @@ class CurrencyEditScreen extends Screen
             'priceChart' => $this->getPriceChartData($currency),
             'volumeChart' => $this->getVolumeChartData($currency),
             'tradingStats' => $this->tradingStatsService->getStats($currency),
-//            'technicalAnalysis' => $this->technicalAnalysisService->analyze($currency),
-//            'smartMoney' => $this->smartMoneyService->analyze($candles),
+            'technicalAnalysis' => $this->technicalAnalysisService->analyzeV2($candles),
+            'smartMoney' => $this->smartMoneyService->analyzeV2($candles),
+        ];
+    }
+
+    /**
+     * The name of the screen displayed in the header.
+     */
+    public function name(): ?string
+    {
+        return $this->currency->name;
+    }
+
+    public function commandBar(): iterable
+    {
+        $isFav = $this->currency->isFavorite();
+
+        return [
+            Button::make($isFav? 'Удалить из избранного' : 'Добавить в избранное')
+                ->method('toggleFavorite')
+                ->icon('heart')
+                ->type( $isFav ? Color::DANGER : Color::DEFAULT)
         ];
     }
 
@@ -66,13 +89,6 @@ class CurrencyEditScreen extends Screen
                 'Технический анализ' => Layout::view('currencies.technical-analysis'),
                 'Smart Money' => Layout::view('currencies.smart-money'),
             ]),
-
-            Layout::rows([
-                Button::make('Добавить в избранное')
-                    ->method('toggleFavorite')
-                    ->icon('heart')
-                    ->type($this->currency->isFavorite() ? Color::DANGER : Color::DEFAULT)
-            ])
         ];
     }
 
