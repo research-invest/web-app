@@ -45,17 +45,11 @@
                     </td>
                     <td>
                         @if($order->type !== 'entry' && $trade->status === 'open')
-{{--                            <button class="btn btn-sm btn-danger"--}}
-{{--                                    onclick="document.getElementById('remove-order-{{ $order->id }}').submit();">--}}
-{{--                                <i class="fas fa-trash"></i>--}}
-{{--                            </button>--}}
-{{--                            <form id="remove-order-{{ $order->id }}" --}}
-{{--                                  action="{{ route('platform.trades.orders.remove', ['trade' => $trade->id, 'order' => $order->id]) }}" --}}
-{{--                                  method="POST" --}}
-{{--                                  style="display: none;">--}}
-{{--                                @csrf--}}
-{{--                                @method('DELETE')--}}
-{{--                            </form>--}}
+                            <button class="btn btn-sm btn-danger delete-order-btn"
+                                    data-trade-id="{{ $trade->id }}"
+                                    data-order-id="{{ $order->id }}">
+                                <i class="fas fa-trash"></i> Удалить
+                            </button>
                         @endif
                     </td>
                 </tr>
@@ -70,3 +64,35 @@
         </div>
     @endif
 </div>
+
+@push('scripts')
+    <script>
+        document.querySelectorAll('.delete-order-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                if (confirm('Вы уверены, что хотите удалить этот ордер?')) {
+                    const tradeId = this.dataset.tradeId;
+                    const orderId = this.dataset.orderId;
+
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = `/trading/deals/${tradeId}/orders/${orderId}`;
+
+                    const csrfToken = document.createElement('input');
+                    csrfToken.type = 'hidden';
+                    csrfToken.name = '_token';
+                    csrfToken.value = '{{ csrf_token() }}';
+
+                    const methodField = document.createElement('input');
+                    methodField.type = 'hidden';
+                    methodField.name = '_method';
+                    methodField.value = 'DELETE';
+
+                    form.appendChild(csrfToken);
+                    form.appendChild(methodField);
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
+        });
+    </script>
+@endpush

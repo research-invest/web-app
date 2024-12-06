@@ -26,8 +26,7 @@ class UpdateCurrencies extends Command
 
     private function update()
     {
-        $currenciesService = new Currencies();
-        $currencies = $currenciesService->getCurrencies();
+        $currencies = (new Currencies())->getCurrencies();
 
         $bar = $this->output->createProgressBar(count($currencies));
         $bar->start();

@@ -9,8 +9,11 @@ use Orchid\Screen\AsSource;
 
 /**
  *
+ * @property  float $position_size
  * @property  float $take_profit_price
  * @property  float $target_profit_amount
+ * @property  integer $leverage
+ * @property  string $status
  * @property  string $position_type
  * @property  Currency $currency
  * @property  TradePnlHistory[] $pnlHistory

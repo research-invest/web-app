@@ -5,6 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Orchid\Screen\AsSource;
 
+
+/**
+ *
+ * @property  float $size
+ * @property  float $price
+ * @property  string $type
+ * @property  float $realized_pnl
+ */
 class TradeOrder extends Model
 {
     use AsSource;
@@ -27,4 +35,4 @@ class TradeOrder extends Model
     {
         return $this->belongsTo(Trade::class);
     }
-} 
+}

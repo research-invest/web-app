@@ -21,10 +21,7 @@ class UpdateTradesPnL extends Command
          * @var Trade $trade
          */
         foreach ($openTrades as $trade) {
-            // Здесь нужно получить текущую цену с биржи
-            // Пока используем временное решение
             $currentPrice = $trade->currency->last_price ?? $trade->entry_price;
-
             $trade->updatePnL($currentPrice);
         }
 

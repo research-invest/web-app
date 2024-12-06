@@ -41,14 +41,14 @@ class FuturesCalculator extends Screen
                     'stop_loss_percent' => $this->calculateStopLossPercent($trade),
                     'take_profit_percent' => $this->calculateTakeProfitPercent($trade),
                     'target_profit_amount' => $trade->target_profit_amount,
-                    'additional_orders' => $trade->orders()
-                        ->where('type', 'add')
-                        ->get()
-                        ->map(fn($order) => [
-                            'price' => $order->price,
-                            'size' => $order->size
-                        ])
-                        ->toArray()
+//                    'additional_orders' => $trade->orders()
+//                        ->where('type', 'add')
+//                        ->get()
+//                        ->map(fn($order) => [
+//                            'price' => $order->price,
+//                            'size' => $order->size
+//                        ])
+//                        ->toArray()
                 ];
             }
         }
