@@ -19,7 +19,7 @@ class Handler
     {
         $schedule->command(UpdateCurrencies::class)->everyTwoMinutes();
         $schedule->command(UpdateTradesPnL::class)->everyTwoMinutes();
-        $schedule->command(CheckTradeLevels::class)->everyTwoMinutes();
+//        $schedule->command(CheckTradeLevels::class)->everyTwoMinutes();
         $schedule->command(SendTradePnLNotification::class)->everyTenMinutes();
         $schedule->command(CheckLiquidationWarnings::class)->everyFiveMinutes();
         $schedule->command(FreeSpaceAlert::class)->hourly();
