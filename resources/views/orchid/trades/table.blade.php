@@ -42,7 +42,7 @@
             @foreach($rows as $source)
                 <tr @class([
                             'table-light' => $source->isOddDay(),
-                            'table-secondary' => $source->isEvenDay()
+                            '' => $source->isEvenDay()
                         ])>
 
                     @foreach($columns as $column)
