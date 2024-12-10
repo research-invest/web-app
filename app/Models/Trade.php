@@ -289,4 +289,14 @@ class Trade extends Model
     {
         return $this->position_type === 'short';
     }
+
+    public function isEvenDay(): bool
+    {
+        return (int)$this->created_at->format('z') % 2 === 0;
+    }
+
+    public function isOddDay(): bool
+    {
+        return !$this->isEvenDay();
+    }
 }

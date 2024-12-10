@@ -19,6 +19,9 @@ class ListLayout extends Table
      */
     public $target = 'trades';
 
+
+    public $template = 'orchid.trades.table';
+
     /**
      * @return TD[]
      */
