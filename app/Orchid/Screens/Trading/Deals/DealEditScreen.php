@@ -190,8 +190,7 @@ class DealEditScreen extends Screen
 
                         Input::make('trade.realized_pnl')
                             ->title('Реализованный PnL')
-                            ->canSee($this->trade->exists && $this->trade->realized_pnl)
-                            ->type('number'),
+                            ->canSee($this->trade->exists && $this->trade->realized_pnl),
 
                         TextArea::make('trade.notes')
                             ->title('Заметки')
