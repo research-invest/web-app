@@ -48,9 +48,9 @@ class ListLayout extends Table
             TD::make('exit_price', 'Цена выхода'),
             TD::make('pnl', 'PNL')
                 ->render(function (Trade $trade) {
-                    $pnl = $trade->status === 'closed'
-                        ? $trade->realized_pnl
-                        : $trade->getUnrealizedPnL($trade->currency->last_price);
+                    $pnl = $trade->status === Trade::STATUS_OPEN
+                        ? $trade->getUnrealizedPnL($trade->currency->last_price)
+                        : $trade->realized_pnl;
 
                     $color = $pnl >= 0 ? 'success' : 'danger';
 
