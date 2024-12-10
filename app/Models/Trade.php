@@ -22,6 +22,10 @@ class Trade extends Model
 {
     use AsSource, Filterable, SoftDeletes;
 
+    public const string STATUS_OPEN = 'open';
+    public const string STATUS_CLOSED = 'closed';
+    public const string STATUS_LIQUIDATED = 'liquidated';
+
     protected $fillable = [
         'currency_id',
         'position_type',

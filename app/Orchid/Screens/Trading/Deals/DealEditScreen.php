@@ -182,11 +182,16 @@ class DealEditScreen extends Screen
                         Select::make('trade.status')
                             ->title('Статус')
                             ->options([
-                                'open' => 'Открыта',
-                                'closed' => 'Закрыта',
-                                'liquidated' => 'Ликвидирована'
+                                Trade::STATUS_OPEN => 'Открыта',
+                                Trade::STATUS_CLOSED => 'Закрыта',
+                                Trade::STATUS_LIQUIDATED => 'Ликвидирована'
                             ])
                             ->required(),
+
+                        Input::make('trade.realized_pnl')
+                            ->title('Реализованный PnL')
+                            ->canSee($this->trade->exists && $this->trade->realized_pnl)
+                            ->type('number'),
 
                         TextArea::make('trade.notes')
                             ->title('Заметки')

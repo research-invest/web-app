@@ -55,7 +55,10 @@ class PnlAnalyticsService
                 DB::raw('DATE(closed_at) as date'),
                 DB::raw('SUM(realized_pnl) as daily_pnl')
             )
-            ->where('status', 'closed')
+            ->whereIn('status', [
+                Trade::STATUS_CLOSED,
+                Trade::STATUS_LIQUIDATED,
+            ])
             ->whereNotNull('closed_at')
             ->whereNull('deleted_at')
             ->whereBetween('closed_at', [$startDate, $endDate])
