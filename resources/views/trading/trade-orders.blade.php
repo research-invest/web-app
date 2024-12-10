@@ -44,7 +44,7 @@
                         @endif
                     </td>
                     <td>
-                        @if($order->type !== 'entry' && $trade->status === 'open')
+                        @if($order->type !== 'entry')
                             <button class="btn btn-sm btn-danger delete-order-btn"
                                     data-trade-id="{{ $trade->id }}"
                                     data-order-id="{{ $order->id }}">
