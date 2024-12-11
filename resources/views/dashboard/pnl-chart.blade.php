@@ -33,6 +33,14 @@
             </div>
         </div>
     </div>
-
 </div>
+
+<script type="text/javascript">
+    document.getElementById('select-periods').addEventListener('change', function () {
+        const selectedPeriod = this.value;
+        const currentUrl = new URL(window.location.href);
+        currentUrl.searchParams.set('period_id', selectedPeriod);
+        window.location.href = currentUrl.toString();
+    });
+</script>
 

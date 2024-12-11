@@ -18,6 +18,7 @@ use Orchid\Screen\AsSource;
  * @property  string $position_type
  * @property  Currency $currency
  * @property  TradePnlHistory[] $pnlHistory
+ * @property  TradePeriod $tradePeriod
  */
 class Trade extends Model
 {
@@ -40,7 +41,8 @@ class Trade extends Model
         'exit_price',
         'realized_pnl',
         'closed_at',
-        'notes'
+        'notes',
+        'trade_period_id',
     ];
 
     protected $casts = [
@@ -298,5 +300,10 @@ class Trade extends Model
     public function isOddDay(): bool
     {
         return !$this->isEvenDay();
+    }
+
+    public function tradePeriod()
+    {
+        return $this->belongsTo(TradePeriod::class);
     }
 }

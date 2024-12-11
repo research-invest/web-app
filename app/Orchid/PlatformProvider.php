@@ -75,6 +75,11 @@ class PlatformProvider extends OrchidServiceProvider
                     Menu::make('Калькулятор сделок')
                         ->icon('calculator')
                         ->route('platform.trading.futures-calculator'),
+
+                    Menu::make('Торговые периоды')
+                        ->icon('book-open')
+                        ->route('platform.trading.periods'),
+
                 ]),
         ];
     }

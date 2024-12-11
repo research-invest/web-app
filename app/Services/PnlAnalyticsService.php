@@ -11,10 +11,11 @@ class PnlAnalyticsService
     private const int DAILY_TARGET = 100;
     private const int DAILY_TARGET_WEEKEND = 50;
 
-    public function getChartData(): array
+    public function getChartData(int $periodId): array
     {
         $firstTradeDate = DB::table('trades')
 //            ->where('status', 'closed')
+            ->where('trade_period_id', $periodId)
             ->whereNotNull('closed_at')
             ->min('closed_at');
 
@@ -23,6 +24,7 @@ class PnlAnalyticsService
             return [
                 'summary' => [
                     'tradingDays' => 0,
+                    'totalDays' => 0,
                     'totalPnl' => 0,
                     'targetPnl' => 0,
                     'difference' => 0

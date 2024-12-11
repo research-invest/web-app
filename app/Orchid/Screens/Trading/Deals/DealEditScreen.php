@@ -7,6 +7,7 @@ namespace App\Orchid\Screens\Trading\Deals;
 
 use App\Models\Currency;
 use App\Models\Trade;
+use App\Models\TradePeriod;
 use App\Orchid\Layouts\Charts\HighchartsChart;
 use App\Services\PnlAnalyticsService;
 use App\Services\RiskManagement\PositionCalculator;
@@ -252,7 +253,16 @@ class DealEditScreen extends Screen
 
         // Если это новая сделка
         if (!$trade->exists) {
-            $trade->fill($data);
+
+            $currentPeriod = TradePeriod::where('is_active', true)
+                ->latest()
+                ->firstOrFail();
+
+            $trade
+                ->fill($data)
+                ->fill([
+                    'trade_period_id' => $currentPeriod->id,
+                ]);
             $trade->save();
 
             // Создаем первый ордер при создании сделки
