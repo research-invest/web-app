@@ -43,6 +43,7 @@ class PlatformScreen extends Screen
         return [
             'chartData' => $analyticsService->getPlanFactChartData(),
             'dealTypeChartData' => $analyticsService->getDealTypeChartData(),
+            'topProfitableTradesChart' => $analyticsService->getTopProfitableTradesChart(),
             'period' => $this->period,
             'periods' => $periods,
         ];
@@ -106,7 +107,7 @@ class PlatformScreen extends Screen
                 ),
 
                 new HighchartsChart(
-                    $this->query()['dealTypeChartData']['graph']
+                    $this->query()['topProfitableTradesChart']['graph']
                 ),
 
             ]),

@@ -252,4 +252,76 @@ class PnlAnalyticsService
             ]
         ];
     }
+
+    public function getTopProfitableTradesChart(): array
+    {
+        // выбираем топ-10 прибыльных сделок
+        $topTradesIds = DB::table('trades')
+            ->select('id')
+            ->whereIn('status', [
+                Trade::STATUS_CLOSED,
+//                Trade::STATUS_LIQUIDATED,
+            ])
+            ->when(
+                $this->periodId,
+                fn($query) => $query->where('trade_period_id', $this->periodId)
+            )
+            ->whereNotNull('closed_at')
+            ->whereNull('deleted_at')
+            ->orderBy('realized_pnl', 'desc')
+            ->limit(10)
+            ->pluck('id');
+
+        $trades = DB::table('trades')
+            ->select(
+                'position_type',
+                DB::raw('COUNT(*) as count'),
+                DB::raw('SUM(realized_pnl) as total_pnl')
+            )
+            ->whereIn('id', $topTradesIds)
+            ->groupBy('position_type')
+            ->get();
+
+        $data = [];
+        foreach ($trades as $trade) {
+            $data[] = [
+                'name' => $trade->position_type === 'long' ? 'Лонг' : 'Шорт',
+                'y' => $trade->count,
+                'pnl' => round($trade->total_pnl, 2),
+                'avgPnl' => round($trade->total_pnl / $trade->count, 2)
+            ];
+        }
+
+        return [
+            'graph' => [
+                'chart' => [
+                    'type' => 'pie'
+                ],
+                'title' => [
+                    'text' => 'Топ-10 прибыльных сделок по типам'
+                ],
+                'tooltip' => [
+                    'pointFormat' => '{series.name}: <b>{point.percentage:.1f}%</b><br>' .
+                        'Количество: <b>{point.y}</b><br>' .
+                        'Общий P&L: <b>${point.pnl}</b><br>' .
+                        'Средний P&L: <b>${point.avgPnl}</b>'
+                ],
+                'plotOptions' => [
+                    'pie' => [
+                        'allowPointSelect' => true,
+                        'cursor' => 'pointer',
+                        'dataLabels' => [
+                            'enabled' => true,
+                            'format' => '<b>{point.name}</b>: {point.percentage:.1f}%'
+                        ]
+                    ]
+                ],
+                'series' => [[
+                    'name' => 'Тип сделок',
+                    'colorByPoint' => true,
+                    'data' => $data
+                ]]
+            ]
+        ];
+    }
 }
