@@ -11,11 +11,18 @@ class PnlAnalyticsService
     private const int DAILY_TARGET = 100;
     private const int DAILY_TARGET_WEEKEND = 50;
 
-    public function getChartData(int $periodId): array
+    public function __construct(protected ?int $periodId = null)
+    {
+
+    }
+    public function getPlanFactChartData(): array
     {
         $firstTradeDate = DB::table('trades')
 //            ->where('status', 'closed')
-            ->where('trade_period_id', $periodId)
+            ->when(
+                $this->periodId,
+                fn($query) => $query->where('trade_period_id', $this->periodId),
+            )
             ->whereNotNull('closed_at')
             ->min('closed_at');
 
@@ -133,6 +140,66 @@ class PnlAnalyticsService
                     'valueSuffix' => ' USD'
                 ]
             ],
+        ];
+    }
+
+    public function getDealTypeChartData(): array
+    {
+        $trades = DB::table('trades')
+            ->select(
+                'position_type',
+                DB::raw('COUNT(*) as count'),
+                DB::raw('SUM(realized_pnl) as total_pnl')
+            )
+            ->whereIn('status', [
+                Trade::STATUS_CLOSED,
+                Trade::STATUS_LIQUIDATED,
+            ])
+            ->when(
+                $this->periodId,
+                fn($query) => $query->where('trade_period_id', $this->periodId)
+            )
+            ->whereNotNull('closed_at')
+            ->whereNull('deleted_at')
+            ->groupBy('position_type')
+            ->get();
+
+        $data = [];
+        foreach ($trades as $trade) {
+            $data[] = [
+                'name' => $trade->position_type === 'long' ? 'Лонг' : 'Шорт',
+                'y' => $trade->count,
+                'pnl' => round($trade->total_pnl, 2)
+            ];
+        }
+
+        return [
+            'graph' => [
+                'chart' => [
+                    'type' => 'pie'
+                ],
+                'title' => [
+                    'text' => 'Распределение сделок по типам'
+                ],
+                'tooltip' => [
+                    'pointFormat' => '{series.name}: <b>{point.percentage:.1f}%</b><br>Количество: <b>{point.y}</b><br>P&L: <b>${point.pnl}</b>'
+                ],
+                'plotOptions' => [
+                    'pie' => [
+                        'allowPointSelect' => true,
+                        'cursor' => 'pointer',
+                        'dataLabels' => [
+                            'enabled' => true,
+                            'format' => '<b>{point.name}</b>: {point.percentage:.1f}%'
+                        ]
+                    ]
+                ],
+                'series' => [[
+                    'name' => 'Тип сделок',
+                    'colorByPoint' => true,
+                    'data' => $data
+                ]]
+            ]
         ];
     }
 

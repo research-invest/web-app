@@ -26,21 +26,23 @@ class PlatformScreen extends Screen
      */
     public function query(): iterable
     {
-        $analyticsService = new PnlAnalyticsService();
+        $periodId = (int)request()->get('period_id');
 
-        $periods = TradePeriod::query()
-            ->oldest()->get();
+        $analyticsService = new PnlAnalyticsService($periodId);
+
+        $periods = TradePeriod::query()->oldest()->get();
 
         $this->period = TradePeriod::query()
             ->when(
-                (int)request()->get('period_id'),
-                fn($query) => $query->where('id', (int)request()->get('period_id')),
+                $periodId,
+                fn($query) => $query->where('id', $periodId),
                 fn($query) => $query->isActive()->latest()
             )
             ->firstOrFail();
 
         return [
-            'chartData' => $analyticsService->getChartData($this->period->id),
+            'chartData' => $analyticsService->getPlanFactChartData(),
+            'dealTypeChartData' => $analyticsService->getDealTypeChartData(),
             'period' => $this->period,
             'periods' => $periods,
         ];
@@ -79,13 +81,16 @@ class PlatformScreen extends Screen
      */
     public function layout(): iterable
     {
+        $periodId = (int)request()->get('period_id');
+
         return [
             Layout::rows([
                 Select::make('period_id')
                     ->set('id', 'select-periods')
                     ->title('Выберите период')
+                    ->empty('Все периоды')
                     ->options($this->query()['periods']->pluck('name', 'id')->toArray())
-                    ->value($this->period->id)
+                    ->value($periodId)
                     ->help('Выберите торговый период для отображения данных'),
             ])->title('Фильтр по периоду'),
 
@@ -94,6 +99,17 @@ class PlatformScreen extends Screen
             new HighchartsChart(
                 $this->query()['chartData']['graph']
             ),
+
+            Layout::columns([
+                new HighchartsChart(
+                    $this->query()['dealTypeChartData']['graph']
+                ),
+
+                new HighchartsChart(
+                    $this->query()['dealTypeChartData']['graph']
+                ),
+
+            ]),
         ];
     }
 }
