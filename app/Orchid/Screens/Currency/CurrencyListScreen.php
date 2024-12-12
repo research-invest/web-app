@@ -5,13 +5,10 @@ declare(strict_types=1);
 namespace App\Orchid\Screens\Currency;
 
 use App\Models\Currency;
-use App\Orchid\Filters\Statistics\SingleCurrencyFilter;
+use App\Orchid\Filters\Currency\FiltersLayout;
 use App\Orchid\Layouts\Currency\CurrenciesListLayout;
-use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 use App\Models\User;
 use Orchid\Screen\Screen;
-use Orchid\Support\Facades\Toast;
 
 class CurrencyListScreen extends Screen
 {
@@ -23,7 +20,7 @@ class CurrencyListScreen extends Screen
     public function query(): iterable
     {
         return [
-            'currencies' => Currency::query()
+            'currencies' => Currency::filters(FiltersLayout::class)
                 ->leftJoin('currencies_favorites', function($join) {
                     $join->on('currencies.id', '=', 'currencies_favorites.currency_id')
                          ->where('currencies_favorites.user_id', '=', auth()->id());
@@ -77,6 +74,7 @@ class CurrencyListScreen extends Screen
     {
         return [
 //            UserFiltersLayout::class,
+            FiltersLayout::class,
             CurrenciesListLayout::class,
 
 //            Layout::modal('editUserModal', UserEditLayout::class)
