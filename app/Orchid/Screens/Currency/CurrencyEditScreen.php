@@ -32,10 +32,11 @@ class CurrencyEditScreen extends Screen
     private $candles = [];
 
     public function __construct(
-        TechnicalAnalysis $technicalAnalysisService,
-        SmartMoneyStrategy $smartMoneyService,
+        TechnicalAnalysis   $technicalAnalysisService,
+        SmartMoneyStrategy  $smartMoneyService,
         TradingStatsService $tradingStatsService
-    ) {
+    )
+    {
         $this->technicalAnalysisService = $technicalAnalysisService;
         $this->smartMoneyService = $smartMoneyService;
         $this->tradingStatsService = $tradingStatsService;
@@ -85,10 +86,10 @@ class CurrencyEditScreen extends Screen
         $isFav = $this->currency->isFavorite();
 
         return [
-            Button::make($isFav? 'Удалить из избранного' : 'Добавить в избранное')
+            Button::make($isFav ? 'Удалить из избранного' : 'Добавить в избранное')
                 ->method('toggleFavorite')
                 ->icon('heart')
-                ->type( $isFav ? Color::DANGER : Color::DEFAULT)
+                ->type($isFav ? Color::DANGER : Color::DEFAULT)
         ];
     }
 
@@ -101,7 +102,8 @@ class CurrencyEditScreen extends Screen
                     new HighchartsChart(
                         $this->getPriceChart()
                     ),
-                ], //Layout::view('currencies.price-chart')
+                    Layout::view('currencies.candlestick-legend'),
+                ],
 //                'Объем торгов' => Layout::view('currencies.volume-chart'),
                 'Статистика сделок' => Layout::view('currencies.trading-stats'),
                 'Технический анализ' => Layout::view('currencies.technical-analysis'),
@@ -160,7 +162,7 @@ class CurrencyEditScreen extends Screen
 
         return [
             'chart' => [
-                'type' => 'candlestick',
+                'type' => 'hollowcandlestick',
                 'height' => 600
             ],
             'title' => [
@@ -191,7 +193,7 @@ class CurrencyEditScreen extends Screen
                 ]
             ],
             'navigator' => [
-                'enabled' => true
+                'enabled' => true,
             ],
             'scrollbar' => [
                 'enabled' => true
@@ -207,16 +209,8 @@ class CurrencyEditScreen extends Screen
                     'text' => 'Цена'
                 ]
             ],
-            'plotOptions' => [
-                'candlestick' => [
-                    'color' => '#ef5350',     // цвет медвежьей свечи
-                    'upColor' => '#26a69a',   // цвет бычьей свечи
-                    'lineColor' => '#ef5350', // цвет линии медвежьей свечи
-                    'upLineColor' => '#26a69a' // цвет линии бычьей свечи
-                ]
-            ],
             'series' => [[
-                'type' => 'candlestick',
+                'type' => 'hollowcandlestick',
                 'name' => $this->currency->name,
                 'data' => $candleData,
                 'tooltip' => [
