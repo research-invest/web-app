@@ -30,7 +30,7 @@ class Handler
 //        $schedule->command(CheckFavoritePairs::class)->everyThirtyMinutes();
 
         $schedule->command(CollectTopPerformingCoinSnapshots::class)
-            ->everyThirtyMinutes()
+            ->everyTenMinutes()
             ->withoutOverlapping();
 
         $schedule->command(AnalyzeTopPerformingCoinSnapshots::class)
