@@ -202,6 +202,67 @@ class PnlAnalyticsService
             ]
         ];
     }
+    public function getCurrencyTypeChartData(): array
+    {
+        $trades = DB::table('trades')
+            ->select(
+                'currency_id',
+                DB::raw('currencies.name as name'),
+                DB::raw('COUNT(*) as count'),
+                DB::raw('SUM(realized_pnl) as total_pnl')
+            )
+            ->join('currencies', 'currencies.id', '=', 'trades.currency_id')
+            ->whereIn('status', [
+                Trade::STATUS_CLOSED,
+                Trade::STATUS_LIQUIDATED,
+            ])
+            ->when(
+                $this->periodId,
+                fn($query) => $query->where('trade_period_id', $this->periodId)
+            )
+            ->whereNotNull('closed_at')
+            ->whereNull('deleted_at')
+            ->groupBy('currency_id', 'currencies.name')
+            ->get();
+
+        $data = [];
+        foreach ($trades as $trade) {
+            $data[] = [
+                'name' => $trade->name,
+                'y' => $trade->count,
+                'pnl' => round($trade->total_pnl, 2)
+            ];
+        }
+
+        return [
+            'graph' => [
+                'chart' => [
+                    'type' => 'pie'
+                ],
+                'title' => [
+                    'text' => 'Распределение сделок по валютам'
+                ],
+                'tooltip' => [
+                    'pointFormat' => '{series.name}: <b>{point.percentage:.1f}%</b><br>Количество: <b>{point.y}</b><br>P&L: <b>${point.pnl}</b>'
+                ],
+                'plotOptions' => [
+                    'pie' => [
+                        'allowPointSelect' => true,
+                        'cursor' => 'pointer',
+                        'dataLabels' => [
+                            'enabled' => true,
+                            'format' => '<b>{point.name}</b>: {point.percentage:.1f}%'
+                        ]
+                    ]
+                ],
+                'series' => [[
+                    'name' => 'Тип сделок',
+                    'colorByPoint' => true,
+                    'data' => $data
+                ]]
+            ]
+        ];
+    }
 
     private function calculateTargetPnl(Carbon $startDate, Carbon $endDate): float
     {

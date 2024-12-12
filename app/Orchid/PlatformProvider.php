@@ -50,10 +50,12 @@ class PlatformProvider extends OrchidServiceProvider
                 ->list([
                     Menu::make('Нормализация')
                         ->icon('bs.book')
+                        ->rawClick()
                         ->route('platform.statistics.normalize'),
 
                     Menu::make('Хорошая динамика')
                         ->icon('bs.book')
+                        ->rawClick()
                         ->route('platform.statistics.top-performing-coins'),
 
                     Menu::make('Объем по диапазону')
@@ -62,6 +64,7 @@ class PlatformProvider extends OrchidServiceProvider
 
                     Menu::make('Композитный индекс')
                         ->icon('bs.book')
+                        ->rawClick()
                         ->route('platform.composite-index')
                 ]),
             Menu::make('Торговля')
@@ -70,14 +73,17 @@ class PlatformProvider extends OrchidServiceProvider
                 ->list([
                     Menu::make('Сделки')
                         ->icon('briefcase')
+                        ->rawClick()
                         ->route('platform.trading.deals'),
 
                     Menu::make('Калькулятор сделок')
                         ->icon('calculator')
+                        ->rawClick()
                         ->route('platform.trading.futures-calculator'),
 
                     Menu::make('Торговые периоды')
                         ->icon('book-open')
+                        ->rawClick()
                         ->route('platform.trading.periods'),
 
                 ]),
