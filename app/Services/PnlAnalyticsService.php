@@ -260,7 +260,7 @@ class PnlAnalyticsService
             ->select('id')
             ->whereIn('status', [
                 Trade::STATUS_CLOSED,
-//                Trade::STATUS_LIQUIDATED,
+                Trade::STATUS_LIQUIDATED,
             ])
             ->when(
                 $this->periodId,

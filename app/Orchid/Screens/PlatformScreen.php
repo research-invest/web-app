@@ -109,7 +109,6 @@ class PlatformScreen extends Screen
                 new HighchartsChart(
                     $this->query()['topProfitableTradesChart']['graph']
                 ),
-
             ]),
         ];
     }

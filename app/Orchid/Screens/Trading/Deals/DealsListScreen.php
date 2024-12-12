@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Orchid\Screens\Trading\Deals;
 
 use App\Models\Trade;
+use App\Orchid\Filters\Deals\FiltersLayout;
 use App\Orchid\Layouts\Trading\Deals\ListLayout;
 use Illuminate\Http\Request;
 use Orchid\Screen\Actions\Link;
@@ -21,7 +22,7 @@ class DealsListScreen extends Screen
     public function query(): iterable
     {
         return [
-            'trades' => Trade::filters()
+            'trades' => Trade::filters(FiltersLayout::class)
                 ->latest()
                 ->paginate(20),
         ];
@@ -72,6 +73,7 @@ class DealsListScreen extends Screen
     public function layout(): iterable
     {
         return [
+            FiltersLayout::class,
             ListLayout::class,
         ];
     }
