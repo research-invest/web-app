@@ -1,3 +1,9 @@
+@push('scripts')
+    <script src="/assets/highcharts/js/highstock.js"></script>
+    <script src="/assets/highcharts/js/data.js"></script>
+    <script src="/assets/highcharts/js/exporting.js"></script>
+    <script src="/assets/highcharts/js/export-data.js"></script>
+@endpush
 <div class="bg-white rounded shadow-sm p-4">
     <div class="row">
         <div class="col-md-6">

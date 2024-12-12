@@ -6,6 +6,7 @@ namespace App\Orchid\Screens\Currency;
 
 use App\Models\Currency;
 use App\Models\CurrencyFavorite;
+use App\Orchid\Layouts\Charts\HighchartsChart;
 use App\Services\Analyze\TechnicalAnalysis;
 use App\Services\Api\Tickers;
 use App\Services\Strategy\SmartMoneyStrategy;
@@ -28,6 +29,7 @@ class CurrencyEditScreen extends Screen
     private $technicalAnalysisService;
     private $smartMoneyService;
     private $tradingStatsService;
+    private $candles = [];
 
     public function __construct(
         TechnicalAnalysis $technicalAnalysisService,
@@ -45,7 +47,19 @@ class CurrencyEditScreen extends Screen
             ->where('currency_id', $currency->id)
             ->exists();
 
-        $candles = (new Tickers())->getTickers($currency->code, 1800);
+        $this->candles = (new Tickers())->getTickers($currency->code, 1800);
+
+//        "symbol" => "BTCUSDT"
+//  "open" => 99150.01
+//  "high" => 100421.8
+//  "low" => 94150.05
+//  "close" => 97504.01
+//  "quote_volume" => 22210196918.803
+//  "timestamp" => "2024-12-10T06:30:00Z"
+//  "volume_diffs" => array:6 [▶]
+//  "last_price" => 97441.8975
+//  "volume" => 227777.19732
+
 
         return [
             'currency' => $currency,
@@ -53,8 +67,8 @@ class CurrencyEditScreen extends Screen
             'priceChart' => $this->getPriceChartData($currency),
             'volumeChart' => $this->getVolumeChartData($currency),
             'tradingStats' => $this->tradingStatsService->getStats($currency),
-            'technicalAnalysis' => $this->technicalAnalysisService->analyzeV2($candles),
-            'smartMoney' => $this->smartMoneyService->analyzeV2($candles),
+            'technicalAnalysis' => $this->technicalAnalysisService->analyzeV2($this->candles),
+            'smartMoney' => $this->smartMoneyService->analyzeV2($this->candles),
         ];
     }
 
@@ -83,8 +97,12 @@ class CurrencyEditScreen extends Screen
         return [
             Layout::tabs([
                 'Основная информация' => Layout::view('currencies.info'),
-                'График цены' => Layout::view('currencies.price-chart'),
-                'Объем торгов' => Layout::view('currencies.volume-chart'),
+                'График цены' => [
+                    new HighchartsChart(
+                        $this->getPriceChart()
+                    ),
+                ], //Layout::view('currencies.price-chart')
+//                'Объем торгов' => Layout::view('currencies.volume-chart'),
                 'Статистика сделок' => Layout::view('currencies.trading-stats'),
                 'Технический анализ' => Layout::view('currencies.technical-analysis'),
                 'Smart Money' => Layout::view('currencies.smart-money'),
@@ -121,5 +139,94 @@ class CurrencyEditScreen extends Screen
     private function getVolumeChartData(Currency $currency)
     {
         return [];
+    }
+
+    private function getPriceChart(): array
+    {
+        $candleData = [];
+
+        foreach ($this->candles as $candle) {
+
+            $timestamp = strtotime($candle['timestamp']) * 1000;
+
+            $candleData[] = [
+                $timestamp,
+                (float)$candle['open'],
+                (float)$candle['high'],
+                (float)$candle['low'],
+                (float)$candle['close']
+            ];
+        }
+
+        return [
+            'chart' => [
+                'type' => 'candlestick',
+                'height' => 600
+            ],
+            'title' => [
+                'text' => 'График ' . $this->currency->name
+            ],
+            'rangeSelector' => [
+                'enabled' => true,
+                'buttons' => [
+                    [
+                        'type' => 'hour',
+                        'count' => 1,
+                        'text' => '1ч'
+                    ],
+                    [
+                        'type' => 'hour',
+                        'count' => 4,
+                        'text' => '4ч'
+                    ],
+                    [
+                        'type' => 'day',
+                        'count' => 1,
+                        'text' => '1д'
+                    ],
+                    [
+                        'type' => 'all',
+                        'text' => 'Все'
+                    ]
+                ]
+            ],
+            'navigator' => [
+                'enabled' => true
+            ],
+            'scrollbar' => [
+                'enabled' => true
+            ],
+            'xAxis' => [
+                'type' => 'datetime',
+                'labels' => [
+                    'format' => '{value:%H:%M}'
+                ]
+            ],
+            'yAxis' => [
+                'title' => [
+                    'text' => 'Цена'
+                ]
+            ],
+            'plotOptions' => [
+                'candlestick' => [
+                    'color' => '#ef5350',     // цвет медвежьей свечи
+                    'upColor' => '#26a69a',   // цвет бычьей свечи
+                    'lineColor' => '#ef5350', // цвет линии медвежьей свечи
+                    'upLineColor' => '#26a69a' // цвет линии бычьей свечи
+                ]
+            ],
+            'series' => [[
+                'type' => 'candlestick',
+                'name' => $this->currency->name,
+                'data' => $candleData,
+                'tooltip' => [
+                    'pointFormat' =>
+                        '<b>Открытие:</b> {point.open}<br/>' .
+                        '<b>Максимум:</b> {point.high}<br/>' .
+                        '<b>Минимум:</b> {point.low}<br/>' .
+                        '<b>Закрытие:</b> {point.close}<br/>'
+                ]
+            ]]
+        ];
     }
 }
