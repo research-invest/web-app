@@ -65,8 +65,6 @@ class CurrencyEditScreen extends Screen
         return [
             'currency' => $currency,
             'isFavorite' => $isFavorite,
-            'priceChart' => $this->getPriceChartData($currency),
-            'volumeChart' => $this->getVolumeChartData($currency),
             'tradingStats' => $this->tradingStatsService->getStats($currency),
             'technicalAnalysis' => $this->technicalAnalysisService->analyzeV2($this->candles),
             'smartMoney' => $this->smartMoneyService->analyzeV2($this->candles),
@@ -104,7 +102,11 @@ class CurrencyEditScreen extends Screen
                     ),
                     Layout::view('currencies.candlestick-legend'),
                 ],
-//                'Объем торгов' => Layout::view('currencies.volume-chart'),
+                'Объем торгов' => [
+                    new HighchartsChart(
+                        $this->getVolumeChart()
+                    ),
+                ],
                 'Статистика сделок' => Layout::view('currencies.trading-stats'),
                 'Технический анализ' => Layout::view('currencies.technical-analysis'),
                 'Smart Money' => Layout::view('currencies.smart-money'),
@@ -130,17 +132,6 @@ class CurrencyEditScreen extends Screen
         }
 
         return redirect()->back();
-    }
-
-    private function getPriceChartData(Currency $currency)
-    {
-        return [];
-
-    }
-
-    private function getVolumeChartData(Currency $currency)
-    {
-        return [];
     }
 
     private function getPriceChart(): array
@@ -219,6 +210,78 @@ class CurrencyEditScreen extends Screen
                         '<b>Максимум:</b> {point.high}<br/>' .
                         '<b>Минимум:</b> {point.low}<br/>' .
                         '<b>Закрытие:</b> {point.close}<br/>'
+                ]
+            ]]
+        ];
+    }
+    private function getVolumeChart(): array
+    {
+        $candleData = [];
+
+        foreach ($this->candles as $candle) {
+
+            $timestamp = strtotime($candle['timestamp']) * 1000;
+
+            $candleData[] = [
+                $timestamp,
+                (float)$candle['quote_volume'],
+            ];
+        }
+
+        return [
+            'chart' => [
+                'height' => 600
+            ],
+            'title' => [
+                'text' => 'График объемов ' . $this->currency->name
+            ],
+            'rangeSelector' => [
+                'enabled' => true,
+                'buttons' => [
+                    [
+                        'type' => 'hour',
+                        'count' => 1,
+                        'text' => '1ч'
+                    ],
+                    [
+                        'type' => 'hour',
+                        'count' => 4,
+                        'text' => '4ч'
+                    ],
+                    [
+                        'type' => 'day',
+                        'count' => 1,
+                        'text' => '1д'
+                    ],
+                    [
+                        'type' => 'all',
+                        'text' => 'Все'
+                    ]
+                ]
+            ],
+            'navigator' => [
+                'enabled' => true,
+            ],
+            'scrollbar' => [
+                'enabled' => true
+            ],
+            'xAxis' => [
+                'type' => 'datetime',
+                'labels' => [
+                    'format' => '{value:%H:%M}'
+                ]
+            ],
+            'yAxis' => [
+                'title' => [
+                    'text' => 'Объем'
+                ]
+            ],
+            'series' => [[
+                'type' => 'spline',
+                'name' => 'Объем торгов',
+                'data' => $candleData,
+                'tooltip' => [
+                    'valueDecimals' => 2
                 ]
             ]]
         ];
