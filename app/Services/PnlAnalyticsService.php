@@ -13,8 +13,8 @@ class PnlAnalyticsService
 
     public function __construct(protected ?int $periodId = null)
     {
-
     }
+
     public function getPlanFactChartData(): array
     {
         $firstTradeDate = DB::table('trades')
@@ -256,7 +256,7 @@ class PnlAnalyticsService
                     ]
                 ],
                 'series' => [[
-                    'name' => 'Тип сделок',
+                    'name' => 'Валюты',
                     'colorByPoint' => true,
                     'data' => $data
                 ]]
@@ -379,6 +379,111 @@ class PnlAnalyticsService
                 ],
                 'series' => [[
                     'name' => 'Тип сделок',
+                    'colorByPoint' => true,
+                    'data' => $data
+                ]]
+            ]
+        ];
+    }
+
+    public function getTradesDurationChart(): array
+    {
+        // Выбираем топ-50 прибыльных сделок
+        $trades = DB::table('trades')
+            ->select(
+                DB::raw('TIMESTAMPDIFF(HOUR, created_at, closed_at) as duration'),
+                'realized_pnl'
+            )
+            ->whereIn('status', [
+                Trade::STATUS_CLOSED,
+                Trade::STATUS_LIQUIDATED,
+            ])
+            ->when(
+                $this->periodId,
+                fn($query) => $query->where('trade_period_id', $this->periodId)
+            )
+            ->whereNotNull('closed_at')
+            ->whereNull('deleted_at')
+            ->where('realized_pnl', '>', 0)
+            ->orderBy('realized_pnl', 'desc')
+            ->limit(50)
+            ->get();
+
+        // Определяем интервалы
+        $intervals = [
+            '< 1 часа' => 0,
+            '1-6 часов' => 0,
+            '6-24 часа' => 0,
+            '1-3 дня' => 0,
+            '> 3 дней' => 0
+        ];
+
+        $totalPnlByInterval = [
+            '< 1 часа' => 0,
+            '1-6 часов' => 0,
+            '6-24 часа' => 0,
+            '1-3 дня' => 0,
+            '> 3 дней' => 0
+        ];
+
+        foreach ($trades as $trade) {
+            $duration = $trade->duration;
+            $pnl = $trade->realized_pnl;
+
+            if ($duration < 1) {
+                $intervals['< 1 часа']++;
+                $totalPnlByInterval['< 1 часа'] += $pnl;
+            } elseif ($duration < 6) {
+                $intervals['1-6 часов']++;
+                $totalPnlByInterval['1-6 часов'] += $pnl;
+            } elseif ($duration < 24) {
+                $intervals['6-24 часа']++;
+                $totalPnlByInterval['6-24 часа'] += $pnl;
+            } elseif ($duration < 72) {
+                $intervals['1-3 дня']++;
+                $totalPnlByInterval['1-3 дня'] += $pnl;
+            } else {
+                $intervals['> 3 дней']++;
+                $totalPnlByInterval['> 3 дней'] += $pnl;
+            }
+        }
+
+        $data = [];
+        foreach ($intervals as $name => $count) {
+            if ($count > 0) {
+                $data[] = [
+                    'name' => $name,
+                    'y' => $count,
+                    'pnl' => round($totalPnlByInterval[$name], 2),
+                    'avgPnl' => $count > 0 ? round($totalPnlByInterval[$name] / $count, 2) : 0
+                ];
+            }
+        }
+
+        return [
+            'graph' => [
+                'chart' => [
+                    'type' => 'column'  // Используем столбчатую диаграмму
+                ],
+                'title' => [
+                    'text' => 'Распределение длительности прибыльных сделок'
+                ],
+                'xAxis' => [
+                    'type' => 'category'
+                ],
+                'yAxis' => [
+                    'title' => [
+                        'text' => 'Количество сделок'
+                    ]
+                ],
+                'tooltip' => [
+                    'headerFormat' => '<span style="font-size:11px">{series.name}</span><br>',
+                    'pointFormat' => '<span style="color:{point.color}">{point.name}</span>: <b>{point.y}</b> сделок<br>' .
+                        'Общий P&L: <b>${point.pnl}</b><br>' .
+                        'Средний P&L: <b>${point.avgPnl}</b>'
+                ],
+                'series' => [[
+                    'name' => 'Длительность сделок',
                     'colorByPoint' => true,
                     'data' => $data
                 ]]

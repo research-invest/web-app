@@ -45,6 +45,7 @@ class PlatformScreen extends Screen
             'dealTypeChartData' => $analyticsService->getDealTypeChartData(),
             'topProfitableTradesChart' => $analyticsService->getTopProfitableTradesChart(),
             'currencyTypeChartData' => $analyticsService->getCurrencyTypeChartData(),
+            'tradesDurationChart' => $analyticsService->getTradesDurationChart(),
             'period' => $this->period,
             'periods' => $periods,
         ];
@@ -115,6 +116,10 @@ class PlatformScreen extends Screen
             Layout::columns([
                 new HighchartsChart(
                     $this->query()['currencyTypeChartData']['graph']
+                ),
+
+                new HighchartsChart(
+                    $this->query()['tradesDurationChart']['graph']
                 ),
             ]),
         ];
