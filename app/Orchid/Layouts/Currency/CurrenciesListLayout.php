@@ -35,6 +35,7 @@ class CurrenciesListLayout extends Table
                 ->filter(Input::make())
                 ->render(fn (Currency $currency) =>  Link::make((string)$currency->id)
                     ->route('platform.currencies.edit', $currency->id)
+                    ->rawClick()
                     ->icon('bs.pencil')),
 
             TD::make('name', __('Name'))
@@ -42,7 +43,8 @@ class CurrenciesListLayout extends Table
                 ->cantHide()
                 ->filter(Input::make())
                 ->render(fn (Currency $currency) => Link::make($currency->name)
-                    ->route('platform.currencies.edit', $currency->id)),
+                    ->route('platform.currencies.edit', $currency->id)
+                    ->rawClick()),
 
             TD::make('code', 'Код'),
 
@@ -71,6 +73,7 @@ class CurrenciesListLayout extends Table
                     ->list([
                         Link::make(__('Edit'))
                             ->route('platform.currencies.edit', $currency->id)
+                            ->rawClick()
                             ->icon('bs.pencil'),
 
                     ])),
