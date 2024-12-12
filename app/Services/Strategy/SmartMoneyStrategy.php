@@ -151,6 +151,10 @@ class SmartMoneyStrategy
     private function determineTrend(array $candles): string
     {
         $firstPrice = $candles[0]['close'];
+
+        if(!$firstPrice){
+            return '-';
+        }
         $lastPrice = end($candles)['close'];
         $priceChange = (($lastPrice - $firstPrice) / $firstPrice) * 100;
 
