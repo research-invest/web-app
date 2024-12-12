@@ -8,6 +8,7 @@ use App\Console\Commands\Alerts\CheckTradeLevels;
 use App\Console\Commands\Alerts\FreeSpaceAlert;
 use App\Console\Commands\Alerts\SendSmartMoneyAlert;
 use App\Console\Commands\Alerts\SendTradePnLNotification;
+use App\Console\Commands\AnalyzeTopPerformingCoinSnapshots;
 use App\Console\Commands\CollectTopPerformingCoinSnapshots;
 use App\Console\Commands\SendIndexChart;
 use App\Console\Commands\UpdateCurrencies;
@@ -30,6 +31,10 @@ class Handler
 
         $schedule->command(CollectTopPerformingCoinSnapshots::class)
             ->everyThirtyMinutes()
+            ->withoutOverlapping();
+
+        $schedule->command(AnalyzeTopPerformingCoinSnapshots::class)
+            ->hourly()
             ->withoutOverlapping();
     }
 }
