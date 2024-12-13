@@ -22,8 +22,8 @@ class PnlAnalyticsService
         $firstTradeDate = DB::table('trades')
 //            ->where('status', 'closed')
             ->when(
-                $this->periodId,
-                fn($query) => $query->where('trade_period_id', $this->periodId),
+                $period,
+                fn($query) => $query->where('trade_period_id', $period?->id),
             )
             ->whereNotNull('closed_at')
             ->min('closed_at');
@@ -86,8 +86,8 @@ class PnlAnalyticsService
         $cumulativeActual = 0;
         $totalDays = 0;
 
-        $dailyTargetValue = when($period?->weekend_target, $period?->weekend_target,self::DAILY_TARGET_WEEKEND);
-        $weekendTargetValue = when($period?->daily_target, $period?->daily_target,self::DAILY_TARGET);
+        $dailyTargetValue = when($period?->daily_target, $period?->daily_target,self::DAILY_TARGET);
+        $weekendTargetValue = when($period?->weekend_target, $period?->weekend_target,self::DAILY_TARGET_WEEKEND);
 
         for ($date = $startDate->copy(); $date <= $endDate; $date->addDay()) {
             $dateStr = $date->format('Y-m-d');
