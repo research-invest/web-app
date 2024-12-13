@@ -62,7 +62,7 @@ class AnalyzeTopPerformingCoinSnapshots extends Command
                     "🪙 *%s*\n" .
                     "💹 Изменение объема: *%+.1f%%*\n" .
                     "📊 Изменение цены: *%+.1f%%*\n" .
-                    "💵 Цена: *%+.1f%%*\n" .
+                    "💵 Цена: *%s*\n" .
                     "⏰ Время: %s\n\n",
                     $coin->currency->name,
                     $coin->volume_diff_percent,
