@@ -54,9 +54,9 @@ class CollectTopPerformingCoinSnapshots extends Command
                 }
 
                 $snapshots[] = [
-                    'currency_id' => $currencies[$coin['symbol']],
+                    'currency_id' => $currencies[$coin['symbol']]['id'],
                     'symbol' => $coin['symbol'],
-                    'price' => $coin['price'],
+                    'price' => $currencies[$coin['symbol']]['price'],
                     'price_change_percent' => round($coin['price_change_percent'], 2),
                     'volume_diff_percent' => round($coin['volume_diff_percent'], 2),
                     'created_at' => $now
