@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Orchid\Layouts\Trading\Deals;
 
+use App\Helpers\MathHelper;
 use App\Helpers\StringHelper;
 use App\Models\Trade;
 use Orchid\Screen\Actions\Button;
@@ -43,12 +44,16 @@ class ListLayout extends Table
 
             TD::make('position_type', 'Тип'),
             TD::make('position_size', 'Размер'),
-            TD::make('entry_price', 'Цена входа'),
+            TD::make('entry_price', 'Цена входа')
+                ->render(fn(Trade $trade) => MathHelper::formatNumber((float)$trade->entry_price)
+                ),
 
             TD::make('price', 'Текущая цена')
-                ->render(fn(Trade $trade) => $trade->currency->last_price),
+                ->render(fn(Trade $trade) => MathHelper::formatNumber((float)$trade->currency->last_price)),
 
-            TD::make('exit_price', 'Цена выхода'),
+            TD::make('exit_price', 'Цена выхода')
+                ->render(fn(Trade $trade) => MathHelper::formatNumber((float)$trade->exit_price)
+                ),
             TD::make('pnl', 'PNL')
                 ->render(function (Trade $trade) {
                     $pnl = $trade->status === Trade::STATUS_OPEN

@@ -38,9 +38,14 @@ class CollectTopPerformingCoinSnapshots extends Command
             $result = (new \App\Services\Api\TopPerformingCoins())->getTopPerformingCoins($priceChangePercent, $minVolumeDiff);
 
             $now = Carbon::now();
-            $snapshots = [];
+            $snapshots = $currencies = [];
 
-            $currencies = Currency::pluck('id', 'code');
+            foreach (Currency::all() as $currency) {
+                $currencies[$currency->code] = [
+                    'id' => $currency->id,
+                    'price' => $currency->last_price,
+                ];
+            }
 
             foreach ($result as $coin) {
                 if (!isset($currencies[$coin['symbol']])) {
@@ -51,6 +56,7 @@ class CollectTopPerformingCoinSnapshots extends Command
                 $snapshots[] = [
                     'currency_id' => $currencies[$coin['symbol']],
                     'symbol' => $coin['symbol'],
+                    'price' => $coin['symbol'],
                     'price_change_percent' => round($coin['price_change_percent'], 2),
                     'volume_diff_percent' => round($coin['volume_diff_percent'], 2),
                     'created_at' => $now

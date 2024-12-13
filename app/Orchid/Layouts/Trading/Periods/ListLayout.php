@@ -36,6 +36,10 @@ class ListLayout extends Table
                 ->render(fn (TradePeriod $period) =>
                     $period->end_date->toDateString()
                 ),
+
+            TD::make('daily_target', 'Дневная цель'),
+            TD::make('weekend_target', 'Цель выходного дня'),
+
             TD::make('is_active', 'Активность')
                 ->render(function (TradePeriod $period) {
 

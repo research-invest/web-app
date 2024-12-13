@@ -41,7 +41,7 @@ class PlatformScreen extends Screen
             ->firstOrFail();
 
         return [
-            'chartData' => $analyticsService->getPlanFactChartData(),
+            'chartData' => $analyticsService->getPlanFactChartData($this->period),
             'dealTypeChartData' => $analyticsService->getDealTypeChartData(),
             'topProfitableTradesChart' => $analyticsService->getTopProfitableTradesChart(),
             'currencyTypeChartData' => $analyticsService->getCurrencyTypeChartData(),
@@ -92,7 +92,7 @@ class PlatformScreen extends Screen
                     ->set('id', 'select-periods')
                     ->title('Выберите период')
                     ->empty('Все периоды')
-                    ->options($this->query()['periods']->pluck('name', 'id')->toArray())
+                    ->options($this->query()['periods']->sortByDesc('id')->pluck('name', 'id')->toArray())
                     ->value($periodId)
                     ->help('Выберите торговый период для отображения данных'),
             ])->title('Фильтр по периоду'),

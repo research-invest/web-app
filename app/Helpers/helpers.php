@@ -28,3 +28,10 @@ if (!function_exists('getDateFormat')) {
     }
 }
 
+if (!function_exists('number_format')) {
+    function number_format($number, $decimals = 2): string
+    {
+        return \App\Helpers\MathHelper::formatNumber($number, $decimals);
+    }
+}
+

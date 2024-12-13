@@ -5,7 +5,7 @@
  */
 namespace App\Console\Commands;
 
-use App\Helpers\ArrayHelper;
+use App\Helpers\MathHelper;
 use App\Models\TopPerformingCoinSnapshot;
 use App\Services\TelegramService;
 use Carbon\Carbon;
@@ -62,10 +62,12 @@ class AnalyzeTopPerformingCoinSnapshots extends Command
                     "🪙 *%s*\n" .
                     "💹 Изменение объема: *%+.1f%%*\n" .
                     "📊 Изменение цены: *%+.1f%%*\n" .
+                    "💵 Цена: *%+.1f%%*\n" .
                     "⏰ Время: %s\n\n",
                     $coin->currency->name,
                     $coin->volume_diff_percent,
                     $coin->price_change_percent,
+                    MathHelper::formatNumber($coin->price),
                     $coin->created_at->format('H:i')
                 );
             }

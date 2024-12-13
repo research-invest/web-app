@@ -14,6 +14,7 @@ class TopPerformingCoinSnapshot extends Model
     protected $fillable = [
         'currency_id',
         'symbol',
+        'price',
         'price_change_percent',
         'volume_diff_percent',
         'created_at'

@@ -34,7 +34,7 @@
                                 @break
                         @endswitch
                     </td>
-                    <td>{{ number_format($order->price, 8) }}</td>
+                    <td>{{ number_format($order->price) }}</td>
                     <td>{{ number_format($order->size, 2) }} USDT</td>
                     <td>
                         @if($order->type === 'entry' || $order->type === 'add')

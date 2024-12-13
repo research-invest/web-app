@@ -47,7 +47,7 @@ class PositionCalculator
                     'y' => $priceUp,
                     'dataLabels' => [
                         'enabled' => true,
-                        'format' => "Усреднение: {y:.2f} ($averagePrice)"
+                        'format' => "Ус: {y:.2f} ($averagePrice)"
                     ]
                 ];
 
@@ -56,7 +56,7 @@ class PositionCalculator
                     'y' => $priceDown,
                     'dataLabels' => [
                         'enabled' => true,
-                        'format' => "Продажа: {y:.2f} ($profit)"
+                        'format' => "Пр: {y:.2f} ($profit)"
                     ]
                 ];
             } else {
@@ -69,7 +69,7 @@ class PositionCalculator
                     'y' => $priceUp,
                     'dataLabels' => [
                         'enabled' => true,
-                        'format' => "Продажа: {y:.2f} ($profit)"
+                        'format' => "Пр: {y:.2f} ($profit)"
                     ]
                 ];
 
@@ -78,7 +78,7 @@ class PositionCalculator
                     'y' => $priceDown,
                     'dataLabels' => [
                         'enabled' => true,
-                        'format' => "Усреднение: {y:.2f} ($averagePrice)"
+                        'format' => "Ус: {y:.2f} ($averagePrice)"
                     ]
                 ];
             }

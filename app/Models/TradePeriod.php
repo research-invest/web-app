@@ -11,6 +11,8 @@ use Orchid\Screen\AsSource;
 
 /**
  * @property string $name
+ * @property integer $daily_target
+ * @property integer $weekend_target
  * @property Carbon $start_date
  * @property Carbon $end_date
  * @property bool $is_active
@@ -23,7 +25,9 @@ class TradePeriod extends Model
         'name',
         'start_date',
         'end_date',
-        'is_active'
+        'is_active',
+        'daily_target',
+        'weekend_target',
     ];
 
     protected $casts = [

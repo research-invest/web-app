@@ -47,9 +47,23 @@ class TradingPeriodScreen extends Screen
                     ->format('Y-m-d')
                     ->required(),
 
+                Input::make('period.daily_target')
+                    ->title('Дневная цель')
+                    ->type('number')
+                    ->value(100)
+                    ->step(50)
+                    ->required(),
+
+                Input::make('period.weekend_target')
+                    ->title('Цель для выходных')
+                    ->type('number')
+                    ->value(50)
+                    ->step(50)
+                    ->required(),
+
                 CheckBox::make('period.is_active')
                     ->title('Активный период')
-                    ->value(1),
+                    ->value(0),
 
                 Button::make('Сохранить')
                     ->method('createOrUpdate')

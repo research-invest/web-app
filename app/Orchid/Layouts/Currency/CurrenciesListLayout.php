@@ -4,15 +4,12 @@ declare(strict_types=1);
 
 namespace App\Orchid\Layouts\Currency;
 
+use App\Helpers\MathHelper;
 use App\Models\Currency;
-use App\Models\User;
-use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\DropDown;
 use Orchid\Screen\Actions\Link;
-use Orchid\Screen\Actions\ModalToggle;
 use Orchid\Screen\Components\Cells\DateTimeSplit;
 use Orchid\Screen\Fields\Input;
-use Orchid\Screen\Layouts\Persona;
 use Orchid\Screen\Layouts\Table;
 use Orchid\Screen\TD;
 
@@ -48,7 +45,8 @@ class CurrenciesListLayout extends Table
 
             TD::make('code', 'Код'),
 
-            TD::make('last_price', 'Цена'),
+            TD::make('last_price', 'Цена')
+                ->render(fn(Currency $currency) => MathHelper::formatNumber($currency->last_price)),
 
             TD::make('created_at', __('Created'))
                 ->usingComponent(DateTimeSplit::class)

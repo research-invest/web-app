@@ -2,7 +2,9 @@
 
 namespace App\Services;
 
+use App\Helpers\MathHelper;
 use App\Models\Trade;
+use App\Models\TradePeriod;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -15,7 +17,7 @@ class PnlAnalyticsService
     {
     }
 
-    public function getPlanFactChartData(): array
+    public function getPlanFactChartData(?TradePeriod $period = null): array
     {
         $firstTradeDate = DB::table('trades')
 //            ->where('status', 'closed')
@@ -84,6 +86,9 @@ class PnlAnalyticsService
         $cumulativeActual = 0;
         $totalDays = 0;
 
+        $dailyTargetValue = when($period?->weekend_target, $period?->weekend_target,self::DAILY_TARGET_WEEKEND);
+        $weekendTargetValue = when($period?->daily_target, $period?->daily_target,self::DAILY_TARGET);
+
         for ($date = $startDate->copy(); $date <= $endDate; $date->addDay()) {
             $dateStr = $date->format('Y-m-d');
             $totalDays++;
@@ -95,11 +100,12 @@ class PnlAnalyticsService
             $actualData[] = round($cumulativeActual, 2);
 
             // Плановый PNL с учетом выходных
-            $dailyTarget = $date->isWeekend() ? self::DAILY_TARGET_WEEKEND : self::DAILY_TARGET;
+            $dailyTarget = $date->isWeekend() ? $weekendTargetValue : $dailyTargetValue;
+
             $plannedData[] = round($plannedData[count($plannedData) - 1] + $dailyTarget, 2);
         }
 
-        $targetPnl = round($this->calculateTargetPnl($startDate, $endDate), 2);
+        $targetPnl = round($this->calculateTargetPnl($startDate, $endDate, $dailyTargetValue, $weekendTargetValue), 2);
 
         return [
             'summary' => [
@@ -264,11 +270,11 @@ class PnlAnalyticsService
         ];
     }
 
-    private function calculateTargetPnl(Carbon $startDate, Carbon $endDate): float
+    private function calculateTargetPnl(Carbon $startDate, Carbon $endDate, int $dailyTarget, int $weekendTarget): float
     {
         $targetPnl = 0;
         for ($date = $startDate->copy(); $date <= $endDate; $date->addDay()) {
-            $targetPnl += $date->isWeekend() ? 50 : 100;
+            $targetPnl += $date->isWeekend() ? $weekendTarget : $dailyTarget;
         }
         return $targetPnl;
     }
@@ -279,7 +285,7 @@ class PnlAnalyticsService
         foreach ($trade->pnlHistory as $history) {
             $unrealizedData[] = (float)$history->unrealized_pnl;
             $roeData[] = (float)$history->roe;
-            $labels[] = $history->price;
+            $labels[] = MathHelper::formatNumber($history->price);
         }
 
         return [
@@ -463,7 +469,7 @@ class PnlAnalyticsService
         return [
             'graph' => [
                 'chart' => [
-                    'type' => 'column'  // Используем столбчатую диаграмму
+                    'type' => 'column'
                 ],
                 'title' => [
                     'text' => 'Распределение длительности прибыльных сделок'
