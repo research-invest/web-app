@@ -28,8 +28,6 @@ class PlatformScreen extends Screen
     {
         $periodId = (int)request()->get('period_id');
 
-        $analyticsService = new PnlAnalyticsService($periodId);
-
         $periods = TradePeriod::query()->oldest()->get();
 
         $this->period = TradePeriod::query()
@@ -40,8 +38,10 @@ class PlatformScreen extends Screen
             )
             ->firstOrFail();
 
+        $analyticsService = new PnlAnalyticsService($this->period);
+
         return [
-            'chartData' => $analyticsService->getPlanFactChartData($this->period),
+            'chartData' => $analyticsService->getPlanFactChartData(),
             'dealTypeChartData' => $analyticsService->getDealTypeChartData(),
             'topProfitableTradesChart' => $analyticsService->getTopProfitableTradesChart(),
             'currencyTypeChartData' => $analyticsService->getCurrencyTypeChartData(),

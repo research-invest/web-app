@@ -13,17 +13,17 @@ class PnlAnalyticsService
     private const int DAILY_TARGET = 100;
     private const int DAILY_TARGET_WEEKEND = 50;
 
-    public function __construct(protected ?int $periodId = null)
+    public function __construct(protected ?TradePeriod $period = null)
     {
     }
 
-    public function getPlanFactChartData(?TradePeriod $period = null): array
+    public function getPlanFactChartData(): array
     {
         $firstTradeDate = DB::table('trades')
 //            ->where('status', 'closed')
             ->when(
-                $period,
-                fn($query) => $query->where('trade_period_id', $period?->id),
+                $this->period,
+                fn($query) => $query->where('trade_period_id', $this->period?->id),
             )
             ->whereNotNull('closed_at')
             ->min('closed_at');
@@ -162,8 +162,8 @@ class PnlAnalyticsService
                 Trade::STATUS_LIQUIDATED,
             ])
             ->when(
-                $this->periodId,
-                fn($query) => $query->where('trade_period_id', $this->periodId)
+                $this->period,
+                fn($query) => $query->where('trade_period_id', $this->period->id)
             )
             ->whereNotNull('closed_at')
             ->whereNull('deleted_at')
@@ -223,8 +223,8 @@ class PnlAnalyticsService
                 Trade::STATUS_LIQUIDATED,
             ])
             ->when(
-                $this->periodId,
-                fn($query) => $query->where('trade_period_id', $this->periodId)
+                $this->period,
+                fn($query) => $query->where('trade_period_id', $this->period->id)
             )
             ->whereNotNull('closed_at')
             ->whereNull('deleted_at')
@@ -330,8 +330,8 @@ class PnlAnalyticsService
                 Trade::STATUS_LIQUIDATED,
             ])
             ->when(
-                $this->periodId,
-                fn($query) => $query->where('trade_period_id', $this->periodId)
+                $this->period,
+                fn($query) => $query->where('trade_period_id', $this->period->id)
             )
             ->whereNotNull('closed_at')
             ->whereNull('deleted_at')
@@ -405,8 +405,8 @@ class PnlAnalyticsService
                 Trade::STATUS_LIQUIDATED,
             ])
             ->when(
-                $this->periodId,
-                fn($query) => $query->where('trade_period_id', $this->periodId)
+                $this->period,
+                fn($query) => $query->where('trade_period_id', $this->period->id)
             )
             ->whereNotNull('closed_at')
             ->whereNull('deleted_at')
