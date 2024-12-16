@@ -86,8 +86,8 @@ class PnlAnalyticsService
         $cumulativeActual = 0;
         $totalDays = 0;
 
-        $dailyTargetValue = when($period?->daily_target, $period?->daily_target,self::DAILY_TARGET);
-        $weekendTargetValue = when($period?->weekend_target, $period?->weekend_target,self::DAILY_TARGET_WEEKEND);
+        $dailyTargetValue = when($this->period?->daily_target, $this->period?->daily_target,self::DAILY_TARGET);
+        $weekendTargetValue = when($this->period?->weekend_target, $this->period?->weekend_target,self::DAILY_TARGET_WEEKEND);
 
         for ($date = $startDate->copy(); $date <= $endDate; $date->addDay()) {
             $dateStr = $date->format('Y-m-d');
