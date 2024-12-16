@@ -6,13 +6,13 @@ namespace App\Orchid\Screens\Currency;
 
 use App\Models\Currency;
 use App\Models\CurrencyFavorite;
+use App\Orchid\Filters\Statistics\Normalize\IntervalsFilter;
 use App\Orchid\Layouts\Charts\HighchartsChart;
 use App\Services\Analyze\TechnicalAnalysis;
 use App\Services\Api\Tickers;
 use App\Services\Strategy\SmartMoneyStrategy;
 use App\Services\Trading\TradingStatsService;
 use Orchid\Screen\Actions\Button;
-use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Screen;
 use Orchid\Support\Facades\Layout;
 use Orchid\Support\Color;
@@ -48,7 +48,7 @@ class CurrencyEditScreen extends Screen
             ->where('currency_id', $currency->id)
             ->exists();
 
-        $this->candles = (new Tickers())->getTickers($currency->code, 1800);
+        $this->candles = (new Tickers())->getTickers($currency->code, (int)request()->get('interval', 1800));
 
 //        "symbol" => "BTCUSDT"
 //  "open" => 99150.01
@@ -57,7 +57,6 @@ class CurrencyEditScreen extends Screen
 //  "close" => 97504.01
 //  "quote_volume" => 22210196918.803
 //  "timestamp" => "2024-12-10T06:30:00Z"
-//  "volume_diffs" => array:6 [▶]
 //  "last_price" => 97441.8975
 //  "volume" => 227777.19732
 
@@ -94,6 +93,10 @@ class CurrencyEditScreen extends Screen
     public function layout(): iterable
     {
         return [
+            Layout::selection([
+                IntervalsFilter::class,
+            ]),
+
             Layout::tabs([
                 'Основная информация' => Layout::view('currencies.info'),
                 'График цены' => [
@@ -105,6 +108,10 @@ class CurrencyEditScreen extends Screen
                 'Объем торгов' => [
                     new HighchartsChart(
                         $this->getVolumeChart()
+                    ),
+
+                    new HighchartsChart(
+                        $this->getDeltaVolumeChart()
                     ),
                 ],
                 'Статистика сделок' => Layout::view('currencies.trading-stats'),
@@ -280,6 +287,81 @@ class CurrencyEditScreen extends Screen
                 'type' => 'spline',
                 'name' => 'Объем торгов',
                 'data' => $candleData,
+                'tooltip' => [
+                    'valueDecimals' => 2
+                ]
+            ]]
+        ];
+    }
+    private function getDeltaVolumeChart(): array
+    {
+        $candleData = [];
+
+        foreach ($this->candles as $candle) {
+            $timestamp = strtotime($candle['timestamp']) * 1000;
+            $volumeDelta = $candle['close'] > $candle['open'] ? $candle['volume'] : -$candle['volume'];
+
+            $candleData[] = [
+                $timestamp,
+                $volumeDelta,
+            ];
+        }
+
+        return [
+            'chart' => [
+                'type' => 'column',
+                'height' => 600
+            ],
+            'title' => [
+                'text' => 'Volume Delta ' . $this->currency->name
+            ],
+            'rangeSelector' => [
+                'enabled' => true,
+                'buttons' => [
+                    [
+                        'type' => 'hour',
+                        'count' => 1,
+                        'text' => '1ч'
+                    ],
+                    [
+                        'type' => 'hour',
+                        'count' => 4,
+                        'text' => '4ч'
+                    ],
+                    [
+                        'type' => 'day',
+                        'count' => 1,
+                        'text' => '1д'
+                    ],
+                    [
+                        'type' => 'all',
+                        'text' => 'Все'
+                    ]
+                ]
+            ],
+            'navigator' => [
+                'enabled' => true,
+            ],
+            'scrollbar' => [
+                'enabled' => true
+            ],
+            'xAxis' => [
+                'type' => 'datetime',
+                'labels' => [
+                    'format' => '{value:%H:%M}'
+                ]
+            ],
+            'yAxis' => [
+                'title' => [
+                    'text' => 'Volume Delta'
+                ]
+            ],
+            'series' => [[
+                'type' => 'column',
+                'name' => 'Volume Delta',
+                'data' => $candleData,
+                'color' => 'green',
+                'negativeColor' => 'red',
                 'tooltip' => [
                     'valueDecimals' => 2
                 ]
