@@ -3,7 +3,6 @@
 namespace App\Orchid\Filters\Deals;
 
 use App\Models\Trade;
-use App\Models\TradePeriod;
 use Illuminate\Database\Eloquent\Builder;
 use Orchid\Filters\Filter;
 use Orchid\Screen\Fields\Select;
@@ -17,7 +16,7 @@ class StatusFilter extends Filter
 
     public function parameters(): array
     {
-        return ['status'];
+        return [];
     }
 
     public function run(Builder $builder): Builder
