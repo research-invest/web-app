@@ -58,9 +58,9 @@ class DealCloseScreen extends Screen
                 Select::make('close_reason')
                     ->title('Причина закрытия')
                     ->options([
+                        'manual' => 'Ручное закрытие',
                         'tp' => 'Take Profit',
                         'sl' => 'Stop Loss',
-                        'manual' => 'Ручное закрытие',
                         'liquidation' => 'Ликвидация'
                     ])
                     ->required(),

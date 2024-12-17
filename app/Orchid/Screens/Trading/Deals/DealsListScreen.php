@@ -24,7 +24,7 @@ class DealsListScreen extends Screen
         return [
             'trades' => Trade::filters(FiltersLayout::class)
                 ->latest()
-                ->paginate(50),
+                ->paginate(25),
         ];
     }
 

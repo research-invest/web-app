@@ -19,6 +19,7 @@ class FiltersLayout extends Selection
     {
         return [
             PeriodFilter::class,
+            StatusFilter::class,
         ];
     }
 }
