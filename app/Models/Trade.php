@@ -57,6 +57,15 @@ class Trade extends Model
         'closed_at' => 'datetime',
     ];
 
+    public static function getStatuses(): array
+    {
+        return [
+            Trade::STATUS_OPEN => 'Открыта',
+            Trade::STATUS_CLOSED => 'Закрыта',
+            Trade::STATUS_LIQUIDATED => 'Ликвидирована'
+        ];
+    }
+
     public function currency()
     {
         return $this->belongsTo(Currency::class)->withDefault();

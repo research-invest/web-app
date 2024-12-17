@@ -33,11 +33,7 @@ class StatusFilter extends Filter
     {
         return [
             Select::make('status')
-                ->options([
-                    Trade::STATUS_OPEN => 'Открыта',
-                    Trade::STATUS_CLOSED => 'Закрыта',
-                    Trade::STATUS_LIQUIDATED => 'Ликвидация',
-                ])
+                ->options(Trade::getStatuses())
                 ->title('Выберите статус')
                 ->empty('Все статусы')
         ];
