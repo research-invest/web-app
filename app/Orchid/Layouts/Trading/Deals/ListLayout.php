@@ -66,12 +66,13 @@ class ListLayout extends Table
                 })
                 ->alignRight(),
             TD::make('leverage', 'Плечо'),
-            TD::make('status', 'Статутс'),
-
+            TD::make('status', 'Статус'),
+            TD::make('liquidation', 'Ликвидация')
+                ->render(fn(Trade $trade) => $trade->getLiquidationPrice()
+                ),
             TD::make('created_at', 'Дата открытия')
                 ->sort()
-                ->render(fn (Trade $trade) =>
-                    $trade->created_at->toDateTimeString()
+                ->render(fn(Trade $trade) => $trade->created_at->toDateTimeString()
                 )->defaultHidden(),
 
             TD::make(__('Actions'))
