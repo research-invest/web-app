@@ -54,6 +54,12 @@ class ListLayout extends Table
             TD::make('exit_price', 'Цена выхода')
                 ->render(fn(Trade $trade) => MathHelper::formatNumber((float)$trade->exit_price)
                 ),
+
+            TD::make('liquidation', 'Ликвидация')
+                ->render(fn(Trade $trade) => $trade->getLiquidationPrice()
+                ),
+            TD::make('leverage', 'Плечо'),
+
             TD::make('pnl', 'PNL')
                 ->render(function (Trade $trade) {
                     $pnl = $trade->status === Trade::STATUS_OPEN
@@ -65,11 +71,7 @@ class ListLayout extends Table
                     return "<span class='text-{$color}'>" . number_format((float)$pnl, 2) . " USDT</span>";
                 })
                 ->alignRight(),
-            TD::make('leverage', 'Плечо'),
             TD::make('status', 'Статус'),
-            TD::make('liquidation', 'Ликвидация')
-                ->render(fn(Trade $trade) => $trade->getLiquidationPrice()
-                ),
             TD::make('created_at', 'Дата открытия')
                 ->sort()
                 ->render(fn(Trade $trade) => $trade->created_at->toDateTimeString()
