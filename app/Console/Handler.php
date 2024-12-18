@@ -19,8 +19,14 @@ class Handler
 {
     public function __invoke(Schedule $schedule): void
     {
-        $schedule->command(UpdateCurrencies::class)->everyTwoMinutes();
-        $schedule->command(UpdateTradesPnL::class)->everyTwoMinutes();
+        $schedule->command(UpdateCurrencies::class)
+            ->withoutOverlapping()
+            ->everyMinute();
+
+        $schedule->command(UpdateTradesPnL::class)
+            ->withoutOverlapping()
+            ->everyMinute();
+
 //        $schedule->command(CheckTradeLevels::class)->everyTwoMinutes();
         $schedule->command(SendTradePnLNotification::class)->everyTenMinutes();
         $schedule->command(CheckLiquidationWarnings::class)->everyFiveMinutes();
