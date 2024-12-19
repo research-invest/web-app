@@ -25,7 +25,7 @@ class Handler
 
         $schedule->command(UpdateTradesPnL::class)
             ->withoutOverlapping()
-            ->everyMinute();
+            ->everyTwoMinutes();
 
 //        $schedule->command(CheckTradeLevels::class)->everyTwoMinutes();
         $schedule->command(SendTradePnLNotification::class)->everyTenMinutes();
