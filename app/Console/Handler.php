@@ -39,8 +39,8 @@ class Handler
             ->everyTenMinutes()
             ->withoutOverlapping();
 
-        $schedule->command(AnalyzeTopPerformingCoinSnapshots::class)
-            ->everyThirtyMinutes()
-            ->withoutOverlapping();
+//        $schedule->command(AnalyzeTopPerformingCoinSnapshots::class)
+//            ->everyThirtyMinutes()
+//            ->withoutOverlapping();
     }
 }

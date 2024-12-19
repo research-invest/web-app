@@ -62,6 +62,7 @@ class SendTradePnLNotification extends Command
             $message .= "{$emoji} <b>{$trade->currency->name}</b> {$direction}\n";
             $message .= "💰 PNL: " . number_format($unrealizedPnl, 2) . " USDT\n";
             $message .= "📊 ROE: " . number_format($roe, 2) . "%\n";
+            $message .= "💵 Размер позиции: " . number_format($trade->getCurrentPositionSize(), 8) . "\n";
             $message .= "💵 Средняя цена: " . number_format($trade->getAverageEntryPrice(), 8) . "\n";
             $message .= "🎯 Текущая цена: " . number_format($currentPrice, 8) . "\n";
             $message .= "⚠️ Ликвидация: " . number_format($liquidationPrice, 8) . "\n";

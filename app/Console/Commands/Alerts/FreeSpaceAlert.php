@@ -15,7 +15,7 @@ class FreeSpaceAlert extends Command
     protected $signature = 'alert-free-space:run';
     protected $description = 'Проверяет свободное место на диске и отправляет уведомление, если его недостаточно';
 
-    private int $minimumFreeSpace = 5; // Минимальное свободное место в ГБ
+    private int $minimumFreeSpace = 10; // Минимальное свободное место в ГБ
 
 
     private TelegramService $telegram;
