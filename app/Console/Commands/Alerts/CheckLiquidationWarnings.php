@@ -100,6 +100,7 @@ class CheckLiquidationWarnings extends Command
         $message .= "🔸 Плечо: {$trade->leverage}x\n\n";
 
         $message .= "📊 <b>Текущая ситуация:</b>\n";
+        $message .= "• Размер позиции: " . $trade->getCurrentPositionSize() . "\n";
         $message .= "• Средняя цена: " . number_format($trade->getAverageEntryPrice(), 8) . "\n";
         $message .= "• Текущая цена: " . number_format($currentPrice, 8) . "\n";
         $message .= "• Цена ликвидации: " . number_format($liquidationPrice, 8) . "\n";
