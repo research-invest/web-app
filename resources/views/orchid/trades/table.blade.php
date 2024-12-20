@@ -1,10 +1,10 @@
 @empty(!$title)
     <fieldset>
-            <div class="col p-0 px-3">
-                <legend class="text-black text-black mt-2 mx-2">
-                    {{ $title }}
-                </legend>
-            </div>
+        <div class="col p-0 px-3">
+            <legend class="text-body-emphasis mt-2 mx-2">
+                {{ $title }}
+            </legend>
+        </div>
     </fieldset>
 @endempty
 
@@ -24,11 +24,11 @@
 
             @if($showHeader)
                 <thead>
-                    <tr>
-                        @foreach($columns as $column)
-                            {!! $column->buildTh() !!}
-                        @endforeach
-                    </tr>
+                <tr>
+                    @foreach($columns as $column)
+                        {!! $column->buildTh() !!}
+                    @endforeach
+                </tr>
                 </thead>
             @endif
 
@@ -77,7 +77,7 @@
                     {!!  $textNotFound !!}
                 </h3>
 
-                 {!! $subNotFound !!}
+                {!! $subNotFound !!}
             </div>
         </div>
     @else
@@ -90,5 +90,3 @@
 
     @endif
 </div>
-
-
