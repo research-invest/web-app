@@ -11,7 +11,6 @@
         "orchid/platform": "^14.36",
         "orchid/icons": "^2.2",
         "opcodesio/log-viewer": "^3.10",
-        "ext-gd": "*",
         "ext-imagick": "*"
     },
     "require-dev": {
