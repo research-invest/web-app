@@ -1,3 +1,6 @@
+@php
+use \App\Helpers\MathHelper;
+@endphp
 <div class="bg-white rounded shadow-sm p-4">
     <div class="mb-3">
         <h4>История ордеров</h4>
@@ -34,13 +37,13 @@
                                 @break
                         @endswitch
                     </td>
-                    <td>{{ number_format($order->price) }}</td>
-                    <td>{{ number_format($order->size, 2) }} USDT</td>
+                    <td>{{ MathHelper::formatNumber($order->price) }}</td>
+                    <td>{{ MathHelper::formatNumber($order->size, 2) }} USDT</td>
                     <td>
                         @if($order->type === 'entry' || $order->type === 'add')
-                            <span class="text-success">+{{ number_format($order->size, 2) }}</span>
+                            <span class="text-success">+{{ MathHelper::formatNumber($order->size, 2) }}</span>
                         @else
-                            <span class="text-danger">-{{ number_format($order->size, 2) }}</span>
+                            <span class="text-danger">-{{ MathHelper::formatNumber($order->size, 2) }}</span>
                         @endif
                     </td>
                     <td>

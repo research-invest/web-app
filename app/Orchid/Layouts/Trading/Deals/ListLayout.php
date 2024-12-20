@@ -83,6 +83,11 @@ class ListLayout extends Table
                 ->render(fn(Trade $trade) => DropDown::make()
                     ->icon('bs.three-dots-vertical')
                     ->list([
+                        Link::make('Перейти в валюту')
+                            ->route('platform.currencies.edit', $trade->currency_id)
+                            ->target('_blank')
+                            ->icon('dollar'),
+
                         Link::make(__('Изменить'))
                             ->route('platform.trading.deal.edit', $trade->id)
                             ->icon('bs.pencil'),

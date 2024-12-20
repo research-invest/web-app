@@ -14,6 +14,7 @@ use Orchid\Screen\AsSource;
  * @property  float $target_profit_amount
  * @property  float $realized_pnl
  * @property  integer $leverage
+ * @property  integer $currency_id
  * @property  string $status
  * @property  string $position_type
  * @property  Currency $currency
