@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Orchid\Filters\Filterable;
 use Orchid\Screen\AsSource;
+use Orchid\Screen\Concerns\ModelStateRetrievable;
 
 /**
  *
@@ -23,7 +24,7 @@ use Orchid\Screen\AsSource;
  */
 class Trade extends Model
 {
-    use AsSource, Filterable, SoftDeletes;
+    use AsSource, Filterable, SoftDeletes, ModelStateRetrievable;
 
     public const string STATUS_OPEN = 'open';
     public const string STATUS_CLOSED = 'closed';
