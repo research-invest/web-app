@@ -5,6 +5,7 @@
 
 namespace App\Console\Commands\Alerts;
 
+use App\Helpers\MathHelper;
 use App\Models\Trade;
 use App\Services\TelegramService;
 use Illuminate\Console\Command;
@@ -60,16 +61,16 @@ class SendTradePnLNotification extends Command
             $direction = $trade->position_type === 'long' ? 'LONG' : 'SHORT';
 
             $message .= "{$emoji} <b>{$trade->currency->name}</b> {$direction}\n";
-            $message .= "💰 PNL: " . number_format($unrealizedPnl, 2) . " USDT\n";
-            $message .= "📊 ROE: " . number_format($roe, 2) . "%\n";
-            $message .= "💵 Размер позиции: " . number_format($trade->getCurrentPositionSize(), 8) . "\n";
-            $message .= "💵 Средняя цена: " . number_format($trade->getAverageEntryPrice(), 8) . "\n";
-            $message .= "🎯 Текущая цена: " . number_format($currentPrice, 8) . "\n";
-            $message .= "⚠️ Ликвидация: " . number_format($liquidationPrice, 8) . "\n";
-            $message .= "🛡️ До ликвидации: " . number_format($distanceToLiquidation, 2) . "%\n\n";
+            $message .= "💰 PNL: " . MathHelper::formatNumber($unrealizedPnl) . " USDT\n";
+            $message .= "📊 ROE: " . MathHelper::formatNumber($roe) . "%\n";
+            $message .= "💵 Размер позиции: " . MathHelper::formatNumber($trade->getCurrentPositionSize()) . "\n";
+            $message .= "💵 Средняя цена: " . MathHelper::formatNumber($trade->getAverageEntryPrice()) . "\n";
+            $message .= "🎯 Текущая цена: " . MathHelper::formatNumber($currentPrice) . "\n";
+            $message .= "⚠️ Ликвидация: " . MathHelper::formatNumber($liquidationPrice) . "\n";
+            $message .= "🛡️ До ликвидации: " . MathHelper::formatNumber($distanceToLiquidation) . "%\n\n";
         }
 
-        $message .= "📊 <b>Общий PNL: " . number_format($totalPnl, 2) . " USDT</b>";
+        $message .= "📊 <b>Общий PNL: " . MathHelper::formatNumber($totalPnl, 2) . " USDT</b>";
 
         return $message;
     }

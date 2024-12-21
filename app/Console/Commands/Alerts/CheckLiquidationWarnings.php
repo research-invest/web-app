@@ -5,6 +5,7 @@
 
 namespace App\Console\Commands\Alerts;
 
+use App\Helpers\MathHelper;
 use App\Models\Trade;
 use App\Services\TelegramService;
 use Illuminate\Console\Command;
@@ -101,17 +102,17 @@ class CheckLiquidationWarnings extends Command
 
         $message .= "📊 <b>Текущая ситуация:</b>\n";
         $message .= "• Размер позиции: " . $trade->getCurrentPositionSize() . "\n";
-        $message .= "• Средняя цена: " . number_format($trade->getAverageEntryPrice(), 8) . "\n";
-        $message .= "• Текущая цена: " . number_format($currentPrice, 8) . "\n";
-        $message .= "• Цена ликвидации: " . number_format($liquidationPrice, 8) . "\n";
-        $message .= "• До ликвидации: " . number_format($distance, 2) . "%\n\n";
+        $message .= "• Средняя цена: " .  MathHelper::formatNumber($trade->getAverageEntryPrice()) . "\n";
+        $message .= "• Текущая цена: " . MathHelper::formatNumber($currentPrice) . "\n";
+        $message .= "• Цена ликвидации: " . MathHelper::formatNumber($liquidationPrice) . "\n";
+        $message .= "• До ликвидации: " . MathHelper::formatNumber($distance) . "%\n\n";
 
         $unrealizedPnl = $trade->getUnrealizedPnL($currentPrice);
         $roe = $trade->getCurrentRoe($currentPrice);
 
         $message .= "💰 <b>P&L:</b>\n";
-        $message .= "• PNL: " . number_format($unrealizedPnl, 2) . " USDT\n";
-        $message .= "• ROE: " . number_format($roe, 2) . "%\n\n";
+        $message .= "• PNL: " . MathHelper::formatNumber($unrealizedPnl) . " USDT\n";
+        $message .= "• ROE: " . MathHelper::formatNumber($roe) . "%\n\n";
 
         $message .= "⚡ <b>Рекомендуемые действия:</b>\n";
         $message .= match($level) {
