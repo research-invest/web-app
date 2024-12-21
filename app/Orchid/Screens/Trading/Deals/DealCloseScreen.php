@@ -92,7 +92,8 @@ class DealCloseScreen extends Screen
             'exit_price' => $exitPrice,
             'realized_pnl' => $pnl,
             'closed_at' => now(),
-            'notes' => $trade->notes . "\n\nЗакрытие: " . $request->input('notes')
+            'notes' => $trade->notes . "\n\nЗакрытие: " . $request->input('notes'),
+            'close_currency_volume' => $trade->currency->volume,
         ]);
 
         // Создаем ордер закрытия

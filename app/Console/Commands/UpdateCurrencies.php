@@ -31,13 +31,19 @@ class UpdateCurrencies extends Command
         $bar = $this->output->createProgressBar(count($currencies));
         $bar->start();
 
+//  "symbol" => "1000CATUSDT"
+//  "exchange" => "binance"
+//  "last_price" => 0.03923
+//  "volume" => 70652699.013495
+
         foreach ($currencies as $currencyData) {
             Currency::updateOrCreate(
                 ['code' => $currencyData['symbol']],
                 [
                     'name' => $currencyData['symbol'],
                     'exchange' => $currencyData['exchange'],
-                    'last_price' => $currencyData['last_price']
+                    'last_price' => $currencyData['last_price'],
+                    'volume' => $currencyData['volume'] ?? 0,
                 ]
             );
 

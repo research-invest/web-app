@@ -254,10 +254,13 @@ class DealEditScreen extends Screen
                 ->latest()
                 ->firstOrFail();
 
+            $currency = Currency::where('id', $data['currency_id'])->firstOrFail();
+
             $trade
                 ->fill($data)
                 ->fill([
                     'trade_period_id' => $currentPeriod->id,
+                    'open_currency_volume' => $currency->volume,
                 ]);
             $trade->save();
 

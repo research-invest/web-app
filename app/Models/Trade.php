@@ -14,6 +14,8 @@ use Orchid\Screen\Concerns\ModelStateRetrievable;
  * @property  float $take_profit_price
  * @property  float $target_profit_amount
  * @property  float $realized_pnl
+ * @property  float $open_currency_volume
+ * @property  float $close_currency_volume
  * @property  integer $leverage
  * @property  integer $currency_id
  * @property  string $status
@@ -45,6 +47,8 @@ class Trade extends Model
         'closed_at',
         'notes',
         'trade_period_id',
+        'open_currency_volume',
+        'close_currency_volume',
     ];
 
     protected $casts = [

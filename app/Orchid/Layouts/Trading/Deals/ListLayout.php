@@ -72,6 +72,10 @@ class ListLayout extends Table
                 })
                 ->alignRight(),
             TD::make('status', 'Статус'),
+
+            TD::make('open_currency_volume', 'Объем открытия сделки')->defaultHidden(),
+            TD::make('close_currency_volume', 'Объем закрытия сделки')->defaultHidden(),
+
             TD::make('created_at', 'Дата открытия')
                 ->sort()
                 ->render(fn(Trade $trade) => $trade->created_at->toDateTimeString()

@@ -15,6 +15,7 @@ use Orchid\Screen\AsSource;
  * @property string $code
  * @property integer $type
  * @property float $last_price
+ * @property float $volume
  * @property integer $is_favorite
  * @property string $exchange
  */
