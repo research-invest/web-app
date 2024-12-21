@@ -168,20 +168,23 @@ class MathHelper
      */
     public static function formatNumber(float $number, int $round = 2): string
     {
-        if ($number >= 1 || $number == 0) {
-            return number_format($number, 2, '.', ' ');
+        if ($number == 0) {
+            return '0.00';
+        }
+
+        $sign = $number < 0 ? '-' : '';
+        $number = abs($number);
+
+        if ($number >= 1) {
+            return $sign . number_format($number, 2, '.', ' ');
         }
 
         if ($number >= 0.0001) {
-            return number_format($number, 4, '.', '');
+            return $sign . number_format($number, 4, '.', '');
         }
 
-        if ($number > 0) {
-            $significantDigits = -floor(log10($number)) + $round;
-            return sprintf("%." . $significantDigits . "f", $number);
-        }
-
-        return '0.00';
+        $significantDigits = -floor(log10($number)) + $round;
+        return $sign . sprintf("%." . $significantDigits . "f", $number);
     }
 
     /**

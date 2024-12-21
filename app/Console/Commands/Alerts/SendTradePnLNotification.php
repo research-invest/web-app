@@ -58,7 +58,7 @@ class SendTradePnLNotification extends Command
             $totalPnl += $unrealizedPnl;
 
             $emoji = $unrealizedPnl >= 0 ? '📈' : '📉';
-            $direction = $trade->position_type === 'long' ? 'LONG' : 'SHORT';
+            $direction = $trade->isTypeLong() ? 'LONG' : 'SHORT';
 
             $message .= "{$emoji} <b>{$trade->currency->name}</b> {$direction}\n";
             $message .= "💰 PNL: " . MathHelper::formatNumber($unrealizedPnl) . " USDT\n";
@@ -70,7 +70,7 @@ class SendTradePnLNotification extends Command
             $message .= "🛡️ До ликвидации: " . MathHelper::formatNumber($distanceToLiquidation) . "%\n\n";
         }
 
-        $message .= "📊 <b>Общий PNL: " . MathHelper::formatNumber($totalPnl, 2) . " USDT</b>";
+        $message .= "📊 <b>Общий PNL: " . MathHelper::formatNumber($totalPnl) . " USDT</b>";
 
         return $message;
     }
