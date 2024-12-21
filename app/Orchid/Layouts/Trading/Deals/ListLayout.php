@@ -6,6 +6,7 @@ namespace App\Orchid\Layouts\Trading\Deals;
 
 use App\Helpers\MathHelper;
 use App\Helpers\StringHelper;
+use App\Models\Currency;
 use App\Models\Trade;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\DropDown;
@@ -73,8 +74,13 @@ class ListLayout extends Table
                 ->alignRight(),
             TD::make('status', 'Статус'),
 
-            TD::make('open_currency_volume', 'Объем открытия сделки')->defaultHidden(),
-            TD::make('close_currency_volume', 'Объем закрытия сделки')->defaultHidden(),
+            TD::make('open_currency_volume', 'Объем открытия сделки')
+                ->render(fn(Trade $trade) => MathHelper::formatNumber($trade->open_currency_volume))
+                ->defaultHidden(),
+
+            TD::make('close_currency_volume', 'Объем закрытия сделки')
+                ->render(fn(Trade $trade) => MathHelper::formatNumber($trade->close_currency_volume))
+                ->defaultHidden(),
 
             TD::make('created_at', 'Дата открытия')
                 ->sort()
