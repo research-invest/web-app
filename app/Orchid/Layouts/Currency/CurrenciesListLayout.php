@@ -46,9 +46,11 @@ class CurrenciesListLayout extends Table
             TD::make('code', 'Код'),
 
             TD::make('last_price', 'Цена')
+                ->sort()
                 ->render(fn(Currency $currency) => MathHelper::formatNumber($currency->last_price)),
 
             TD::make('volume', 'Объем')
+                ->sort()
                 ->render(fn(Currency $currency) =>
                     sprintf('%s (%s)', MathHelper::humanNumber($currency->volume),
                         MathHelper::formatNumber($currency->volume))

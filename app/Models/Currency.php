@@ -53,6 +53,8 @@ class Currency extends BaseModel
         'name',
         'updated_at',
         'created_at',
+        'volume',
+        'last_price',
     ];
 
 
