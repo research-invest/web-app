@@ -57,7 +57,7 @@ class ListLayout extends Table
                 ),
 
             TD::make('liquidation', 'Ликвидация')
-                ->render(fn(Trade $trade) => $trade->getLiquidationPrice()
+                ->render(fn(Trade $trade) => MathHelper::formatNumber($trade->getLiquidationPrice())
                 ),
             TD::make('leverage', 'Плечо'),
 
