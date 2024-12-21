@@ -148,16 +148,6 @@ class MathHelper
         return (($value - $total) / $total) * 100;
     }
 
-    /**
-     * @param string $withdrawalFee
-     * @return float
-     */
-    public static function getWithdrawalFee(string $withdrawalFee): float
-    {
-        $parts = explode(' ', $withdrawalFee);
-        return (float)($parts[0] ?? 0);
-    }
-
 
     /**
      * Проверка на кратность числа
@@ -192,5 +182,27 @@ class MathHelper
         }
 
         return '0.00';
+    }
+
+    /**
+     * @param $number
+     * @param int $decimals
+     * @return string
+     */
+    public static function humanNumber($number, int $decimals = 1): string
+    {
+        if ($number >= 1_000_000_000) {
+            return number_format($number / 1_000_000_000, $decimals, ',', '') . ' млрд';
+        }
+
+        if ($number >= 1_000_000) {
+            return number_format($number / 1_000_000, $decimals, ',', '') . ' млн';
+        }
+
+        if ($number >= 1_000) {
+            return number_format($number / 1_000, $decimals, ',', '') . ' тыс';
+        }
+
+        return number_format($number, $decimals, ',', '');
     }
 }

@@ -49,7 +49,10 @@ class CurrenciesListLayout extends Table
                 ->render(fn(Currency $currency) => MathHelper::formatNumber($currency->last_price)),
 
             TD::make('volume', 'Объем')
-                ->render(fn(Currency $currency) => MathHelper::formatNumber($currency->volume)),
+                ->render(fn(Currency $currency) =>
+                    sprintf('%s (%s)', MathHelper::humanNumber($currency->volume),
+                        MathHelper::formatNumber($currency->volume))
+                ),
 
             TD::make('created_at', __('Created'))
                 ->usingComponent(DateTimeSplit::class)
