@@ -47,14 +47,67 @@ class CurrenciesListLayout extends Table
 
             TD::make('last_price', 'Цена')
                 ->sort()
-                ->render(fn(Currency $currency) => MathHelper::formatNumber($currency->last_price)),
+                ->render(function(Currency $currency) {
+                    $periods = [
+                        '24H' => $currency->start_price_24h,
+                        '4H' => $currency->start_price_4h,
+                        '1H' => $currency->start_price_1h
+                    ];
+
+                    $html = MathHelper::formatNumber($currency->last_price);
+
+                    foreach ($periods as $label => $startPrice) {
+                        if ($startPrice > 0) {
+                            $change = ($currency->last_price - $startPrice) / $startPrice * 100;
+                            $color = $change > 0 ? 'green' : ($change < 0 ? 'red' : 'inherit');
+                            $html .= sprintf(
+                                ' <small style="color: %s">%s: %+.1f%%</small>',
+                                $color,
+                                $label,
+                                $change
+                            );
+                        }
+                    }
+
+                    return $html;
+                }),
 
             TD::make('volume', 'Объем')
                 ->sort()
-                ->render(fn(Currency $currency) =>
-                    sprintf('%s (%s)', MathHelper::humanNumber($currency->volume),
-                        MathHelper::formatNumber($currency->volume))
-                ),
+                ->render(function(Currency $currency) {
+                    $current = $currency->volume;
+                    $html = [];
+
+                    // Форматируем текущий объем
+                    $html[] = sprintf(
+                        '%s (%s)',
+                        MathHelper::humanNumber($current),
+                        MathHelper::formatNumber($current)
+                    );
+
+                    // Добавляем изменения за разные периоды
+                    $periods = [
+                        '1H' => $currency->start_volume_1h,
+                        '4H' => $currency->start_volume_4h,
+                        '24H' => $currency->start_volume_24h
+                    ];
+
+                    foreach ($periods as $label => $startVolume) {
+                        if ($startVolume > 0) {
+                            $change = ($current - $startVolume) / $startVolume * 100;
+                            $color = $change > 0 ? 'green' : ($change < 0 ? 'red' : 'inherit');
+
+                            $html[] = sprintf(
+                                '<div style="color: %s">%s: %+.2f%%</div>',
+                                $color,
+                                $label,
+                                $change
+                            );
+                        }
+                    }
+
+                    return implode('', $html);
+                }),
 
             TD::make('created_at', __('Created'))
                 ->usingComponent(DateTimeSplit::class)
