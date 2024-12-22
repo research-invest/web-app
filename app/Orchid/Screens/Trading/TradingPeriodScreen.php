@@ -2,6 +2,7 @@
 
 namespace App\Orchid\Screens\Trading;
 
+use App\Helpers\UserHelper;
 use App\Models\TradePeriod;
 use App\Orchid\Layouts\Trading\Periods\ListLayout;
 use Orchid\Screen\Actions\Button;
@@ -74,7 +75,12 @@ class TradingPeriodScreen extends Screen
 
     public function createOrUpdate(TradePeriod $period): void
     {
-        $period->fill(request()->get('period'))->save();
+        $period
+            ->fill(request()->get('period'))
+            ->fill([
+                'user_id' => UserHelper::getId(),
+            ])
+            ->save();
     }
     public function togglePeriodActive(TradePeriod $period): void
     {

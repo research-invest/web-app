@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Orchid\Screens\Trading\Deals;
 
 
+use App\Helpers\UserHelper;
 use App\Models\Currency;
 use App\Models\Trade;
 use App\Models\TradePeriod;
@@ -259,6 +260,7 @@ class DealEditScreen extends Screen
             $trade
                 ->fill($data)
                 ->fill([
+                    'user_id' => UserHelper::getId(),
                     'trade_period_id' => $currentPeriod->id,
                     'open_currency_volume' => $currency->volume,
                 ]);

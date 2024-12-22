@@ -18,6 +18,13 @@ use Orchid\Screen\AsSource;
  * @property float $volume
  * @property integer $is_favorite
  * @property string $exchange
+ * @property integer $is_active
+ * @property float $start_volume_1h
+ * @property float $start_volume_4h
+ * @property float $start_volume_24h
+ * @property float $start_price_1h
+ * @property float $start_price_4h
+ * @property float $start_price_24h
  */
 class Currency extends BaseModel
 {

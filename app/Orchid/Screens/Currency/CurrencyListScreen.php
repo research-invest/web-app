@@ -21,6 +21,7 @@ class CurrencyListScreen extends Screen
     {
         return [
             'currencies' => Currency::filters(FiltersLayout::class)
+                ->isActive()
                 ->leftJoin('currencies_favorites', function($join) {
                     $join->on('currencies.id', '=', 'currencies_favorites.currency_id')
                          ->where('currencies_favorites.user_id', '=', auth()->id());

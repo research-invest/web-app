@@ -16,8 +16,11 @@ use Orchid\Screen\AsSource;
  * @property Carbon $start_date
  * @property Carbon $end_date
  * @property bool $is_active
+ * @property integer $user_id
+ *
+ * @property User $user
  */
-class TradePeriod extends Model
+class TradePeriod extends BaseModel
 {
     use AsSource, Filterable, SoftDeletes;
 
@@ -28,6 +31,7 @@ class TradePeriod extends Model
         'is_active',
         'daily_target',
         'weekend_target',
+        'user_id',
     ];
 
     protected $casts = [
@@ -36,9 +40,9 @@ class TradePeriod extends Model
         'is_active' => 'boolean'
     ];
 
-    public function scopeIsActive($query)
+    public function user()
     {
-        return $query->where('is_active', true);
+        return $this->belongsTo(User::class);
     }
 
     public function trades(): HasMany

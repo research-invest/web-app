@@ -20,7 +20,10 @@ use Orchid\Screen\Concerns\ModelStateRetrievable;
  * @property  integer $currency_id
  * @property  string $status
  * @property  string $position_type
+ * @property  integer $user_id
+ *
  * @property  Currency $currency
+ * @property  User $user
  * @property  TradePnlHistory[] $pnlHistory
  * @property  TradePeriod $tradePeriod
  */
@@ -49,6 +52,7 @@ class Trade extends Model
         'trade_period_id',
         'open_currency_volume',
         'close_currency_volume',
+        'user_id',
     ];
 
     protected $casts = [
@@ -80,6 +84,11 @@ class Trade extends Model
     public function orders()
     {
         return $this->hasMany(TradeOrder::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 
     public function pnlHistory()

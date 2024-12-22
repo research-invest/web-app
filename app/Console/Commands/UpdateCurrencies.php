@@ -30,21 +30,44 @@ class UpdateCurrencies extends Command
 
         $bar = $this->output->createProgressBar(count($currencies));
         $bar->start();
+        $now = now();
+
+        Currency::query()->update(['is_active' => false]);
 
 //  "symbol" => "1000CATUSDT"
 //  "exchange" => "binance"
 //  "last_price" => 0.03923
 //  "volume" => 70652699.013495
-
         foreach ($currencies as $currencyData) {
+
+            $update = [
+                'name' => $currencyData['symbol'],
+                'exchange' => $currencyData['exchange'],
+                'last_price' => $currencyData['last_price'],
+                'volume' => $currencyData['volume'],
+                'is_active' => true,
+            ];
+
+            if ($now->minute === 0) {
+                $update['start_volume_1h'] = $currencyData['volume'];
+                $update['start_price_1h'] = $currencyData['last_price'];
+
+                // кратно ли 4 часам
+                if ($now->hour % 4 === 0) {
+                    $update['start_volume_4h'] = $currencyData['volume'];
+                    $update['start_price_4h'] = $currencyData['last_price'];
+                }
+
+                // полночь ли сейчас
+                if ($now->hour === 0 && $now->minute === 0) {
+                    $update['start_volume_24h'] = $currencyData['volume'];
+                    $update['start_price_24h'] = $currencyData['last_price'];
+                }
+            }
+
             Currency::updateOrCreate(
                 ['code' => $currencyData['symbol']],
-                [
-                    'name' => $currencyData['symbol'],
-                    'exchange' => $currencyData['exchange'],
-                    'last_price' => $currencyData['last_price'],
-                    'volume' => $currencyData['volume'] ?? 0,
-                ]
+                $update
             );
 
             $bar->advance();
