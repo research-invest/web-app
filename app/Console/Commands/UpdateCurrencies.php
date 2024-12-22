@@ -32,7 +32,7 @@ class UpdateCurrencies extends Command
         $bar->start();
         $now = now();
 
-        Currency::query()->update(['is_active' => false]);
+        //Currency::query()->update(['is_active' => false]);
 
 //  "symbol" => "1000CATUSDT"
 //  "exchange" => "binance"
