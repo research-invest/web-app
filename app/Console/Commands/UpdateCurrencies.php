@@ -38,36 +38,36 @@ class UpdateCurrencies extends Command
 //  "exchange" => "binance"
 //  "last_price" => 0.03923
 //  "volume" => 70652699.013495
-        foreach ($currencies as $currencyData) {
+        foreach ($currencies as $currency) {
 
-            $update = [
-                'name' => $currencyData['symbol'],
-                'exchange' => $currencyData['exchange'],
-                'last_price' => $currencyData['last_price'],
-                'volume' => $currencyData['volume'],
+            $data = [
+                'name' => $currency['symbol'],
+                'exchange' => $currency['exchange'],
+                'last_price' => $currency['last_price'],
+                'volume' => $currency['volume'],
                 'is_active' => true,
             ];
 
             if ($now->minute === 0) {
-                $update['start_volume_1h'] = $currencyData['volume'];
-                $update['start_price_1h'] = $currencyData['last_price'];
+                $data['start_volume_1h'] = $currency['volume'];
+                $data['start_price_1h'] = $currency['last_price'];
 
                 // кратно ли 4 часам
                 if ($now->hour % 4 === 0) {
-                    $update['start_volume_4h'] = $currencyData['volume'];
-                    $update['start_price_4h'] = $currencyData['last_price'];
+                    $data['start_volume_4h'] = $currency['volume'];
+                    $data['start_price_4h'] = $currency['last_price'];
                 }
 
                 // полночь ли сейчас
                 if ($now->hour === 0) {
-                    $update['start_volume_24h'] = $currencyData['volume'];
-                    $update['start_price_24h'] = $currencyData['last_price'];
+                    $data['start_volume_24h'] = $currency['volume'];
+                    $data['start_price_24h'] = $currency['last_price'];
                 }
             }
 
             Currency::updateOrCreate(
-                ['code' => $currencyData['symbol']],
-                $update
+                ['code' => $currency['symbol']],
+                $data
             );
 
             $bar->advance();
