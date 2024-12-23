@@ -59,7 +59,7 @@ class UpdateCurrencies extends Command
                 }
 
                 // полночь ли сейчас
-                if ($now->hour === 0 && $now->minute === 1) {
+                if ($now->hour === 0) {
                     $update['start_volume_24h'] = $currencyData['volume'];
                     $update['start_price_24h'] = $currencyData['last_price'];
                 }
