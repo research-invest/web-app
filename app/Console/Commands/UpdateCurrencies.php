@@ -45,7 +45,7 @@ class UpdateCurrencies extends Command
                 'exchange' => $currency['exchange'],
                 'last_price' => $currency['last_price'],
                 'volume' => $currency['volume'],
-                'is_active' => true,
+                'is_active' => $currency['last_price'] > 0,
             ];
 
             if ($now->minute === 0) {
