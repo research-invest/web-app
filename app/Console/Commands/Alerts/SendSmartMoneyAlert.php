@@ -39,6 +39,8 @@ class SendSmartMoneyAlert extends Command
         if ($analise) {
             $this->telegram->sendMessage(($currency . ' ' . $analise['message']),
                 '-1002321524146');
+        } else {
+            $this->info(sprintf('Анализ %s не выявил SmartMoney закономерностей', $currency));
         }
     }
 }

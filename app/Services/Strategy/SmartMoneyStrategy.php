@@ -22,10 +22,6 @@ class SmartMoneyStrategy
         $lows = array_column($candles, 'low');
         $closes = array_column($candles, 'close');
 
-        // Определяем тренд за последние N свечей
-        $trendUp = $closes[array_key_last($closes)] > $closes[array_key_last($closes) - 10];
-
-        // Проверяем условия
         $volumeCondition = $this->checkVolumeCondition($volumes);
         $priceCondition = $this->checkPriceRange($highs, $lows);
 
@@ -35,6 +31,9 @@ class SmartMoneyStrategy
             // Получаем значения для сообщения
             $lastVolumeRatio = $volumes[array_key_last($volumes)] / $this->calculateMovingAverage($volumes, $this->periodLength);
             $lastPriceRange = ($highs[array_key_last($highs)] - $lows[array_key_last($lows)]) / $lows[array_key_last($lows)] * 100;
+
+            // Определяем тренд за последние N свечей
+            $trendUp = $closes[array_key_last($closes)] > $closes[array_key_last($closes) - 10];
 
             if ($trendUp) {
                 return [
