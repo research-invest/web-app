@@ -57,12 +57,12 @@ class UpdateCurrencies extends Command
                     $data['start_volume_4h'] = $currency['volume'];
                     $data['start_price_4h'] = $currency['last_price'];
                 }
+            }
 
-                // полночь ли сейчас
-                if ($now->hour === 0) {
-                    $data['start_volume_24h'] = $currency['volume'];
-                    $data['start_price_24h'] = $currency['last_price'];
-                }
+            // полночь ли сейчас
+            if ($now->hour === 0) {
+                $data['start_volume_24h'] = $currency['volume'];
+                $data['start_price_24h'] = $currency['last_price'];
             }
 
             Currency::updateOrCreate(
