@@ -66,14 +66,6 @@ class UpdateCurrencies extends Command
                 $data['start_price_24h'] = $currency['last_price'];
             }
 
-            Log::info("UpdateCurrencies: Check conditions", [
-                'time' => $now->format('Y-m-d H:i:s'),
-                'minute' => $now->minute,
-                'hour' => $now->hour,
-                'timezone' => config('app.timezone'),
-                'data' => $data
-            ]);
-
             Currency::updateOrCreate(
                 ['code' => $currency['symbol']],
                 $data
@@ -81,6 +73,14 @@ class UpdateCurrencies extends Command
 
             $bar->advance();
         }
+
+        Log::info("UpdateCurrencies: Check conditions", [
+            'time' => $now->format('Y-m-d H:i:s'),
+            'minute' => $now->minute,
+            'hour' => $now->hour,
+            'timezone' => config('app.timezone'),
+            'data' => $data
+        ]);
 
         $bar->finish();
         $this->info("\nВалюты успешно обновлены.\n");
