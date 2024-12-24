@@ -58,12 +58,12 @@ class UpdateCurrencies extends Command
                     $data['start_volume_4h'] = $currency['volume'];
                     $data['start_price_4h'] = $currency['last_price'];
                 }
-            }
 
-            // полночь ли сейчас
-            if ($now->hour === 0) {
-                $data['start_volume_24h'] = $currency['volume'];
-                $data['start_price_24h'] = $currency['last_price'];
+                // полночь ли сейчас
+                if ($now->hour === 0) {
+                    $data['start_volume_24h'] = $currency['volume'];
+                    $data['start_price_24h'] = $currency['last_price'];
+                }
             }
 
             Currency::updateOrCreate(
@@ -74,7 +74,7 @@ class UpdateCurrencies extends Command
             $bar->advance();
         }
 
-        Log::info("UpdateCurrencies: Check conditions", [
+        Log::info("UpdateCurrencies: Check conditions " . $now->hour, [
             'time' => $now->format('Y-m-d H:i:s'),
             'minute' => $now->minute,
             'hour' => $now->hour,
