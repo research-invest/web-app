@@ -8,6 +8,7 @@ namespace App\Console\Commands;
 use App\Models\Currency;
 use App\Services\Api\Currencies;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 
 class UpdateCurrencies extends Command
 {
@@ -64,6 +65,14 @@ class UpdateCurrencies extends Command
                 $data['start_volume_24h'] = $currency['volume'];
                 $data['start_price_24h'] = $currency['last_price'];
             }
+
+            Log::info("UpdateCurrencies: Check conditions", [
+                'time' => $now->format('Y-m-d H:i:s'),
+                'minute' => $now->minute,
+                'hour' => $now->hour,
+                'timezone' => config('app.timezone'),
+                'data' => $data
+            ]);
 
             Currency::updateOrCreate(
                 ['code' => $currency['symbol']],
