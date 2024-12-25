@@ -41,6 +41,16 @@ class UpdateCurrencies extends Command
 //  "volume" => 70652699.013495
         foreach ($currencies as $currency) {
 
+
+            if(!is_array($currency)){
+
+                Log::info("UpdateCurrencies: No Array ", [
+                    '$currency' => $currency
+                ]);
+
+                continue;
+            }
+
             $data = [
                 'name' => $currency['symbol'],
                 'exchange' => $currency['exchange'],
