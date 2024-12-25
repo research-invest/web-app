@@ -39,6 +39,7 @@ class ListLayout extends Table
 
             TD::make('daily_target', 'Дневная цель'),
             TD::make('weekend_target', 'Цель выходного дня'),
+            TD::make('deposit', 'Плановый депозит'),
 
             TD::make('is_active', 'Активность')
                 ->render(function (TradePeriod $period) {

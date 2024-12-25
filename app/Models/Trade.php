@@ -21,6 +21,9 @@ use Orchid\Screen\Concerns\ModelStateRetrievable;
  * @property  string $status
  * @property  string $position_type
  * @property  integer $user_id
+ * @property  float $commission_open
+ * @property  float $commission_close
+ * @property  float $commission_finance
  *
  * @property  Currency $currency
  * @property  User $user
@@ -53,6 +56,9 @@ class Trade extends Model
         'open_currency_volume',
         'close_currency_volume',
         'user_id',
+        'commission_open',
+        'commission_close',
+        'commission_finance',
     ];
 
     protected $casts = [

@@ -17,6 +17,7 @@ use Orchid\Screen\AsSource;
  * @property Carbon $end_date
  * @property bool $is_active
  * @property integer $user_id
+ * @property float $deposit
  *
  * @property User $user
  */
@@ -32,6 +33,7 @@ class TradePeriod extends BaseModel
         'daily_target',
         'weekend_target',
         'user_id',
+        'deposit',
     ];
 
     protected $casts = [

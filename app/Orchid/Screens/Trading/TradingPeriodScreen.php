@@ -62,6 +62,12 @@ class TradingPeriodScreen extends Screen
                     ->step(50)
                     ->required(),
 
+                Input::make('period.deposit')
+                    ->title('Плановый депозит')
+                    ->value(2000)
+                    ->type('number')
+                    ->required(),
+
                 CheckBox::make('period.is_active')
                     ->title('Активный период')
                     ->value(0),

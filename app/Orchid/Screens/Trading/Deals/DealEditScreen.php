@@ -186,6 +186,24 @@ class DealEditScreen extends Screen
                             ->options(Trade::getStatuses())
                             ->required(),
 
+                        Group::make([
+                            Input::make('trade.commission_open')
+                                ->title('Комиссия за открытие сделки')
+                                ->canSee($this->trade->exists)
+                                ->type('number'),
+
+                            Input::make('trade.commission_close')
+                                ->title('Комиссия за закрытие сделки')
+                                ->canSee($this->trade->exists)
+                                ->type('number'),
+
+                            Input::make('trade.commission_finance')
+                                ->title('Комиссия за финансирование')
+                                ->canSee($this->trade->exists)
+                                ->type('number'),
+                        ]),
+
+
                         Input::make('trade.realized_pnl')
                             ->title('Реализованный PnL')
                             ->canSee($this->trade->exists && $this->trade->realized_pnl),

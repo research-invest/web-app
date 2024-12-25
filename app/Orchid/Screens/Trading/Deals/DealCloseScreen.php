@@ -5,6 +5,7 @@ namespace App\Orchid\Screens\Trading\Deals;
 use App\Models\Trade;
 use Illuminate\Http\Request;
 use Orchid\Screen\Actions\Button;
+use Orchid\Screen\Fields\Group;
 use Orchid\Screen\Fields\Input;
 use Orchid\Screen\Fields\Select;
 use Orchid\Screen\Fields\TextArea;
@@ -48,14 +49,14 @@ class DealCloseScreen extends Screen
     {
         return [
             Layout::rows([
-                Input::make('exit_price')
+                Input::make('trade.exit_price')
                     ->title('Цена выхода')
                     ->type('number')
                     ->step('0.00000001')
                     ->required()
                     ->value($this->trade->currency->last_price ?? $this->trade->entry_price),
 
-                Select::make('close_reason')
+                Select::make('trade.close_reason')
                     ->title('Причина закрытия')
                     ->options([
                         'manual' => 'Ручное закрытие',
@@ -65,7 +66,24 @@ class DealCloseScreen extends Screen
                     ])
                     ->required(),
 
-                TextArea::make('notes')
+                Group::make([
+                    Input::make('trade.commission_open')
+                        ->title('Комиссия за открытие сделки')
+                        ->type('number'),
+
+                    Input::make('trade.commission_close')
+                        ->title('Комиссия за закрытие сделки')
+                        ->type('number'),
+
+                    Input::make('trade.commission_finance')
+                        ->title('Комиссия за финансирование')
+                        ->type('number'),
+                ]),
+
+                Input::make('trade.realized_pnl')
+                    ->title('Реализованный PnL'),
+
+                TextArea::make('trade.notes')
                     ->title('Комментарий к закрытию')
                     ->rows(3),
             ])
@@ -74,27 +92,32 @@ class DealCloseScreen extends Screen
 
     public function closeTrade(Trade $trade, Request $request)
     {
-        $exitPrice = $request->input('exit_price');
-        $closeReason = $request->input('close_reason');
+        $data = $request->get('trade');
+
+        $exitPrice = $data['exit_price'];
+        $closeReason = $data['close_reason'];
 
         $averagePrice = $trade->getAverageEntryPrice();
 
         // Расчет P&L
-        if ($trade->position_type === 'long') {
+        if ($trade->isTypeLong()) {
             $pnl = ($exitPrice - $averagePrice) * $trade->position_size * $trade->leverage / $averagePrice;
         } else {
             $pnl = ($averagePrice - $exitPrice) * $trade->position_size * $trade->leverage / $averagePrice;
         }
 
-        // Обновляем сделку
-        $trade->update([
-            'status' => $closeReason === 'liquidation' ? 'liquidated' : 'closed',
-            'exit_price' => $exitPrice,
-            'realized_pnl' => $pnl,
-            'closed_at' => now(),
-            'notes' => $trade->notes . "\n\nЗакрытие: " . $request->input('notes'),
-            'close_currency_volume' => $trade->currency->volume,
-        ]);
+        $trade
+            ->fill($data)
+            ->fill([
+                'status' => $closeReason === 'liquidation' ? 'liquidated' : 'closed',
+                'exit_price' => $exitPrice,
+                'realized_pnl' => empty($data['realized_pnl']) ? $pnl : $data['realized_pnl'],
+                'closed_at' => now(),
+                'notes' => $trade->notes . "\n\nЗакрытие: " . $request->input('notes'),
+                'close_currency_volume' => $trade->currency->volume,
+            ]);
+
+        $trade->save();
 
         // Создаем ордер закрытия
         $trade->orders()->create([
