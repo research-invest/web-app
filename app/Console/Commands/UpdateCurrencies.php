@@ -45,7 +45,11 @@ class UpdateCurrencies extends Command
             if(!is_array($currency)){
 
                 Log::info("UpdateCurrencies: No Array ", [
-                    '$currency' => $currency
+                    '$currency' => $currency,
+                    '$currencies' => $currencies,
+                    'time' => $now->format('Y-m-d H:i:s'),
+                    'minute' => $now->minute,
+                    'hour' => $now->hour,
                 ]);
 
                 continue;
