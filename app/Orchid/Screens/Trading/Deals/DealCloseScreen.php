@@ -69,14 +69,17 @@ class DealCloseScreen extends Screen
                 Group::make([
                     Input::make('trade.commission_open')
                         ->title('Комиссия за открытие сделки')
+                        ->step('0.01')
                         ->type('number'),
 
                     Input::make('trade.commission_close')
                         ->title('Комиссия за закрытие сделки')
+                        ->step('0.01')
                         ->type('number'),
 
                     Input::make('trade.commission_finance')
                         ->title('Комиссия за финансирование')
+                        ->step('0.01')
                         ->type('number'),
                 ]),
 
