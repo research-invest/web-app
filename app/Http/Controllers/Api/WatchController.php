@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Currency;
 use App\Models\Trade;
 use App\Models\Notification;
 use App\Models\TradeOrder;
@@ -19,6 +20,7 @@ class WatchController extends Controller
         $user = auth()->user();
 
         $trades = $this->getTrades($user);
+        $favorites = $this->getFavorites($user);
         $data = [
             'summary' => [
                 'total_pnl' => $this->calculateTotalPnl($user, $trades),
@@ -30,6 +32,7 @@ class WatchController extends Controller
 
             // Активные сделки
             'trades' => $trades,
+            'favorites' => $favorites,
 
             // Непрочитанные уведомления
             'notifications' => [],
@@ -142,6 +145,26 @@ class WatchController extends Controller
                     'current_price' => (float)$trade->currency->last_price,
                     'pnl' => round($trade->currentPnL, 3),
                     'can_cancel' => true,
+                ];
+            });
+    }
+
+    private function getFavorites($user)
+    {
+        return Currency::query()
+            ->isActive()
+            ->join('currencies_favorites', function ($join) {
+                $join->on('currencies.id', '=', 'currencies_favorites.currency_id')
+                    ->where('currencies_favorites.user_id', '=', 1);
+            })
+            ->orderByDesc('last_price')
+            ->get()
+//            ->select('currencies.*')
+            ->map(function (Currency $currency) {
+                return [
+                    'id' => $currency->id,
+                    'code' => $currency->code,
+                    'price' => $currency->last_price,
                 ];
             });
     }
