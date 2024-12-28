@@ -38,8 +38,8 @@ class WatchController extends Controller
                         'id' => $trade->id,
                         'symbol' => $trade->currency->code,
                         'type' => $trade->position_type, // buy/sell
-                        'entry_price' => $trade->entry_price,
-                        'current_price' => $trade->currency->last_price,
+                        'entry_price' => (float)$trade->entry_price,
+                        'current_price' => (float)$trade->currency->last_price,
                         'pnl' => $trade->currentPnL,
                         'can_cancel' => true,
                     ];
