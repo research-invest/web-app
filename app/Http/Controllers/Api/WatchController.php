@@ -40,7 +40,7 @@ class WatchController extends Controller
                         'type' => $trade->position_type, // buy/sell
                         'entry_price' => (float)$trade->entry_price,
                         'current_price' => (float)$trade->currency->last_price,
-                        'pnl' => $trade->currentPnL,
+                        'pnl' => round($trade->currentPnL, 3),
                         'can_cancel' => true,
                     ];
                 }),
@@ -119,12 +119,12 @@ class WatchController extends Controller
      */
     private function calculateTotalPnl($user)
     {
-        return (float)Trade::where('status', Trade::STATUS_OPEN)
+        return round(Trade::where('status', Trade::STATUS_OPEN)
             ->withSum(['orders' => function ($query) {
                 $query->where('type', '!=', TradeOrder::TYPE_EXIT);
             }], 'unrealized_pnl')
             ->get()
-            ->sum('orders_sum_unrealized_pnl');
+            ->sum('orders_sum_unrealized_pnl'), 3);
     }
 
     /**
@@ -132,9 +132,9 @@ class WatchController extends Controller
      */
     private function calculateTodayPnl($user)
     {
-        return (float)Trade::where('user_id', 1)
+        return round(Trade::where('user_id', 1)
             ->where('status', Trade::STATUS_CLOSED)
             ->whereDate('closed_at', today())
-            ->sum('realized_pnl');
+            ->sum('realized_pnl'), 2);
     }
 }
