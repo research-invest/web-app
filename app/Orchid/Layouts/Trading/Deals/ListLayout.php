@@ -63,9 +63,7 @@ class ListLayout extends Table
 
             TD::make('pnl', 'PNL')
                 ->render(function (Trade $trade) {
-                    $pnl = $trade->status === Trade::STATUS_OPEN
-                        ? $trade->getUnrealizedPnL($trade->currency->last_price)
-                        : $trade->realized_pnl;
+                    $pnl = $trade->currentPnL;
 
                     $color = $pnl >= 0 ? 'success' : 'danger';
 

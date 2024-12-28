@@ -16,6 +16,7 @@ use Orchid\Screen\Concerns\ModelStateRetrievable;
  * @property  float $realized_pnl
  * @property  float $open_currency_volume
  * @property  float $close_currency_volume
+ * @property  float $entry_price
  * @property  integer $leverage
  * @property  integer $currency_id
  * @property  string $status
@@ -29,6 +30,7 @@ use Orchid\Screen\Concerns\ModelStateRetrievable;
  * @property  User $user
  * @property  TradePnlHistory[] $pnlHistory
  * @property  TradePeriod $tradePeriod
+ * @property  float $currentPnL
  */
 class Trade extends Model
 {
@@ -102,15 +104,15 @@ class Trade extends Model
         return $this->hasMany(TradePnlHistory::class);
     }
 
-    public function getCurrentPnLAttribute()
+    /**
+     * currentPnL
+     * @return float|null
+     */
+    public function getCurrentPnLAttribute(): ?float
     {
-        // Здесь можно добавить логику расчета текущего P&L
-        if ($this->status === 'closed') {
-            return $this->realized_pnl;
-        }
-
-        // Получаем текущую цену из API
-        return null;
+        return $this->status === self::STATUS_OPEN
+            ? $this->getUnrealizedPnL($this->currency->last_price)
+            : $this->realized_pnl;
     }
 
     /**

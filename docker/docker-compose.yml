@@ -37,7 +37,7 @@ services:
 
     app-mysql:
         container_name: webapp-mysql
-        image: mysql:latest
+        image: mysql:8.0.35
         volumes:
             - ./data/mysql/:/var/lib/mysql
         environment:
