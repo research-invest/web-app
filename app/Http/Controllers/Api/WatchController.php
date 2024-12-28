@@ -18,9 +18,10 @@ class WatchController extends Controller
     {
         $user = auth()->user();
 
+        $trades = $this->getTrades($user);
         $data = [
             'summary' => [
-                'total_pnl' => $this->calculateTotalPnl($user),
+                'total_pnl' => $this->calculateTotalPnl($user, $trades),
                 'today_pnl' => $this->calculateTodayPnl($user),
                 'active_trades' => Trade::where('user_id', 1)
                     ->where('status', Trade::STATUS_OPEN)
@@ -28,22 +29,7 @@ class WatchController extends Controller
             ],
 
             // Активные сделки
-            'trades' => Trade::where('user_id', 1)
-                ->where('status', Trade::STATUS_OPEN)
-                ->latest()
-                ->take(10)
-                ->get()
-                ->map(function (Trade $trade) {
-                    return [
-                        'id' => $trade->id,
-                        'symbol' => $trade->currency->code,
-                        'type' => $trade->position_type, // buy/sell
-                        'entry_price' => (float)$trade->entry_price,
-                        'current_price' => (float)$trade->currency->last_price,
-                        'pnl' => round($trade->currentPnL, 3),
-                        'can_cancel' => true,
-                    ];
-                }),
+            'trades' => $trades,
 
             // Непрочитанные уведомления
             'notifications' => [],
@@ -117,8 +103,10 @@ class WatchController extends Controller
     /**
      * Расчет общего PNL
      */
-    private function calculateTotalPnl($user)
+    private function calculateTotalPnl($user, $trades = [])
     {
+        return round(collect($trades)->sum('pnl'), 3);
+
         return round(Trade::where('status', Trade::STATUS_OPEN)
             ->withSum(['orders' => function ($query) {
                 $query->where('type', '!=', TradeOrder::TYPE_EXIT);
@@ -136,5 +124,25 @@ class WatchController extends Controller
             ->where('status', Trade::STATUS_CLOSED)
             ->whereDate('closed_at', today())
             ->sum('realized_pnl'), 2);
+    }
+
+    private function getTrades($user)
+    {
+        return Trade::where('user_id', 1)
+            ->where('status', Trade::STATUS_OPEN)
+            ->latest()
+            ->take(10)
+            ->get()
+            ->map(function (Trade $trade) {
+                return [
+                    'id' => $trade->id,
+                    'symbol' => $trade->currency->code,
+                    'type' => $trade->position_type, // buy/sell
+                    'entry_price' => (float)$trade->entry_price,
+                    'current_price' => (float)$trade->currency->last_price,
+                    'pnl' => round($trade->currentPnL, 3),
+                    'can_cancel' => true,
+                ];
+            });
     }
 }
