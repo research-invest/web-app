@@ -14,6 +14,7 @@ use Orchid\Screen\Concerns\ModelStateRetrievable;
  * @property  float $take_profit_price
  * @property  float $target_profit_amount
  * @property  float $realized_pnl
+ * @property  float $unrealized_pnl
  * @property  float $open_currency_volume
  * @property  float $close_currency_volume
  * @property  float $entry_price
@@ -52,6 +53,7 @@ class Trade extends Model
         'target_profit_amount',
         'status',
         'exit_price',
+        'unrealized_pnl',
         'realized_pnl',
         'closed_at',
         'notes',
@@ -232,6 +234,8 @@ class Trade extends Model
     {
 //        $averagePrice = $this->getAverageEntryPrice();
 
+        $unrealizedTradePnl = 0;
+
         // Обновляем PNL для каждого ордера
         foreach ($this->orders as $order) {
             if ($order->type === TradeOrder::TYPE_EXIT) {
@@ -248,12 +252,18 @@ class Trade extends Model
                 $unrealizedPnl = ($order->price - $currentPrice) * $quantity;
             }
 
+            $unrealizedTradePnl += $unrealizedPnl;
+
             // Обновляем ордер
             $order->update([
                 'unrealized_pnl' => $unrealizedPnl,
                 'pnl_updated_at' => now()
             ]);
         }
+
+        $this->update([
+            'unrealized_pnl' => $unrealizedTradePnl,
+        ]);
 
         // Расчет общего PNL для позиции
         $totalUnrealizedPnl = $this->getUnrealizedPnL($currentPrice);
@@ -279,7 +289,7 @@ class Trade extends Model
      */
     public function getLiquidationPrice(): float
     {
-        if(!$this->leverage){
+        if (!$this->leverage) {
             return 0;
         }
 
