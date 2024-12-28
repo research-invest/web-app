@@ -231,9 +231,12 @@ class Trade extends Model
     {
 //        $averagePrice = $this->getAverageEntryPrice();
 
+        /**
+         * @var TradeOrder $order
+         */
         // Обновляем PNL для каждого ордера
         foreach ($this->orders as $order) {
-            if ($order->type === 'exit') {
+            if ($order->type === TradeOrder::TYPE_EXIT) {
                 continue; // Пропускаем ордера выхода
             }
 

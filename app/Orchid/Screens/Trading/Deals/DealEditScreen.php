@@ -8,6 +8,7 @@ namespace App\Orchid\Screens\Trading\Deals;
 use App\Helpers\UserHelper;
 use App\Models\Currency;
 use App\Models\Trade;
+use App\Models\TradeOrder;
 use App\Models\TradePeriod;
 use App\Orchid\Layouts\Charts\HighchartsChart;
 use App\Services\PnlAnalyticsService;
@@ -106,8 +107,8 @@ class DealEditScreen extends Screen
                     Select::make('type')
                         ->title('Тип ордера')
                         ->options([
-                            'add' => 'Дополнительный вход',
-                            'exit' => 'Частичное закрытие',
+                            TradeOrder::TYPE_ADD => 'Дополнительный вход',
+                            TradeOrder::TYPE_EXIT => 'Частичное закрытие',
                         ])
                         ->required(),
 

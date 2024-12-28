@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Trade;
 use App\Models\Notification;
+use App\Models\TradeOrder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -118,9 +119,12 @@ class WatchController extends Controller
      */
     private function calculateTotalPnl($user)
     {
-        return Trade::where('user_id', 1)
-            ->where('status', 'closed')
-            ->sum('realized_pnl');
+        return Trade::where('status', Trade::STATUS_OPEN)
+            ->withSum(['orders' => function ($query) {
+                $query->where('status', '=', TradeOrder::TYPE_ADD);
+            }], 'unrealized_pnl')
+            ->get()
+            ->sum('orders_sum_unrealized_pnl');
     }
 
     /**
@@ -129,7 +133,7 @@ class WatchController extends Controller
     private function calculateTodayPnl($user)
     {
         return Trade::where('user_id', 1)
-            ->where('status', 'closed')
+            ->where('status', Trade::STATUS_OPEN)
             ->whereDate('closed_at', today())
             ->sum('realized_pnl');
     }

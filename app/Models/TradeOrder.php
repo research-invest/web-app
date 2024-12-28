@@ -17,6 +17,9 @@ class TradeOrder extends Model
 {
     use AsSource;
 
+    public const string TYPE_ADD = 'add';
+    public const string TYPE_EXIT = 'exit';
+
     protected $fillable = [
         'trade_id',
         'price',
