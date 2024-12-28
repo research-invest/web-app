@@ -17,6 +17,7 @@ class TradeOrder extends Model
 {
     use AsSource;
 
+    public const string TYPE_ENTRY = 'entry';
     public const string TYPE_ADD = 'add';
     public const string TYPE_EXIT = 'exit';
 

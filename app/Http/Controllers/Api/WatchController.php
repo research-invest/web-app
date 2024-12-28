@@ -23,7 +23,7 @@ class WatchController extends Controller
                 'total_pnl' => $this->calculateTotalPnl($user),
                 'today_pnl' => $this->calculateTodayPnl($user),
                 'active_trades' => Trade::where('user_id', 1)
-                    ->where('status', 'active')
+                    ->where('status', Trade::STATUS_OPEN)
                     ->count(),
             ],
 
@@ -121,7 +121,7 @@ class WatchController extends Controller
     {
         return Trade::where('status', Trade::STATUS_OPEN)
             ->withSum(['orders' => function ($query) {
-                $query->where('status', '=', TradeOrder::TYPE_ADD);
+                $query->where('type', '!=', TradeOrder::TYPE_EXIT);
             }], 'unrealized_pnl')
             ->get()
             ->sum('orders_sum_unrealized_pnl');

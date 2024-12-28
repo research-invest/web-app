@@ -289,7 +289,7 @@ class DealEditScreen extends Screen
             $trade->orders()->create([
                 'price' => $trade->entry_price,
                 'size' => $trade->position_size,
-                'type' => 'entry',
+                'type' => TradeOrder::TYPE_ENTRY,
                 'executed_at' => now()
             ]);
 
