@@ -119,7 +119,7 @@ class WatchController extends Controller
      */
     private function calculateTotalPnl($user)
     {
-        return Trade::where('status', Trade::STATUS_OPEN)
+        return (float)Trade::where('status', Trade::STATUS_OPEN)
             ->withSum(['orders' => function ($query) {
                 $query->where('type', '!=', TradeOrder::TYPE_EXIT);
             }], 'unrealized_pnl')
@@ -132,8 +132,8 @@ class WatchController extends Controller
      */
     private function calculateTodayPnl($user)
     {
-        return Trade::where('user_id', 1)
-            ->where('status', Trade::STATUS_OPEN)
+        return (float)Trade::where('user_id', 1)
+            ->where('status', Trade::STATUS_CLOSED)
             ->whereDate('closed_at', today())
             ->sum('realized_pnl');
     }

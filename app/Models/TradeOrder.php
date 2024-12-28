@@ -26,7 +26,9 @@ class TradeOrder extends Model
         'price',
         'size',
         'type',
-        'executed_at'
+        'executed_at',
+        'unrealized_pnl',
+        'pnl_updated_at'
     ];
 
     protected $casts = [

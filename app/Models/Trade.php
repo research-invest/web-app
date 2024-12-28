@@ -27,6 +27,7 @@ use Orchid\Screen\Concerns\ModelStateRetrievable;
  * @property  float $commission_finance
  *
  * @property  Currency $currency
+ * @property  TradeOrder[] $orders
  * @property  User $user
  * @property  TradePnlHistory[] $pnlHistory
  * @property  TradePeriod $tradePeriod
@@ -231,9 +232,6 @@ class Trade extends Model
     {
 //        $averagePrice = $this->getAverageEntryPrice();
 
-        /**
-         * @var TradeOrder $order
-         */
         // Обновляем PNL для каждого ордера
         foreach ($this->orders as $order) {
             if ($order->type === TradeOrder::TYPE_EXIT) {
