@@ -117,7 +117,7 @@ class MathHelper
      */
     public static function getPercentOfNumber(float $numberFrom, float $numberTo): float
     {
-        if(!$numberTo){
+        if (!$numberTo) {
             return 0;
         }
 
