@@ -178,9 +178,9 @@ class WatchController extends Controller
                     'price_24h' => $currency->start_price_24h,
                     'price_4h' => $currency->start_price_4h,
                     'price_1h' => $currency->start_price_1h,
-                    'price_24h_percent' => round(MathHelper::getPercentOfNumber($currency->start_price_24h,$currency->last_price), 2),
-                    'price_4h_percent' => round(MathHelper::getPercentOfNumber($currency->start_price_4h, $currency->last_price), 2),
-                    'price_1h_percent' => round(MathHelper::getPercentOfNumber($currency->start_price_1h, $currency->last_price), 2),
+                    'price_24h_percent' => round(MathHelper::getPercentOfNumber($currency->last_price, $currency->start_price_24h), 2),
+                    'price_4h_percent' => round(MathHelper::getPercentOfNumber($currency->last_price, $currency->start_price_4h), 2),
+                    'price_1h_percent' => round(MathHelper::getPercentOfNumber($currency->last_price, $currency->start_price_1h), 2),
                 ];
             });
     }
