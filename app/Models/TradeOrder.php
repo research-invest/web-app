@@ -42,4 +42,19 @@ class TradeOrder extends Model
     {
         return $this->belongsTo(Trade::class);
     }
+
+    public function isTypeEntry(): bool
+    {
+        return $this->type === self::TYPE_ENTRY;
+    }
+
+    public function isTypeAdd(): bool
+    {
+        return $this->type === self::TYPE_ADD;
+    }
+
+    public function isTypeExit(): bool
+    {
+        return $this->type === self::TYPE_EXIT;
+    }
 }

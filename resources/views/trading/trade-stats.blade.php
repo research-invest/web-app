@@ -1,3 +1,9 @@
+@php
+    /**
+    * @var \App\Models\TradeOrder $order
+    * @var \App\Models\Trade $trade
+     */
+@endphp
 <div class="bg-white rounded shadow-sm p-4">
     <div class="row">
         {{-- Основные метрики --}}
@@ -7,8 +13,8 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between mb-2">
                         <span>Тип позиции:</span>
-                        <span class="badge {{ $trade->position_type === 'long' ? 'bg-success' : 'bg-danger' }}">
-                            {{ $trade->position_type === 'long' ? 'ЛОНГ' : 'ШОРТ' }}
+                        <span class="badge {{ $trade->isTypeLong() ? 'bg-success' : 'bg-danger' }}">
+                            {{ $trade->isTypeLong() ? 'ЛОНГ' : 'ШОРТ' }}
                         </span>
                     </div>
                     <div class="d-flex justify-content-between mb-2">
@@ -105,7 +111,7 @@
                         </div>
                     @endif
 
-                    @if($trade->status === 'open')
+                    @if($trade->isStatusOpen())
                         <div class="border-top my-2"></div>
                         <div class="small text-muted">
                             <i class="fas fa-info-circle"></i>
@@ -132,8 +138,8 @@
 
         {{-- P&L и результаты --}}
         <div class="col-md-4">
-            <div class="card {{ $trade->status === 'open' ? 'border-info' : 'border-success' }} mb-3">
-                <div class="card-header">{{ $trade->status === 'open' ? 'Текущий P&L' : 'Результат' }}</div>
+            <div class="card {{ $trade->isStatusOpen() ? 'border-info' : 'border-success' }} mb-3">
+                <div class="card-header">{{ $trade->isStatusOpen() ? 'Текущий P&L' : 'Результат' }}</div>
                 <div class="card-body">
                     @if($trade->status === 'open')
                         @php
@@ -195,7 +201,7 @@
         <div class="col-12">
             <div class="alert alert-info">
                 <i class="fas fa-info-circle"></i>
-                @if($trade->status === 'open')
+                @if($trade->isStatusOpen())
                     Сделка активна. P&L обновляется в реальном времени.
                 @elseif($trade->closed_at)
                     Сделка закрыта {{ $trade->closed_at->format('d.m.Y H:i:s') }}

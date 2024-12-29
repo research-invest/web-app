@@ -1,5 +1,9 @@
 @php
 use \App\Helpers\MathHelper;
+/**
+* @var \App\Models\TradeOrder $order
+* @var \App\Models\Trade $trade
+ */
 @endphp
 <div class="bg-white rounded shadow-sm p-4">
     <div class="mb-3">
@@ -40,14 +44,14 @@ use \App\Helpers\MathHelper;
                     <td>{{ MathHelper::formatNumber($order->price) }}</td>
                     <td>{{ MathHelper::formatNumber($order->size, 2) }} USDT</td>
                     <td>
-                        @if($order->type === 'entry' || $order->type === 'add')
+                        @if($order->isTypeEntry() || $order->isTypeAdd())
                             <span class="text-success">+{{ MathHelper::formatNumber($order->size, 2) }}</span>
                         @else
                             <span class="text-danger">-{{ MathHelper::formatNumber($order->size, 2) }}</span>
                         @endif
                     </td>
                     <td>
-                        @if($order->type !== 'entry')
+                        @if(!$order->isTypeEntry())
                             <button class="btn btn-sm btn-danger delete-order-btn"
                                     data-trade-id="{{ $trade->id }}"
                                     data-order-id="{{ $order->id }}">
@@ -60,7 +64,7 @@ use \App\Helpers\MathHelper;
         </tbody>
     </table>
 
-    @if($trade->status === 'open')
+    @if($trade->isStatusOpen())
         <div class="alert alert-info">
             <i class="fas fa-info-circle"></i>
             Используйте кнопку "Добавить ордер" для регистрации дополнительных входов или частичных выходов из позиции.

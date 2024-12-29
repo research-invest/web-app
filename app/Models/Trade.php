@@ -81,9 +81,9 @@ class Trade extends Model
     public static function getStatuses(): array
     {
         return [
-            Trade::STATUS_OPEN => 'Открыта',
-            Trade::STATUS_CLOSED => 'Закрыта',
-            Trade::STATUS_LIQUIDATED => 'Ликвидирована'
+            self::STATUS_OPEN => 'Открыта',
+            self::STATUS_CLOSED => 'Закрыта',
+            self::STATUS_LIQUIDATED => 'Ликвидирована'
         ];
     }
 
@@ -348,5 +348,11 @@ class Trade extends Model
     public function tradePeriod()
     {
         return $this->belongsTo(TradePeriod::class);
+    }
+
+
+    public function isStatusOpen(): bool
+    {
+        return $this->status === self::STATUS_OPEN;
     }
 }
