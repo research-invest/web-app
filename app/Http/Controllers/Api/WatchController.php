@@ -146,6 +146,15 @@ class WatchController extends Controller
                     'current_price' => (float)$trade->currency->last_price,
                     'pnl' => round($trade->currentPnL, 3),
                     'can_cancel' => true,
+                    'average_price' => (float)$trade->getAverageEntryPrice(),
+                    'orders' => $trade->orders()->get()
+                        ->map(function (TradeOrder $order) {
+                            return [
+                                'id'=> $order->id,
+                                'price'=> (float)$order->price,
+                                'size'=> (float)$order->size,
+                            ];
+                        }),
                 ];
             });
     }

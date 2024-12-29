@@ -8,6 +8,7 @@ use Orchid\Screen\AsSource;
 
 /**
  *
+ * @property  int $id
  * @property  float $size
  * @property  float $price
  * @property  string $type
