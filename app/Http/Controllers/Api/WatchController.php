@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Helpers\MathHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Currency;
 use App\Models\Trade;
@@ -165,6 +166,12 @@ class WatchController extends Controller
                     'id' => $currency->id,
                     'code' => $currency->code,
                     'price' => $currency->last_price,
+                    'price_24h' => $currency->start_price_24h,
+                    'price_4h' => $currency->start_price_4h,
+                    'price_1h' => $currency->start_price_1h,
+                    'price_24h_percent' => MathHelper::getPercentOfNumber($currency->last_price, $currency->start_price_24h),
+                    'price_4h_percent' => MathHelper::getPercentOfNumber($currency->last_price, $currency->start_price_4h),
+                    'price_1h_percent' => MathHelper::getPercentOfNumber($currency->last_price, $currency->start_price_1h),
                 ];
             });
     }
