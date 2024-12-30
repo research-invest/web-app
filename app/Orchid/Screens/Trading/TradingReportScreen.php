@@ -67,6 +67,7 @@ class TradingReportScreen extends Screen
                     ->render(fn (Trade $trade) => $trade->currency->code),
                 TD::make('realized_pnl', 'PNL')
                     ->render(fn (Trade $trade) => number_format($trade->realized_pnl, 2) . '$'),
+                TD::make('notes', 'Комментарий'),
             ])->title('Топ 5 лучших сделок'),
 
             Layout::table('lossTrades', [
@@ -76,6 +77,7 @@ class TradingReportScreen extends Screen
                     ->render(fn (Trade $trade) => $trade->currency->code),
                 TD::make('pnl', 'PNL')
                     ->render(fn (Trade $trade) => number_format($trade->realized_pnl, 2) . '$'),
+                TD::make('notes', 'Комментарий'),
             ])->title('Убыточные сделки'),
         ];
     }
