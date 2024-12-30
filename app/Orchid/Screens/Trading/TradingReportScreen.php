@@ -13,6 +13,7 @@ class TradingReportScreen extends Screen
 {
     public $period;
     private $analyticsService;
+    private $analytics;
 
     public function __construct(TradingAnalyticsService $analyticsService)
     {
@@ -22,7 +23,26 @@ class TradingReportScreen extends Screen
     public function query(TradePeriod $period): array
     {
         $this->period = $period;
-        return $this->analyticsService->analyze($period);
+        $this->analytics = $this->analyticsService->analyze($period);
+
+        return [
+            'metrics' => [
+                'netResult' => [
+                    'value' => number_format($this->analytics['summary']['netResult'], 2) . '$',
+                ],
+                'tradesCount' => [
+                    'value' => (string)$this->analytics['summary']['tradesCount'],
+                ],
+                'winRate' => [
+                    'value' => number_format($this->analytics['summary']['winRate'], 2) . '%',
+                ],
+                'ratio' => [
+                    'value' => (string)$this->analytics['positions']['ratio'],
+                ],
+            ],
+            'topTrades' => $this->analytics['topTrades'],
+            'lossTrades' => $this->analytics['lossTrades'],
+        ];
     }
 
     public function name(): ?string
@@ -34,10 +54,10 @@ class TradingReportScreen extends Screen
     {
         return [
             Layout::metrics([
-                'Общий результат' => number_format($this->query($this->period)['summary']['netResult'], 2) . '$',
-                'Всего сделок' => $this->query($this->period)['summary']['tradesCount'],
-                'Винрейт' => number_format($this->query($this->period)['summary']['winRate'], 2) . '%',
-                'Соотношение Short/Long' => $this->query($this->period)['positions']['ratio'],
+                'Общий результат' => 'metrics.netResult',
+                'Всего сделок' => 'metrics.tradesCount',
+                'Винрейт' => 'metrics.winRate',
+                'Соотношение Short/Long' => 'metrics.ratio',
             ]),
 
             Layout::table('topTrades', [
