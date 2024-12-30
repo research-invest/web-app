@@ -38,6 +38,8 @@ class Trade extends Model
 {
     use AsSource, Filterable, SoftDeletes, ModelStateRetrievable;
 
+    public const string POSITION_TYPE_LONG = 'long';
+    public const string POSITION_TYPE_SHORT = 'short';
     public const string STATUS_OPEN = 'open';
     public const string STATUS_CLOSED = 'closed';
     public const string STATUS_LIQUIDATED = 'liquidated';

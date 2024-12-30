@@ -29,6 +29,7 @@ use \App\Orchid\Screens\Trading\Deals\DealCloseScreen;
 use App\Orchid\Screens\Statistics\CompositeIndex;
 
 use \App\Orchid\Screens\Trading\TradingPeriodScreen;
+use App\Orchid\Screens\Trading\TradingReportScreen;
 
 /*
 |--------------------------------------------------------------------------
@@ -176,3 +177,6 @@ Route::screen('/examples/charts', ExampleChartsScreen::class)->name('platform.ex
 Route::screen('/examples/cards', ExampleCardsScreen::class)->name('platform.example.cards');
 
 //Route::screen('idea', Idea::class, 'platform.screens.idea');
+
+Route::screen('trading/report/{period}', TradingReportScreen::class)
+    ->name('platform.trading.report');

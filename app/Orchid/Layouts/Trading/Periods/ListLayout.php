@@ -7,6 +7,7 @@ namespace App\Orchid\Layouts\Trading\Periods;
 use App\Models\TradePeriod;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\DropDown;
+use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Layouts\Table;
 use Orchid\Screen\TD;
 
@@ -29,12 +30,10 @@ class ListLayout extends Table
 
             TD::make('name', 'Название'),
             TD::make('start_date', 'Дата начала')
-                ->render(fn (TradePeriod $period) =>
-                    $period->start_date->toDateString()
+                ->render(fn(TradePeriod $period) => $period->start_date->toDateString()
                 ),
             TD::make('start_date', 'Дата окончания')
-                ->render(fn (TradePeriod $period) =>
-                    $period->end_date->toDateString()
+                ->render(fn(TradePeriod $period) => $period->end_date->toDateString()
                 ),
 
             TD::make('daily_target', 'Дневная цель'),
@@ -65,6 +64,9 @@ class ListLayout extends Table
                 ->render(fn(TradePeriod $period) => DropDown::make()
                     ->icon('bs.three-dots-vertical')
                     ->list([
+                        Link::make(__('Отчёт'))
+                            ->route('platform.trading.report', $period->id)
+                            ->icon('bs.notebook'),
 //                        Link::make(__('Изменить'))
 //                            ->route('platform.trading.deal.edit', $period->id)
 //                            ->icon('bs.pencil'),
