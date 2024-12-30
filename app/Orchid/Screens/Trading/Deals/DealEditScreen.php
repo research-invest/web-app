@@ -135,8 +135,8 @@ class DealEditScreen extends Screen
                         RadioButtons::make('trade.position_type')
                             ->title('Тип позиции')
                             ->options([
-                                'long' => 'Лонг',
-                                'short' => 'Шорт'
+                                Trade::POSITION_TYPE_LONG => 'Лонг',
+                                Trade::POSITION_TYPE_SHORT => 'Шорт'
                             ])
                             ->required(),
 

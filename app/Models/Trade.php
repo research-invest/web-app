@@ -18,6 +18,7 @@ use Orchid\Screen\Concerns\ModelStateRetrievable;
  * @property  float $open_currency_volume
  * @property  float $close_currency_volume
  * @property  float $entry_price
+ * @property  float $exit_price
  * @property  integer $leverage
  * @property  integer $currency_id
  * @property  string $status
@@ -128,7 +129,7 @@ class Trade extends Model
     public function getAverageEntryPrice(): float
     {
         $entryOrders = $this->orders()
-            ->whereIn('type', ['entry', 'add'])
+            ->whereIn('type', [TradeOrder::TYPE_ENTRY, TradeOrder::TYPE_ADD])
             ->get();
 
         $totalQuantity = 0;
@@ -329,12 +330,12 @@ class Trade extends Model
 
     public function isTypeLong(): bool
     {
-        return $this->position_type === 'long';
+        return $this->position_type === self::POSITION_TYPE_LONG;
     }
 
     public function isTypeShort(): bool
     {
-        return $this->position_type === 'short';
+        return $this->position_type === self::POSITION_TYPE_SHORT;
     }
 
     public function isEvenDay(): bool

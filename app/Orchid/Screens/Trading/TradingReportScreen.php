@@ -2,6 +2,7 @@
 
 namespace App\Orchid\Screens\Trading;
 
+use App\Helpers\MathHelper;
 use App\Models\Trade;
 use App\Models\TradePeriod;
 use App\Services\TradingAnalyticsService;
@@ -65,6 +66,10 @@ class TradingReportScreen extends Screen
                 TD::make('position_type', 'Позиция'),
                 TD::make('symbol', 'Валюта')
                     ->render(fn (Trade $trade) => $trade->currency->code),
+                TD::make('entry_price', 'Цена входа')
+                    ->render(fn (Trade $trade) => MathHelper::formatNumber($trade->entry_price)),
+                TD::make('exit_price', 'Цена выхода')
+                    ->render(fn (Trade $trade) => MathHelper::formatNumber($trade->exit_price)),
                 TD::make('realized_pnl', 'PNL')
                     ->render(fn (Trade $trade) => number_format($trade->realized_pnl, 2) . '$'),
                 TD::make('notes', 'Комментарий'),
@@ -75,6 +80,10 @@ class TradingReportScreen extends Screen
                 TD::make('position_type', 'Позиция'),
                 TD::make('symbol', 'Валюта')
                     ->render(fn (Trade $trade) => $trade->currency->code),
+                TD::make('entry_price', 'Цена входа')
+                    ->render(fn (Trade $trade) => MathHelper::formatNumber($trade->entry_price)),
+                TD::make('exit_price', 'Цена выхода')
+                    ->render(fn (Trade $trade) => MathHelper::formatNumber($trade->exit_price)),
                 TD::make('pnl', 'PNL')
                     ->render(fn (Trade $trade) => number_format($trade->realized_pnl, 2) . '$'),
                 TD::make('notes', 'Комментарий'),
