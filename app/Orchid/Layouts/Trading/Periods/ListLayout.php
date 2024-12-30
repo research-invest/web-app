@@ -42,7 +42,6 @@ class ListLayout extends Table
 
             TD::make('is_active', 'Активность')
                 ->render(function (TradePeriod $period) {
-
                     return Button::make($period->is_active ? 'Деактивировать' : 'Активировать')
                         ->icon('bs.check-circle')
                         ->method('togglePeriodActive')
@@ -64,9 +63,10 @@ class ListLayout extends Table
                 ->render(fn(TradePeriod $period) => DropDown::make()
                     ->icon('bs.three-dots-vertical')
                     ->list([
-                        Link::make(__('Отчёт'))
+                        Link::make('Открыть отчет')
+                            ->target('_blank')
                             ->route('platform.trading.report', $period->id)
-                            ->icon('bs.notebook'),
+                            ->icon('notebook'),
 //                        Link::make(__('Изменить'))
 //                            ->route('platform.trading.deal.edit', $period->id)
 //                            ->icon('bs.pencil'),
