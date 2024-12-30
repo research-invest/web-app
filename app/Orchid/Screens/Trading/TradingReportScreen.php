@@ -3,12 +3,14 @@
 namespace App\Orchid\Screens\Trading;
 
 use App\Helpers\MathHelper;
+use App\Helpers\UserHelper;
 use App\Models\Trade;
 use App\Models\TradePeriod;
 use App\Services\TradingAnalyticsService;
 use Orchid\Screen\Screen;
 use Orchid\Support\Facades\Layout;
 use Orchid\Screen\TD;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class TradingReportScreen extends Screen
 {
@@ -23,6 +25,11 @@ class TradingReportScreen extends Screen
 
     public function query(TradePeriod $period): array
     {
+
+        if ($period->user_id !== UserHelper::getId()) {
+            throw new NotFoundHttpException();
+        }
+
         $this->period = $period;
         $this->analytics = $this->analyticsService->analyze($period);
 
