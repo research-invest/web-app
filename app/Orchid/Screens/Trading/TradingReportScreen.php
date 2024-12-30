@@ -46,16 +46,16 @@ class TradingReportScreen extends Screen
                 TD::make('symbol', 'Валюта')
                     ->render(fn (Trade $trade) => $trade->currency->code),
                 TD::make('realized_pnl', 'PNL')
-                    ->render(fn ($trade) => number_format($trade->pnl, 2) . '$'),
+                    ->render(fn (Trade $trade) => number_format($trade->realized_pnl, 2) . '$'),
             ])->title('Топ 5 лучших сделок'),
 
             Layout::table('lossTrades', [
                 TD::make('created_at', 'Дата'),
-                TD::make('position', 'Позиция'),
+                TD::make('position_type', 'Позиция'),
                 TD::make('symbol', 'Валюта')
                     ->render(fn (Trade $trade) => $trade->currency->code),
                 TD::make('pnl', 'PNL')
-                    ->render(fn ($trade) => number_format($trade->pnl, 2) . '$'),
+                    ->render(fn (Trade $trade) => number_format($trade->realized_pnl, 2) . '$'),
             ])->title('Убыточные сделки'),
         ];
     }
