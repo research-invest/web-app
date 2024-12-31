@@ -16,9 +16,9 @@ class WatchController extends Controller
     /**
      * Получить всю информацию для часов
      */
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $user = auth()->user();
+        $user = $request->user();
 
         $trades = $this->getTrades($user);
         $favorites = $this->getFavorites($user);
@@ -26,6 +26,7 @@ class WatchController extends Controller
             'summary' => [
                 'total_pnl' => $this->calculateTotalPnl($user, $trades),
                 'today_pnl' => $this->calculateTodayPnl($user),
+                'period_pnl' => 0,
                 'active_trades' => Trade::where('user_id', 1)
                     ->where('status', Trade::STATUS_OPEN)
                     ->count(),
