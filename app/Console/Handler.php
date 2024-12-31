@@ -33,7 +33,7 @@ class Handler
         $schedule->command(CheckLiquidationWarnings::class)->everyFiveMinutes();
         $schedule->command(FreeSpaceAlert::class)->hourly();
         $schedule->command(SendSmartMoneyAlert::class)->everyThirtyMinutes();
-//        $schedule->command(SendIndexChart::class)->everyThreeMinutes();
+        $schedule->command(SendIndexChart::class)->everyThirtyMinutes();
 //        $schedule->command(CheckFavoritePairs::class)->everyThirtyMinutes();
 
         $schedule->command(CollectTopPerformingCoinSnapshots::class)
