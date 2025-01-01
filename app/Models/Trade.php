@@ -378,6 +378,8 @@ class Trade extends BaseModel
             ->sum('size');
 
         if ($initialDeposit > 0 && $this->realized_pnl !== null) {
+            return ($this->realized_pnl / $initialDeposit) * 100;
+
             return MathHelper::getPercentOfNumber(
                 (float)$this->realized_pnl,
                 (float)$initialDeposit

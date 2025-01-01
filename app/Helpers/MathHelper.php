@@ -121,8 +121,6 @@ class MathHelper
             return 0;
         }
 
-        return ($numberFrom / $numberTo) * 100;
-
         return ($numberFrom - $numberTo) / $numberTo * 100;
     }
 
