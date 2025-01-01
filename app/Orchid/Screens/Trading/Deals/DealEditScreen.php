@@ -278,9 +278,9 @@ class DealEditScreen extends Screen
         // Если это новая сделка
         if (!$trade->exists) {
 
-            $currentPeriod = TradePeriod::where('is_active', true)
+            $currentPeriod = TradePeriod::isActive()
                 ->latest()
-                ->firstOrFail();
+                ->first();
 
             $currency = Currency::where('id', $data['currency_id'])->firstOrFail();
 
@@ -288,9 +288,10 @@ class DealEditScreen extends Screen
                 ->fill($data)
                 ->fill([
                     'user_id' => UserHelper::getId(),
-                    'trade_period_id' => $currentPeriod->id,
+                    'trade_period_id' => $currentPeriod?->id,
                     'open_currency_volume' => $currency->volume,
                 ]);
+
             $trade->save();
 
             // Создаем первый ордер при создании сделки

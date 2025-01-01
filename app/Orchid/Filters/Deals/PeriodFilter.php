@@ -2,9 +2,11 @@
 
 namespace App\Orchid\Filters\Deals;
 
+use App\Helpers\UserHelper;
 use App\Models\TradePeriod;
 use Illuminate\Database\Eloquent\Builder;
 use Orchid\Filters\Filter;
+use Orchid\Screen\Fields\Relation;
 use Orchid\Screen\Fields\Select;
 
 class PeriodFilter extends Filter
@@ -27,11 +29,18 @@ class PeriodFilter extends Filter
     public function display(): array
     {
         return [
-            Select::make('period_id')
+//            Select::make('period_id')
+//                ->set('id', 'select-periods')
+//                ->fromModel(TradePeriod::class, 'name', 'id')
+//                ->title('Выберите период')
+//                ->empty('Все периоды'),
+
+            Relation::make('period_id')
                 ->set('id', 'select-periods')
                 ->fromModel(TradePeriod::class, 'name', 'id')
+                ->applyScope('byCreator', UserHelper::getId())
                 ->title('Выберите период')
-                ->empty('Все периоды')
+                ->empty('Все периоды'),
         ];
     }
 }
