@@ -30,6 +30,7 @@ use App\Orchid\Screens\Statistics\CompositeIndex;
 
 use \App\Orchid\Screens\Trading\TradingPeriodScreen;
 use App\Orchid\Screens\Trading\TradingReportScreen;
+use \App\Orchid\Screens\Trading\StrategiesScreen;
 
 /*
 |--------------------------------------------------------------------------
@@ -66,6 +67,9 @@ Route::screen('/trading/futures-calculator', \App\Orchid\Screens\Trading\Futures
 
 Route::screen('/trading/deals/periods', TradingPeriodScreen::class)
 ->name('platform.trading.periods');
+
+Route::screen('/trading/deals/strategies', StrategiesScreen::class)
+->name('platform.trading.strategies');
 
 Route::screen('/trading/deals', DealsListScreen::class)
 ->name('platform.trading.deals')

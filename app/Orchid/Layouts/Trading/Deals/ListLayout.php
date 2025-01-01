@@ -64,12 +64,12 @@ class ListLayout extends Table
             TD::make('pnl', 'PNL')
                 ->render(function (Trade $trade) {
                     $pnl = $trade->currentPnL;
-
                     $color = $pnl >= 0 ? 'success' : 'danger';
 
                     return "<span class='text-{$color}'>" . number_format((float)$pnl, 2) . " USDT</span>";
                 })
                 ->alignRight(),
+            TD::make('profit_percentage', '% от вложений'),
             TD::make('status', 'Статус'),
 
             TD::make('open_currency_volume', 'Объем открытия сделки')

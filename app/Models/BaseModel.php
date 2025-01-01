@@ -2,8 +2,7 @@
 
 namespace App\Models;
 
-use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Builder;
+use App\Helpers\UserHelper;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -13,10 +12,14 @@ use Illuminate\Database\Eloquent\Model;
 class BaseModel extends Model
 {
 
-
     public function scopeIsActive($query)
     {
         return $query->where('is_active', true);
+    }
+
+    public function scopeByCreator($query)
+    {
+        return $query->where('user_id', UserHelper::getId());
     }
 
 }

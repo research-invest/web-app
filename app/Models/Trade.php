@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Helpers\MathHelper;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Orchid\Filters\Filterable;
 use Orchid\Screen\AsSource;
@@ -19,6 +19,7 @@ use Orchid\Screen\Concerns\ModelStateRetrievable;
  * @property  float $close_currency_volume
  * @property  float $entry_price
  * @property  float $exit_price
+ * @property  float $profit_percentage
  * @property  integer $leverage
  * @property  integer $currency_id
  * @property  string $status
@@ -35,7 +36,7 @@ use Orchid\Screen\Concerns\ModelStateRetrievable;
  * @property  TradePeriod $tradePeriod
  * @property  float $currentPnL
  */
-class Trade extends Model
+class Trade extends BaseModel
 {
     use AsSource, Filterable, SoftDeletes, ModelStateRetrievable;
 
@@ -67,6 +68,8 @@ class Trade extends Model
         'commission_open',
         'commission_close',
         'commission_finance',
+        'profit_percentage',
+        'strategy_id',
     ];
 
     protected $casts = [
@@ -357,5 +360,24 @@ class Trade extends Model
     public function isStatusOpen(): bool
     {
         return $this->status === self::STATUS_OPEN;
+    }
+
+    public function getProfitPercentage():float
+    {
+        $initialDeposit = $this->orders()
+            ->whereIn('type', [
+                TradeOrder::TYPE_ENTRY,
+                TradeOrder::TYPE_ADD
+            ])
+            ->sum('size');
+
+        if ($initialDeposit > 0 && $this->realized_pnl !== null) {
+            return MathHelper::getPercentOfNumber(
+                (float)$this->realized_pnl,
+                (float)$initialDeposit
+            );
+        }
+
+        return 0.0;
     }
 }

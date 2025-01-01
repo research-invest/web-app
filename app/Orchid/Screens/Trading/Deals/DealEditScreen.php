@@ -7,6 +7,7 @@ namespace App\Orchid\Screens\Trading\Deals;
 
 use App\Helpers\UserHelper;
 use App\Models\Currency;
+use App\Models\Strategy;
 use App\Models\Trade;
 use App\Models\TradeOrder;
 use App\Models\TradePeriod;
@@ -182,10 +183,17 @@ class DealEditScreen extends Screen
                                 ->type('number'),
                         ]),
 
-                        Select::make('trade.status')
-                            ->title('Статус')
-                            ->options(Trade::getStatuses())
-                            ->required(),
+                        Group::make([
+                            Select::make('trade.status')
+                                ->title('Статус')
+                                ->options(Trade::getStatuses())
+                                ->required(),
+
+                            Relation::make('trade.strategy_id')
+                                ->fromModel(Strategy::class, 'name', 'id')
+                                ->applyScope('byCreator', UserHelper::getId())
+                                ->title('Стратегия'),
+                        ]),
 
                         Group::make([
                             Input::make('trade.commission_open')

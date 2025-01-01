@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Orchid\Screen\AsSource;
 
 
@@ -14,7 +13,7 @@ use Orchid\Screen\AsSource;
  * @property  string $type
  * @property  float $realized_pnl
  */
-class TradeOrder extends Model
+class TradeOrder extends BaseModel
 {
     use AsSource;
 

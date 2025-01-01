@@ -2,9 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 
-class CurrencyFavorite extends Model
+class CurrencyFavorite extends BaseModel
 {
     protected $table = 'currencies_favorites';
 

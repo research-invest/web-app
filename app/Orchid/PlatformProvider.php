@@ -81,6 +81,11 @@ class PlatformProvider extends OrchidServiceProvider
                         ->rawClick()
                         ->route('platform.trading.futures-calculator'),
 
+                    Menu::make('Торговые стратегии')
+                        ->icon('dropbox')
+                        ->rawClick()
+                        ->route('platform.trading.strategies'),
+
                     Menu::make('Торговые периоды')
                         ->icon('book-open')
                         ->rawClick()

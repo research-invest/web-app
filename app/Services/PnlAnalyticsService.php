@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Helpers\MathHelper;
+use App\Helpers\UserHelper;
 use App\Models\Trade;
 use App\Models\TradePeriod;
 use Carbon\Carbon;
@@ -20,6 +21,7 @@ class PnlAnalyticsService
     public function getPlanFactChartData(): array
     {
         $firstTradeDate = DB::table('trades')
+            ->where('user_id', UserHelper::getId())
 //            ->where('status', 'closed')
             ->when(
                 $this->period,
@@ -58,7 +60,7 @@ class PnlAnalyticsService
         }
 
         $startDate = Carbon::parse($firstTradeDate)->startOfDay();
-        $endDate = Carbon::now();
+        $endDate = Carbon::now(); // брать из периода
 
         // Получаем фактический PNL по закрытым сделкам
         $actualPnl = DB::table('trades')
@@ -70,6 +72,7 @@ class PnlAnalyticsService
                 Trade::STATUS_CLOSED,
                 Trade::STATUS_LIQUIDATED,
             ])
+            ->where('user_id', UserHelper::getId())
             ->whereNotNull('closed_at')
             ->whereNull('deleted_at')
             ->whereBetween('closed_at', [$startDate, $endDate])
@@ -157,6 +160,7 @@ class PnlAnalyticsService
                 DB::raw('COUNT(*) as count'),
                 DB::raw('SUM(realized_pnl) as total_pnl')
             )
+            ->where('user_id', UserHelper::getId())
             ->whereIn('status', [
                 Trade::STATUS_CLOSED,
                 Trade::STATUS_LIQUIDATED,
@@ -222,6 +226,7 @@ class PnlAnalyticsService
                 Trade::STATUS_CLOSED,
                 Trade::STATUS_LIQUIDATED,
             ])
+            ->where('user_id', UserHelper::getId())
             ->when(
                 $this->period,
                 fn($query) => $query->where('trade_period_id', $this->period->id)
@@ -333,6 +338,7 @@ class PnlAnalyticsService
                 $this->period,
                 fn($query) => $query->where('trade_period_id', $this->period->id)
             )
+            ->where('user_id', UserHelper::getId())
             ->whereNotNull('closed_at')
             ->whereNull('deleted_at')
             ->orderBy('realized_pnl', 'desc')
@@ -404,6 +410,7 @@ class PnlAnalyticsService
                 Trade::STATUS_CLOSED,
                 Trade::STATUS_LIQUIDATED,
             ])
+            ->where('user_id', UserHelper::getId())
             ->when(
                 $this->period,
                 fn($query) => $query->where('trade_period_id', $this->period->id)

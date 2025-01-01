@@ -7,6 +7,7 @@ namespace App\Orchid\Screens;
 use App\Models\TradePeriod;
 use App\Orchid\Layouts\Charts\HighchartsChart;
 use App\Services\PnlAnalyticsService;
+use Illuminate\Database\Eloquent\Collection;
 use Orchid\Screen\Fields\Select;
 use Orchid\Screen\Screen;
 use Orchid\Support\Facades\Layout;
@@ -19,6 +20,26 @@ class PlatformScreen extends Screen
      */
     public $period;
 
+    public function __construct()
+    {
+        $periodId = (int)request()->get('period_id');
+
+        $this->period = TradePeriod::query()
+            ->byCreator()
+            ->when(
+                $periodId,
+                fn($query) => $query->where('id', $periodId),
+                fn($query) => $query->isActive()->latest()
+            )
+            ->first();
+
+        if (!$this->period) {
+            redirect()
+                ->route('platform.trading.periods')
+                ->with('error', 'Нет активного периода');
+        }
+    }
+
     /**
      * Fetch data to be displayed on the screen.
      *
@@ -26,19 +47,8 @@ class PlatformScreen extends Screen
      */
     public function query(): iterable
     {
-        $periodId = (int)request()->get('period_id');
-
-        $periods = TradePeriod::query()->oldest()->get();
-
-        $this->period = TradePeriod::query()
-            ->when(
-                $periodId,
-                fn($query) => $query->where('id', $periodId),
-                fn($query) => $query->isActive()->latest()
-            )
-            ->firstOrFail();
-
         $analyticsService = new PnlAnalyticsService($this->period);
+        $periods = TradePeriod::query()->byCreator()->oldest()->get();
 
         return [
             'chartData' => $analyticsService->getPlanFactChartData(),
@@ -56,7 +66,7 @@ class PlatformScreen extends Screen
      */
     public function name(): ?string
     {
-        return 'Торговый период: ' . $this->period->name;
+        return 'Торговый период: ' . ($this->period->name ?? 'Нет активного периода');
     }
 
     /**

@@ -6,8 +6,10 @@ use App\Helpers\MathHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Currency;
 use App\Models\Trade;
-use App\Models\Notification;
 use App\Models\TradeOrder;
+use App\Models\TradePeriod;
+use App\Models\User;
+use App\Services\PnlAnalyticsService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -26,8 +28,8 @@ class WatchController extends Controller
             'summary' => [
                 'total_pnl' => $this->calculateTotalPnl($user, $trades),
                 'today_pnl' => $this->calculateTodayPnl($user),
-                'period_pnl' => 0,
-                'active_trades' => Trade::where('user_id', 1)
+                'period_pnl' => $this->getPeriodPnl($user),
+                'active_trades' => Trade::where('user_id', $user->id)
                     ->where('status', Trade::STATUS_OPEN)
                     ->count(),
             ],
@@ -89,8 +91,7 @@ class WatchController extends Controller
                 ], 400);
             }
 
-            // TODO: Добавить логику отмены через API биржи
-            $trade->update(['status' => 'cancelled']);
+//            $trade->update(['status' => 'cancelled']);
 
             return response()->json([
                 'success' => true,
@@ -131,9 +132,9 @@ class WatchController extends Controller
             ->sum('realized_pnl'), 2);
     }
 
-    private function getTrades($user)
+    private function getTrades(User $user)
     {
-        return Trade::where('user_id', 1)
+        return Trade::where('user_id', $user->id)
             ->where('status', Trade::STATUS_OPEN)
             ->latest()
             ->take(10)
@@ -151,22 +152,22 @@ class WatchController extends Controller
                     'orders' => $trade->orders()->get()
                         ->map(function (TradeOrder $order) {
                             return [
-                                'id'=> $order->id,
-                                'price'=> (float)$order->price,
-                                'size'=> (float)$order->size,
+                                'id' => $order->id,
+                                'price' => (float)$order->price,
+                                'size' => (float)$order->size,
                             ];
                         }),
                 ];
             });
     }
 
-    private function getFavorites($user)
+    private function getFavorites(User $user)
     {
         return Currency::query()
             ->isActive()
-            ->join('currencies_favorites', function ($join) {
+            ->join('currencies_favorites', function ($join) use ($user) {
                 $join->on('currencies.id', '=', 'currencies_favorites.currency_id')
-                    ->where('currencies_favorites.user_id', '=', 1);
+                    ->where('currencies_favorites.user_id', '=', $user->id);
             })
             ->orderByDesc('last_price')
             ->get()
@@ -184,5 +185,19 @@ class WatchController extends Controller
                     'price_1h_percent' => round(MathHelper::getPercentOfNumber($currency->last_price, $currency->start_price_1h), 2),
                 ];
             });
+    }
+
+    private function getPeriodPnl(User $user): float
+    {
+        $period = TradePeriod::query()
+            ->byCreator()
+            ->isActive()
+            ->latest()
+            ->first();
+
+        $analyticsService = new PnlAnalyticsService($period);
+        $totalPnl = $analyticsService->getPlanFactChartData()['summary']['totalPnl'] ?? 0;
+
+        return $totalPnl;
     }
 }

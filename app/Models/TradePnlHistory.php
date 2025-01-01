@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Orchid\Screen\AsSource;
 
 /**
@@ -10,7 +9,7 @@ use Orchid\Screen\AsSource;
  * @property float $roe
  * @property float $unrealized_pnl
  */
-class TradePnlHistory extends Model
+class TradePnlHistory extends BaseModel
 {
     use AsSource;
 

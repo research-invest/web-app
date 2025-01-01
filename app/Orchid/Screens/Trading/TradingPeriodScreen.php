@@ -18,7 +18,7 @@ class TradingPeriodScreen extends Screen
     public function query(): array
     {
         return [
-            'periods' => TradePeriod::latest()->paginate()
+            'periods' => TradePeriod::latest()->byCreator()->paginate()
         ];
     }
 

@@ -112,12 +112,13 @@ class DealCloseScreen extends Screen
         $trade
             ->fill($data)
             ->fill([
-                'status' => $closeReason === 'liquidation' ? 'liquidated' : 'closed',
+                'status' => $closeReason === 'liquidation' ? Trade::STATUS_LIQUIDATED : Trade::STATUS_CLOSED,
                 'exit_price' => $exitPrice,
                 'realized_pnl' => empty($data['realized_pnl']) ? $pnl : $data['realized_pnl'],
                 'closed_at' => now(),
                 'notes' => $trade->notes . "\n\nЗакрытие: " . $request->input('notes'),
                 'close_currency_volume' => $trade->currency->volume,
+                'profit_percentage' => $trade->getProfitPercentage(),
             ]);
 
         $trade->save();
