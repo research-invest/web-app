@@ -59,8 +59,8 @@ class PnlAnalyticsService
             ];
         }
 
-        $startDate = Carbon::parse($firstTradeDate)->startOfDay();
-        $endDate = Carbon::now(); // брать из периода
+        $startDate = Carbon::parse($this->period->start_date)->startOfDay();
+        $endDate = Carbon::parse($this->period->end_date)->endOfDay();
 
         // Получаем фактический PNL по закрытым сделкам
         $actualPnl = DB::table('trades')
