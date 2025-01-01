@@ -34,6 +34,7 @@ class StatusFilter extends Filter
         return [
             Select::make('status')
                 ->options(Trade::getStatuses())
+                ->value($this->request->get('status'))
                 ->title('Выберите статус')
                 ->empty('Все статусы')
         ];
