@@ -20,7 +20,12 @@ class PlatformScreen extends Screen
      */
     public $period;
 
-    public function __construct()
+    /**
+     * Fetch data to be displayed on the screen.
+     *
+     * @return array
+     */
+    public function query(): iterable
     {
         $periodId = (int)request()->get('period_id');
 
@@ -33,20 +38,6 @@ class PlatformScreen extends Screen
             )
             ->first();
 
-        if (!$this->period) {
-            redirect()
-                ->route('platform.trading.periods')
-                ->with('error', 'Нет активного периода');
-        }
-    }
-
-    /**
-     * Fetch data to be displayed on the screen.
-     *
-     * @return array
-     */
-    public function query(): iterable
-    {
         $analyticsService = new PnlAnalyticsService($this->period);
         $periods = TradePeriod::query()->byCreator()->oldest()->get();
 
