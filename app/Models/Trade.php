@@ -84,6 +84,12 @@ class Trade extends BaseModel
         'closed_at' => 'datetime',
     ];
 
+    protected $allowedSorts = [
+        'position_type',
+        'profit_percentage',
+        'realized_pnl',
+    ];
+
     public static function getStatuses(): array
     {
         return [
