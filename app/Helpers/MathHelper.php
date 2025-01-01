@@ -111,17 +111,17 @@ class MathHelper
     }
 
     /**
-     * @param float $numberFrom
-     * @param float $numberTo
+     * @param float $initialValue
+     * @param float $finalValue
      * @return float
      */
-    public static function getPercentOfNumber(float $numberFrom, float $numberTo): float
+    public static function getPercentOfNumber(float $initialValue, float $finalValue): float
     {
-        if (!$numberTo) {
+        if (!$initialValue) {
             return 0;
         }
 
-        return ($numberFrom - $numberTo) / $numberTo * 100;
+        return (($finalValue - $initialValue) / abs($initialValue)) * 100;
     }
 
     /**

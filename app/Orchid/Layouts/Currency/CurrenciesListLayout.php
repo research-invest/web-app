@@ -58,7 +58,8 @@ class CurrenciesListLayout extends Table
 
                     foreach ($periods as $label => $startPrice) {
                         if ($startPrice > 0) {
-                            $change = ($currency->last_price - $startPrice) / $startPrice * 100;
+//                            $change = ($currency->last_price - $startPrice) / $startPrice * 100;
+                            $change = MathHelper::getPercentOfNumber($startPrice, $currency->last_price);
                             $color = $change > 0 ? 'green' : ($change < 0 ? 'red' : 'inherit');
                             $html .= sprintf(
                                 ' <small style="color: %s">%s: %+.1f%%</small>',

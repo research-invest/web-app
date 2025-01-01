@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Helpers\UserHelper;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -16,16 +17,21 @@ class AuthController extends Controller
         ]);
 
         if (auth()->attempt($request->only('email', 'password'))) {
-            $user = auth()->user();
-            $token = Str::random(60);
-            
-            $user->forceFill([
-                'api_token' => $token,
-            ])->save();
+            $user = UserHelper::get();
+
+            if (!$user->api_token) {
+                $user->forceFill([
+                    'api_token' => Str::random(60),
+                ])->save();
+            }
 
             return response()->json([
-                'token' => $token,
-                'user' => $user
+                'token' => $user->api_token,
+                'user' => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                ]
             ]);
         }
 
@@ -39,7 +45,7 @@ class AuthController extends Controller
         $user = auth()->user();
         $user->api_token = null;
         $user->save();
-        
+
         return response()->json([
             'message' => 'Выход выполнен успешно'
         ]);
