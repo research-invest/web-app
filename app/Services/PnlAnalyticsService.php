@@ -60,7 +60,7 @@ class PnlAnalyticsService
         }
 
         $startDate = Carbon::parse($this->period->start_date)->startOfDay();
-        $endDate = Carbon::parse($this->period->end_date)->endOfDay();
+        $endDate = $this->period->is_active ? Carbon::now() : Carbon::parse($this->period->end_date)->endOfDay();
 
         // Получаем фактический PNL по закрытым сделкам
         $actualPnl = DB::table('trades')
@@ -89,8 +89,8 @@ class PnlAnalyticsService
         $cumulativeActual = 0;
         $totalDays = 0;
 
-        $dailyTargetValue = when($this->period?->daily_target, $this->period?->daily_target,self::DAILY_TARGET);
-        $weekendTargetValue = when($this->period?->weekend_target, $this->period?->weekend_target,self::DAILY_TARGET_WEEKEND);
+        $dailyTargetValue = when($this->period?->daily_target, $this->period?->daily_target, self::DAILY_TARGET);
+        $weekendTargetValue = when($this->period?->weekend_target, $this->period?->weekend_target, self::DAILY_TARGET_WEEKEND);
 
         for ($date = $startDate->copy(); $date <= $endDate; $date->addDay()) {
             $dateStr = $date->format('Y-m-d');
@@ -212,6 +212,7 @@ class PnlAnalyticsService
             ]
         ];
     }
+
     public function getCurrencyTypeChartData(): array
     {
         $trades = DB::table('trades')
@@ -341,6 +342,7 @@ class PnlAnalyticsService
             ->where('user_id', UserHelper::getId())
             ->whereNotNull('closed_at')
             ->whereNull('deleted_at')
+            ->where('realized_pnl', '>', 0)
             ->orderBy('realized_pnl', 'desc')
             ->limit(10)
             ->pluck('id');
