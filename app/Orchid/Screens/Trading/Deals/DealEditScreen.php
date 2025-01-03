@@ -187,6 +187,7 @@ class DealEditScreen extends Screen
                             ->title('Фейковая сделка')
                             ->help('Не учитывается в статистике, можно проверять гипотезы')
                             ->canSee(!$this->trade->exists)
+                            ->sendTrueOrFalse()
                             ->value(0),
 
                         Group::make([
