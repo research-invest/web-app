@@ -421,7 +421,7 @@ class CurrencyEditScreen extends Screen
             'xAxis' => [
                 'type' => 'datetime',
                 'labels' => [
-                    'format' => '{value:%H:%M}'
+                    'format' => '{value:%Y-%m-%d %H:%M}'  //  '{value:%d.%m %H:%M}'
                 ]
             ],
             'yAxis' => [
