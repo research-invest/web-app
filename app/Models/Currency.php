@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Helpers\MathHelper;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Orchid\Filters\Filterable;
 use Orchid\Filters\Types\Like;
@@ -27,6 +28,7 @@ use Orchid\Screen\AsSource;
  * @property float $start_price_24h
  *
  * @property TopPerformingCoinSnapshot[] $topPerformingSnapshots
+ * @property float $price_change_24h
  */
 class Currency extends BaseModel
 {
@@ -84,5 +86,15 @@ class Currency extends BaseModel
     public function topPerformingSnapshots()
     {
         return $this->hasMany(TopPerformingCoinSnapshot::class);
+    }
+
+
+    /**
+     * price_change_24h
+     * @return float|null
+     */
+    public function getPriceChange24hLAttribute(): ?float
+    {
+        return round(MathHelper::getPercentOfNumber($this->start_price_24h, $this->last_price), 2);
     }
 }

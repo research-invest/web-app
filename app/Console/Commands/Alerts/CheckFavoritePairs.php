@@ -28,12 +28,15 @@ class CheckFavoritePairs extends Command
         $users = User::with('favorites.currency')->get();
 
         foreach ($users as $user) {
-            if ($user->favorites->isEmpty()) {
+            if (!$user->telegram_chat_id || $user->favorites->isEmpty()) {
                 continue;
             }
 
             $message = " *Ваши избранные пары*\n\n";
 
+            /**
+             * @var Currency $currency
+             */
             foreach ($user->favorites as $favorite) {
                 $currency = $favorite->currency;
                 $change = $currency->price_change_24h;
@@ -52,7 +55,7 @@ class CheckFavoritePairs extends Command
                 );
             }
 
-            $this->telegram->sendMessage($message, $user->telegram_chat_id);
+            $this->telegram->sendMessage($message, '-1002321524146');
         }
 
         $this->info('Отчеты по избранным парам отправлены пользователям');

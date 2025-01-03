@@ -60,7 +60,9 @@ class SendTradePnLNotification extends Command
             $emoji = $unrealizedPnl >= 0 ? '📈' : '📉';
             $direction = $trade->isTypeLong() ? 'LONG' : 'SHORT';
 
-            $message .= "{$emoji} <b>{$trade->currency->name}</b> {$direction}\n";
+            $name = $trade->currency->name . ($trade->is_fake ? '(Fake)' : '');
+
+            $message .= "{$emoji} <b>{$name}</b> {$direction}\n";
             $message .= "💰 PNL: " . MathHelper::formatNumber($unrealizedPnl) . " USDT\n";
             $message .= "📊 ROE: " . MathHelper::formatNumber($roe) . "%\n";
             $message .= "💵 Размер позиции: " . MathHelper::formatNumber($trade->getCurrentPositionSize()) . "\n";
