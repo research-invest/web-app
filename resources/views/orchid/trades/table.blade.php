@@ -42,6 +42,7 @@
             @foreach($rows as $source)
                 <tr @class([
                             'table-light' => $source->isOddDay(),
+                            'table-info' => $source->is_fake,
                             '' => $source->isEvenDay()
                         ])>
 
