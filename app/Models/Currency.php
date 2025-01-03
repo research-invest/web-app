@@ -25,6 +25,8 @@ use Orchid\Screen\AsSource;
  * @property float $start_price_1h
  * @property float $start_price_4h
  * @property float $start_price_24h
+ *
+ * @property TopPerformingCoinSnapshot[] $topPerformingSnapshots
  */
 class Currency extends BaseModel
 {
@@ -77,5 +79,10 @@ class Currency extends BaseModel
     public function favorites()
     {
         return $this->hasMany(CurrencyFavorite::class);
+    }
+
+    public function topPerformingSnapshots()
+    {
+        return $this->hasMany(TopPerformingCoinSnapshot::class);
     }
 }

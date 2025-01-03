@@ -13,24 +13,21 @@ use App\Orchid\Screens\Examples\ExampleGridScreen;
 use App\Orchid\Screens\Examples\ExampleLayoutsScreen;
 use App\Orchid\Screens\Examples\ExampleScreen;
 use App\Orchid\Screens\Examples\ExampleTextEditorsScreen;
-
 use App\Orchid\Screens\PlatformScreen;
 use App\Orchid\Screens\Role\RoleEditScreen;
 use App\Orchid\Screens\Role\RoleListScreen;
+use App\Orchid\Screens\Statistics\CompositeIndex;
+use App\Orchid\Screens\Trading\Deals\DealCloseScreen;
+use App\Orchid\Screens\Trading\Deals\DealEditScreen;
+use App\Orchid\Screens\Trading\Deals\DealsListScreen;
+use App\Orchid\Screens\Trading\StrategiesScreen;
+use App\Orchid\Screens\Trading\TradingPeriodScreen;
+use App\Orchid\Screens\Trading\TradingReportScreen;
 use App\Orchid\Screens\User\UserEditScreen;
 use App\Orchid\Screens\User\UserListScreen;
 use App\Orchid\Screens\User\UserProfileScreen;
 use Illuminate\Support\Facades\Route;
 use Tabuna\Breadcrumbs\Trail;
-
-use \App\Orchid\Screens\Trading\Deals\DealsListScreen;
-use \App\Orchid\Screens\Trading\Deals\DealEditScreen;
-use \App\Orchid\Screens\Trading\Deals\DealCloseScreen;
-use App\Orchid\Screens\Statistics\CompositeIndex;
-
-use \App\Orchid\Screens\Trading\TradingPeriodScreen;
-use App\Orchid\Screens\Trading\TradingReportScreen;
-use \App\Orchid\Screens\Trading\StrategiesScreen;
 
 /*
 |--------------------------------------------------------------------------
@@ -50,8 +47,11 @@ Route::screen('/main', PlatformScreen::class)
 Route::screen('/statistics/normalize', \App\Orchid\Screens\Statistics\Normalize::class)
     ->name('platform.statistics.normalize');
 
-Route::screen('/statistics/top-performing-coins', \App\Orchid\Screens\Statistics\TopPerformingCoins::class)
+Route::screen('/statistics/top-performing-coins', \App\Orchid\Screens\Statistics\TopPerformingCoins\TopPerformingCoins::class)
     ->name('platform.statistics.top-performing-coins');
+
+Route::screen('/statistics/top-performing-coins-table', \App\Orchid\Screens\Statistics\TopPerformingCoins\TopPerformingCoinsTable::class)
+    ->name('platform.statistics.top-performing-coins-table');
 
 Route::screen('/statistics/volume-by-range', \App\Orchid\Screens\Statistics\VolumeByRange::class)
     ->name('platform.statistics.volume-by-range');

@@ -58,6 +58,11 @@ class PlatformProvider extends OrchidServiceProvider
                         ->rawClick()
                         ->route('platform.statistics.top-performing-coins'),
 
+                    Menu::make('Хорошая динамика (таблица)')
+                        ->icon('bs.book')
+                        ->rawClick()
+                        ->route('platform.statistics.top-performing-coins-table'),
+
                     Menu::make('Объем по диапазону')
                         ->icon('bs.book')
                         ->route('platform.statistics.volume-by-range'),

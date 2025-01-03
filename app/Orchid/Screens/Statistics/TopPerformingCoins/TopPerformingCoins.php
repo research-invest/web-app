@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Orchid\Screens\Statistics;
+namespace App\Orchid\Screens\Statistics\TopPerformingCoins;
 
 use App\Orchid\Filters\Statistics\TopPerformingCoins\FiltersLayout;
 use App\Orchid\Layouts\Charts\HighchartsChart;
