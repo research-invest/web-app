@@ -2,8 +2,12 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property Carbon $created_at
+ */
 class TopPerformingCoinSnapshot extends BaseModel
 {
     public $timestamps = false;

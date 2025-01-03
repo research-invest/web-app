@@ -6,6 +6,7 @@ namespace App\Orchid\Screens\Currency;
 
 use App\Models\Currency;
 use App\Models\CurrencyFavorite;
+use App\Models\TopPerformingCoinSnapshot;
 use App\Orchid\Filters\Statistics\Normalize\IntervalsFilter;
 use App\Orchid\Layouts\Charts\HighchartsChart;
 use App\Services\Analyze\TechnicalAnalysis;
@@ -109,9 +110,13 @@ class CurrencyEditScreen extends Screen
                     new HighchartsChart(
                         $this->getVolumeChart()
                     ),
-
                     new HighchartsChart(
                         $this->getDeltaVolumeChart()
+                    ),
+                ],
+                'Статистика изменений' => [
+                    new HighchartsChart(
+                        $this->getTopPerformingChart()
                     ),
                 ],
                 'Статистика сделок' => Layout::view('currencies.trading-stats'),
@@ -366,6 +371,95 @@ class CurrencyEditScreen extends Screen
                     'valueDecimals' => 2
                 ]
             ]]
+        ];
+    }
+
+    private function getTopPerformingChart(): array
+    {
+        $snapshots = $this->currency->topPerformingSnapshots()
+            ->orderBy('created_at')
+            ->get();
+
+        $priceData = [];
+        $volumeData = [];
+
+        /**
+         * @var TopPerformingCoinSnapshot $snapshot
+         */
+        foreach ($snapshots as $snapshot) {
+
+            $timestamp = $snapshot->created_at->getTimestamp();
+
+            $priceData[] = [
+                $timestamp,
+                (float)$snapshot->price_change_percent
+            ];
+
+            $volumeData[] = [
+                $timestamp,
+                (float)$snapshot->volume_diff_percent
+            ];
+        }
+
+        return [
+            'chart' => [
+                'height' => 600,
+                'type' => 'line'
+            ],
+            'title' => [
+                'text' => 'Динамика изменений цены и объема'
+            ],
+            'rangeSelector' => [
+                'enabled' => false,
+            ],
+            'navigator' => [
+                'enabled' => true,
+            ],
+            'scrollbar' => [
+                'enabled' => true
+            ],
+            'xAxis' => [
+                'type' => 'datetime',
+                'labels' => [
+                    'format' => '{value:%H:%M}'
+                ]
+            ],
+            'yAxis' => [
+                'title' => [
+                    'text' => 'Изменение (%)'
+                ],
+                'labels' => [
+                    'format' => '{value}%'
+                ]
+            ],
+            'series' => [
+                [
+                    'name' => 'Изменение цены',
+                    'data' => $priceData,
+                    'color' => '#7cb5ec',
+                    'tooltip' => [
+                        'valueSuffix' => '%',
+                        'valueDecimals' => 2
+                    ]
+                ],
+                [
+                    'name' => 'Изменение объема',
+                    'data' => $volumeData,
+                    'color' => '#434348',
+                    'tooltip' => [
+                        'valueSuffix' => '%',
+                        'valueDecimals' => 2
+                    ]
+                ]
+            ],
+            'plotOptions' => [
+                'series' => [
+                    'marker' => [
+                        'enabled' => true,
+                        'radius' => 3
+                    ]
+                ]
+            ]
         ];
     }
 }
