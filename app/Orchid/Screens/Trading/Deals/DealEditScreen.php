@@ -29,6 +29,7 @@ use Orchid\Screen\Fields\TextArea;
 use Orchid\Screen\Screen;
 use Orchid\Support\Facades\Layout;
 use Orchid\Support\Facades\Toast;
+use Orchid\Screen\Fields\Upload;
 
 class DealEditScreen extends Screen
 {
@@ -252,6 +253,21 @@ class DealEditScreen extends Screen
                         'steps' => $this->calculatePnLSteps($this->trade)
                     ]),
                 ],
+
+                'Изображения' => [
+                    Layout::rows([
+                        Upload::make('trade.attachment')
+                            ->title('Добавить изображение')
+                            ->acceptedFiles('image/*')
+                            ->maxFileSize(10)
+                            ->multiple()
+                            ->help('Загрузите скриншот графика или другое изображение'),
+                    ]),
+
+                    Layout::view('trading.trade-images', [
+                        'trade' => $this->trade
+                    ]),
+                ],
             ])
         ];
     }
@@ -311,6 +327,13 @@ class DealEditScreen extends Screen
 
             Toast::success('Сделка создана');
         } else {
+
+            if ($request->has('trade.attachment')) {
+                $trade->attachments()->syncWithoutDetaching(
+                    $request->input('trade.attachment', [])
+                );
+            }
+
             $trade->fill($data)->save();
             Toast::success('Сделка обновлена');
         }

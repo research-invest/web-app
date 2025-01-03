@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Helpers\MathHelper;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Orchid\Attachment\Attachable;
 use Orchid\Filters\Filterable;
 use Orchid\Screen\AsSource;
 use Orchid\Screen\Concerns\ModelStateRetrievable;
@@ -39,7 +40,7 @@ use Orchid\Screen\Concerns\ModelStateRetrievable;
  */
 class Trade extends BaseModel
 {
-    use AsSource, Filterable, SoftDeletes, ModelStateRetrievable;
+    use AsSource, Filterable, SoftDeletes, ModelStateRetrievable, Attachable;
 
     public const string POSITION_TYPE_LONG = 'long';
     public const string POSITION_TYPE_SHORT = 'short';
