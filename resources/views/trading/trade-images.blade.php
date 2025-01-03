@@ -6,7 +6,9 @@
             @foreach($trade->attachment as $image)
                 <div class="col-md-4 mb-4">
                     <div class="card">
-                        <img src="{{ $image->url() }}" class="card-img-top" alt="Trade Image">
+                        <a target="_blank" href="{{ $image->url() }}">
+                            <img src="{{ $image->url() }}" class="card-img-top" alt="">
+                        </a>
                         <div class="card-body">
                             <p class="card-text text-muted small">
                                 Загружено: {{ $image->created_at->format('d.m.Y H:i') }}
@@ -17,4 +19,4 @@
             @endforeach
         </div>
     @endif
-</div> 
+</div>
