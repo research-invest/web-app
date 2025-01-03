@@ -93,7 +93,7 @@ class Currency extends BaseModel
      * price_change_24h
      * @return float|null
      */
-    public function getPriceChange24hLAttribute(): ?float
+    public function getPriceChange24hAttribute(): ?float
     {
         return round(MathHelper::getPercentOfNumber($this->start_price_24h, $this->last_price), 2);
     }
