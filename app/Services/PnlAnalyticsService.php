@@ -75,6 +75,7 @@ class PnlAnalyticsService
             ->where('user_id', UserHelper::getId())
             ->whereNotNull('closed_at')
             ->whereNull('deleted_at')
+            ->where('is_fake', 0)
             ->whereBetween('closed_at', [$startDate, $endDate])
             ->groupBy('date')
             ->get()
@@ -169,6 +170,7 @@ class PnlAnalyticsService
                 $this->period,
                 fn($query) => $query->where('trade_period_id', $this->period->id)
             )
+            ->where('is_fake', 0)
             ->whereNotNull('closed_at')
             ->whereNull('deleted_at')
             ->groupBy('position_type')
@@ -232,6 +234,7 @@ class PnlAnalyticsService
                 $this->period,
                 fn($query) => $query->where('trade_period_id', $this->period->id)
             )
+            ->where('is_fake', 0)
             ->whereNotNull('closed_at')
             ->whereNull('deleted_at')
             ->groupBy('currency_id', 'currencies.name')
@@ -340,6 +343,7 @@ class PnlAnalyticsService
                 fn($query) => $query->where('trade_period_id', $this->period->id)
             )
             ->where('user_id', UserHelper::getId())
+            ->where('is_fake', 0)
             ->whereNotNull('closed_at')
             ->whereNull('deleted_at')
             ->where('realized_pnl', '>', 0)
@@ -417,6 +421,7 @@ class PnlAnalyticsService
                 $this->period,
                 fn($query) => $query->where('trade_period_id', $this->period->id)
             )
+            ->where('is_fake', 0)
             ->whereNotNull('closed_at')
             ->whereNull('deleted_at')
             ->where('realized_pnl', '>', 0)

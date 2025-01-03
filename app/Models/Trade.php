@@ -28,6 +28,7 @@ use Orchid\Screen\Concerns\ModelStateRetrievable;
  * @property  float $commission_open
  * @property  float $commission_close
  * @property  float $commission_finance
+ * @property  boolean $is_fake
  *
  * @property  Currency $currency
  * @property  TradeOrder[] $orders
@@ -70,6 +71,7 @@ class Trade extends BaseModel
         'commission_finance',
         'profit_percentage',
         'strategy_id',
+        'is_fake',
     ];
 
     protected $casts = [
@@ -117,6 +119,17 @@ class Trade extends BaseModel
     public function pnlHistory()
     {
         return $this->hasMany(TradePnlHistory::class);
+    }
+
+
+    public function scopeFake($query)
+    {
+        return $query->where('is_fake', true);
+    }
+
+    public function scopeNotFake($query)
+    {
+        return $query->where('is_fake', false);
     }
 
     /**

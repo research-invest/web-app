@@ -38,10 +38,15 @@ class ListLayout extends Table
                 ),
 
             TD::make('currency', 'Пара')
-                ->render(fn(Trade $trade) => Link::make($trade->currency->name)
-                    ->rawClick()
-                    ->route('platform.trading.deal.edit', $trade)
-                ),
+                ->render(function(Trade $trade) {
+                    $route = route('platform.trading.deal.edit', $trade);
+                    $text = $trade->currency->name;
+                    if ($trade->is_fake) {
+                        $text = "{$text} (Fake Trade)";
+                        return "<a href='{$route}' class='text-danger'>{$text}</a>";
+                    }
+                    return "<a href='{$route}'>{$text}</a>";
+                }),
 
             TD::make('position_type', 'Тип'),
             TD::make('position_size', 'Размер'),

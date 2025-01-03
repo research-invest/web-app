@@ -183,6 +183,12 @@ class DealEditScreen extends Screen
                                 ->type('number'),
                         ]),
 
+                        CheckBox::make('trade.is_fake')
+                            ->title('Фейковая сделка')
+                            ->help('Не учитывается в статистике, можно проверять гипотезы')
+                            ->canSee(!$this->trade->exists)
+                            ->value(0),
+
                         Group::make([
                             Select::make('trade.status')
                                 ->title('Статус')
