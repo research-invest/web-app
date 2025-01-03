@@ -388,7 +388,7 @@ class CurrencyEditScreen extends Screen
          */
         foreach ($snapshots as $snapshot) {
 
-            $timestamp = $snapshot->created_at->getTimestamp();
+            $timestamp = $snapshot->created_at->getTimestamp() * 1000;
 
             $priceData[] = [
                 $timestamp,
