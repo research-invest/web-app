@@ -336,7 +336,7 @@ class FuturesCalculator extends Screen
             return 1.0;
         }
 
-        if ($trade->position_type === 'long') {
+        if ($trade->isTypeLong()) {
             return round(($trade->entry_price - $trade->stop_loss_price) / $trade->entry_price * 100, 2);
         }
 
@@ -349,7 +349,7 @@ class FuturesCalculator extends Screen
             return 10.0;
         }
 
-        if ($trade->position_type === 'long') {
+        if ($trade->isTypeLong()) {
             return round(($trade->take_profit_price - $trade->entry_price) / $trade->entry_price * 100, 2);
         }
 
