@@ -75,9 +75,11 @@ class ListLayout extends Table
                 })
                 ->sort()
                 ->alignRight(),
-            TD::make('profit_percentage', '% от вложений')
+
+            TD::make('profit_percentage', 'roe')
             ->defaultHidden()
             ->sort(),
+
             TD::make('status', 'Статус'),
 
             TD::make('open_currency_volume', 'Объем открытия сделки')
