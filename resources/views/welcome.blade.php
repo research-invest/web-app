@@ -1,11 +1,20 @@
-<!DOCTYPE html>
+@php
+    $colors = ['palevioletred', 'aqua', 'brown', 'chartreuse'];
+@endphp
+    <!DOCTYPE html>
 <html>
 <head>
     <title>Welcome to nginx!</title>
     <style>
-        html { background-color: {{ array_rand(['palevioletred', 'aqua', 'brown', 'chartreuse']) }}; }
-        body { width: 35em; margin: 0 auto;
-            font-family: Tahoma, Verdana, Arial, sans-serif; }
+        html {
+            background-color: {{ $colors[array_rand($colors)] }};
+        }
+
+        body {
+            width: 35em;
+            margin: 0 auto;
+            font-family: Tahoma, Verdana, Arial, sans-serif;
+        }
     </style>
 </head>
 <body>
