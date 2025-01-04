@@ -70,7 +70,8 @@ class PlatformProvider extends OrchidServiceProvider
                     Menu::make('Композитный индекс')
                         ->icon('bs.book')
                         ->rawClick()
-                        ->route('platform.composite-index'),
+                        ->route('platform.composite-index')
+                        ->divider(),
 
                     Menu::make('Doge/Tao/One/')
                         ->icon('bs.book')
