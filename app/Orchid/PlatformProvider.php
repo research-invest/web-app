@@ -70,7 +70,19 @@ class PlatformProvider extends OrchidServiceProvider
                     Menu::make('Композитный индекс')
                         ->icon('bs.book')
                         ->rawClick()
-                        ->route('platform.composite-index')
+                        ->route('platform.composite-index'),
+
+                    Menu::make('Doge/Tao/One/')
+                        ->icon('bs.book')
+                        ->target('_blank')
+                        ->rawClick()
+                        ->href('http://p635704.for-test-only.ru/'),
+
+                    Menu::make('Neo/Link/')
+                        ->icon('bs.book')
+                        ->target('_blank')
+                        ->rawClick()
+                        ->href('http://a8kg.fvds.ru/'),
                 ]),
             Menu::make('Торговля')
                 ->icon('money')
