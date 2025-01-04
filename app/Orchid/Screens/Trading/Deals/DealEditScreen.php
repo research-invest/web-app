@@ -151,7 +151,9 @@ class DealEditScreen extends Screen
 
                             Input::make('trade.position_size')
                                 ->title('Размер позиции (USDT)')
+                                ->value($this->trade->exists ? $this->trade->position_size : 400)
                                 ->type('number')
+                                ->step('0.1')
                                 ->required(),
 
                             Input::make('trade.leverage')
@@ -159,7 +161,7 @@ class DealEditScreen extends Screen
                                 ->type('number')
                                 ->value($this->trade->exists ? $this->trade->leverage : 5)
                                 ->min(1)
-                                ->max(125)
+                                ->max(200)
                                 ->required(),
                         ]),
 
@@ -219,7 +221,6 @@ class DealEditScreen extends Screen
                                 ->canSee($this->trade->exists)
                                 ->type('number'),
                         ]),
-
 
                         Input::make('trade.realized_pnl')
                             ->title('Реализованный PnL')
