@@ -23,7 +23,7 @@ class CheckListSeeder extends Seeder
             ],
             [
                 'title' => 'Войти в фейковую сделку',
-                'description' => 'Хотя бы на 10-20 минут и уже по ней принять решение',
+                'description' => 'Хотя бы на 10-20 минут',
             ],
         ];
 

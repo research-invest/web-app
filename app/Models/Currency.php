@@ -49,8 +49,8 @@ class Currency extends BaseModel
      * @var array
      */
     protected $allowedFilters = [
-        'id'         => Where::class,
-        'name'       => Like::class,
+        'id' => Where::class,
+        'name' => Like::class,
         'updated_at' => WhereDateStartEnd::class,
         'created_at' => WhereDateStartEnd::class,
     ];
@@ -98,5 +98,14 @@ class Currency extends BaseModel
     public function getPriceChange24hAttribute(): ?float
     {
         return round(MathHelper::getPercentOfNumber($this->start_price_24h, $this->last_price), 2);
+    }
+
+    /**
+     * Ссылка на TradingView
+     * @return string
+     */
+    public function getTVLink(): string
+    {
+        return sprintf('https://ru.tradingview.com/chart/?symbol=%s:%s', 'binance', $this->tradingview_code ?: $this->code);
     }
 }

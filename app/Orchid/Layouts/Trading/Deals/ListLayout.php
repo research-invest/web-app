@@ -95,6 +95,10 @@ class ListLayout extends Table
                 ->render(fn(Trade $trade) => $trade->created_at->toDateTimeString()
                 )->defaultHidden(),
 
+            TD::make('duration_time', 'Длительность')
+                ->render(fn(Trade $trade) => $trade->getDurationTime()
+                )->defaultHidden(),
+
             TD::make(__('Actions'))
                 ->align(TD::ALIGN_CENTER)
                 ->width('100px')

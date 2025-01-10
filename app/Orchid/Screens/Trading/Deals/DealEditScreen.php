@@ -74,7 +74,8 @@ class DealEditScreen extends Screen
 
             Button::make('Сохранить')
                 ->icon('save')
-                ->method('save'),
+                ->method('save')
+                ->class('btn btn-default'),
 
             Link::make('Калькулятор')
                 ->icon('calculator')
@@ -82,6 +83,13 @@ class DealEditScreen extends Screen
                 ->canSee($this->trade->exists)
                 ->route('platform.trading.futures-calculator', ['trade_id' => $this->trade->id])
                 ->class('btn btn-info'),
+
+            Link::make('Валюта')
+                ->icon('bitcoin')
+                ->target('_blank')
+                ->canSee($this->trade->exists)
+                ->route('platform.currencies.edit', ['currency' => $this->trade->currency_id])
+                ->class('btn btn-default'),
 
             ModalToggle::make('Добавить ордер')
                 ->modal('addOrderModal')
@@ -97,13 +105,12 @@ class DealEditScreen extends Screen
                 ->class('btn btn-warning')
                 ->canSee($this->trade->exists && $this->trade->status === 'open'),
 
-//            Button::make('Удалить')
-//                ->icon('trash')
-//                ->method('remove')
-//                ->confirm('Уверены?')
-//                ->class('btn btn-danger')
-//                ->canSee($this->trade->exists),
-
+            Link::make('TV')
+                ->icon('grid')
+                ->target('_blank')
+                ->canSee($this->trade->exists)
+                ->href($this->trade->currency->getTVLink())
+                ->class('btn btn-default'),
         ];
     }
 

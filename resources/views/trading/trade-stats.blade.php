@@ -119,7 +119,6 @@
                         </div>
                     @endif
 
-                    {{-- В блоке "Цены и уровни" добавим информацию о ликвидации --}}
                     <div class="d-flex justify-content-between mb-2">
                         <span>Цена ликвидации:</span>
                         <div class="text-end">
@@ -168,6 +167,10 @@
                                 {{ number_format($unrealizedPnl / $trade->position_size * 100, 2) }}%
                             </span>
                         </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Длительность:</span>
+                            <span>{{ $trade->getDurationTime() }}</span>
+                        </div>
                     @else
                         <div class="d-flex justify-content-between mb-2">
                             <span>Реализованный P&L:</span>
@@ -185,10 +188,7 @@
                         </div>
                         <div class="d-flex justify-content-between">
                             <span>Длительность:</span>
-                            @if($trade->created_at)
-                                <span>{{ $trade->closed_at->diffForHumans($trade->created_at, true) }}</span>
-                            @endif
-
+                            <span>{{ $trade->getDurationTime() }}</span>
                         </div>
                     @endif
                 </div>

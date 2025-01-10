@@ -45,10 +45,6 @@ return new class extends Migration
             $table->softDeletes();
         });
 
-//        platform.trading.check-list
-//            platform.trading.check-item.create
-//            platform.trading.check-item.edit
-
         //trade_check_list_items - выполненные пункты чек-листа для конкретной сделки
         Schema::create('trade_check_list_items', function (Blueprint $table) {
             $table->bigIncrements('id');

@@ -35,6 +35,7 @@ use Orchid\Screen\Concerns\ModelStateRetrievable;
  * @property  boolean $is_fake
  *
  * @property  Carbon $closed_at
+ * @property  Carbon $created_at
  * @property  Currency $currency
  * @property  TradeOrder[] $orders
  * @property  User $user
@@ -392,7 +393,7 @@ class Trade extends BaseModel
         return $this->status === self::STATUS_OPEN;
     }
 
-    public function getProfitPercentage():float
+    public function getProfitPercentage(): float
     {
         $initialDeposit = $this->orders()
             ->whereIn('type', [
@@ -411,5 +412,18 @@ class Trade extends BaseModel
         }
 
         return 0.0;
+    }
+
+    /**
+     * Длительность сделки
+     * @return string
+     */
+    public function getDurationTime(): string
+    {
+        if ($this->closed_at) {
+            return $this->closed_at->diffForHumans($this->created_at, true);
+        }
+
+        return $this->created_at->diffForHumans(now(), true);
     }
 }

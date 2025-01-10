@@ -136,6 +136,11 @@ class CurrenciesListLayout extends Table
                             ->rawClick()
                             ->icon('bs.pencil'),
 
+                        Link::make('Открыть TradingView')
+                            ->icon('grid')
+                            ->target('_blank')
+                            ->rawClick()
+                            ->href($currency->getTVLink()),
                     ])),
         ];
     }
