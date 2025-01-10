@@ -106,6 +106,8 @@ class Currency extends BaseModel
      */
     public function getTVLink(): string
     {
-        return sprintf('https://ru.tradingview.com/chart/?symbol=%s:%s', 'binance', $this->tradingview_code ?: $this->code);
+        return sprintf('https://ru.tradingview.com/chart/?symbol=%s&interval=%s',
+            $this->tradingview_code ?: $this->code,
+            60);
     }
 }
