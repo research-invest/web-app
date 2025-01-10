@@ -33,15 +33,11 @@ class CheckItemListScreen extends Screen
         ];
     }
 
-//platform.trading.check-list
-//platform.trading.check-item.create
-//platform.trading.check-item.edit
-
     public function layout(): array
     {
         return [
             Layout::table('checkListItems', [
-                TD::make('sort_order', '№')->sort(),
+                TD::make('id', '№')->sort(),
                 TD::make('title', 'Название')->sort(),
                 TD::make('strategy.name', 'Стратегия'),
                 TD::make('priority', 'Приоритет')->sort(),

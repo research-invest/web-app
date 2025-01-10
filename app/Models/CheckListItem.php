@@ -20,6 +20,13 @@ class CheckListItem extends Model
         'user_id',
     ];
 
+
+    protected $allowedSorts = [
+        'id',
+        'priority',
+        'sort_order',
+    ];
+
     public function strategy()
     {
         return $this->belongsTo(Strategy::class, 'trade_strategy_id');
