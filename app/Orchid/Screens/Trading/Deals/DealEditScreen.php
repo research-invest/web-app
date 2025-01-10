@@ -30,10 +30,15 @@ use Orchid\Screen\Screen;
 use Orchid\Support\Facades\Layout;
 use Orchid\Support\Facades\Toast;
 use Orchid\Screen\Fields\Upload;
+use App\Models\CheckListItem;
+use App\Models\TradeCheckListItem;
 
 class DealEditScreen extends Screen
 {
 
+    /**
+     * @var Trade
+     */
     public $trade;
 
     public function name(): ?string
@@ -45,8 +50,21 @@ class DealEditScreen extends Screen
     {
         $this->trade = $trade;
 
+        // Загружаем существующие чек-листы для сделки
+        $checklist = [];
+        if ($trade->exists) {
+            $trade->load('checkListItems.checkListItem');
+            foreach ($trade->checkListItems as $item) {
+                $checklist[$item->check_list_item_id] = [
+                    'is_completed' => $item->is_completed,
+                    'notes' => $item->notes,
+                ];
+            }
+        }
+
         return [
-            'trade' => $trade
+            'trade' => $trade,
+            'checklist' => $checklist,
         ];
     }
 
@@ -232,6 +250,18 @@ class DealEditScreen extends Screen
                     ])
                 ],
 
+                'Чек-лист' => [
+                    Layout::view('trading.header_check_list', [
+                        'title' => 'Проверка перед открытием сделки',
+                        'description' => 'Убедитесь, что все пункты проверены перед открытием позиции'
+                    ]),
+
+                    // Динамически формируем чек-лист
+                    Layout::rows(
+                        $this->getCheckListFields(),
+                    ),
+                ],
+
                 'Ордера' => [
                     Layout::view('trading.trade-orders', ['trade' => $this->trade])
                 ],
@@ -328,7 +358,6 @@ class DealEditScreen extends Screen
 
             Toast::success('Сделка создана');
         } else {
-
             if ($request->has('trade.attachment')) {
                 $trade->attachments()->syncWithoutDetaching(
                     $request->input('trade.attachment', [])
@@ -338,6 +367,35 @@ class DealEditScreen extends Screen
             $trade->fill($data)->save();
             Toast::success('Сделка обновлена');
         }
+
+        // Сохраняем чек-лист
+        $checklistData = $request->input('checklist', []);
+
+        foreach ($checklistData as $checkListItemId => $data) {
+            $item = TradeCheckListItem::updateOrCreate(
+                [
+                    'trade_id' => $trade->id,
+                    'check_list_item_id' => $checkListItemId,
+                ],
+                [
+                    'is_completed' => $data['is_completed'] ?? false,
+                    'notes' => $data['notes'] ?? null,
+                ]
+            );
+
+            // Если есть прикрепленные файлы
+            if (isset($data['attachment']) && !empty($data['attachment'])) {
+                $trade->attachments()->syncWithoutDetaching(
+                    $data['attachment']
+                );
+
+                $item->attachments()->syncWithoutDetaching(
+                    $data['attachment']
+                );
+            }
+        }
+
+        Toast::success('Сделка сохранена');
 
         return redirect()->route('platform.trading.deal.edit', $trade->id);
     }
@@ -454,5 +512,64 @@ class DealEditScreen extends Screen
         }
 
         return $results;
+    }
+
+    private function getCheckListFields(): array
+    {
+        $fields = [];
+
+        $checkListItems = CheckListItem::orderBy('sort_order')
+            ->when($this->trade->strategy_id, function ($query) {
+                $query->where(function ($q) {
+                    $q->where('trade_strategy_id', $this->trade->strategy_id)
+                        ->orWhereNull('trade_strategy_id');
+                });
+            })
+            ->get();
+
+        foreach ($checkListItems as $item) {
+            // Получаем существующий чек-лист айтем
+            $checkListItem = $this->trade->checkListItems
+                ->where('check_list_item_id', $item->id)
+                ->first();
+
+            // Получаем прикрепленные файлы для этого пункта
+            $attachments = [];
+            if ($checkListItem) {
+                $attachments = $checkListItem->attachments()->get();
+            }
+
+            // Добавляем группу с полями
+            $fields[] = Group::make([
+                CheckBox::make("checklist.{$item->id}.is_completed")
+                    ->title($item->title)
+                    ->sendTrueOrFalse()
+                    ->value($checkListItem?->is_completed ?? false)
+                    ->help($item->description),
+
+                TextArea::make("checklist.{$item->id}.notes")
+                    ->title('Заметки')
+                    ->value($checkListItem?->notes)
+                    ->rows(2)
+                    ->canSee($checkListItem?->is_completed ?? false),
+
+                Upload::make("checklist.{$item->id}.attachment")
+                    ->title('Скриншот')
+                    ->maxFiles(1)
+                    ->value($attachments)
+                    ->targetId()
+                    ->groups('trades')
+                    ->canSee($checkListItem?->is_completed ?? false),
+
+//                Layout::rows([
+//                    Layout::view('trading.check_list_attachments', [
+//                        'attachments' => $attachments
+//                    ])
+//                ]),
+
+            ]);
+        }
+
+        return $fields;
     }
 }

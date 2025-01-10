@@ -16,7 +16,7 @@ class Strategy extends BaseModel
 {
     use AsSource;
 
-    protected $table = 'strategies';
+    protected $table = 'trade_strategies';
 
     protected $fillable = [
         'name',

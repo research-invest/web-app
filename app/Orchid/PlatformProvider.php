@@ -109,6 +109,11 @@ class PlatformProvider extends OrchidServiceProvider
                         ->rawClick()
                         ->route('platform.trading.periods'),
 
+                    Menu::make('Чек-листы')
+                        ->icon('list')
+                        ->route('platform.trading.check-list')
+                        ->title('Управление чек-листами'),
+
                 ])
                 ->divider(),
 

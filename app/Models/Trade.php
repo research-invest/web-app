@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Helpers\MathHelper;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Orchid\Attachment\Attachable;
 use Orchid\Filters\Filterable;
@@ -19,6 +20,7 @@ use Orchid\Screen\Concerns\ModelStateRetrievable;
  * @property  float $open_currency_volume
  * @property  float $close_currency_volume
  * @property  float $entry_price
+ * @property  float $stop_loss_price
  * @property  float $exit_price
  * @property  float $profit_percentage
  * @property  integer $leverage
@@ -26,15 +28,18 @@ use Orchid\Screen\Concerns\ModelStateRetrievable;
  * @property  string $status
  * @property  string $position_type
  * @property  integer $user_id
+ * @property  integer $strategy_id
  * @property  float $commission_open
  * @property  float $commission_close
  * @property  float $commission_finance
  * @property  boolean $is_fake
  *
+ * @property  Carbon $closed_at
  * @property  Currency $currency
  * @property  TradeOrder[] $orders
  * @property  User $user
  * @property  TradePnlHistory[] $pnlHistory
+ * @property  CheckListItem[] $checkListItems
  * @property  TradePeriod $tradePeriod
  * @property  float $currentPnL
  */
@@ -120,6 +125,11 @@ class Trade extends BaseModel
     public function pnlHistory()
     {
         return $this->hasMany(TradePnlHistory::class);
+    }
+
+    public function checkListItems()
+    {
+        return $this->hasMany(TradeCheckListItem::class, 'trade_id');
     }
 
 

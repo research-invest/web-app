@@ -17,6 +17,8 @@ use App\Orchid\Screens\PlatformScreen;
 use App\Orchid\Screens\Role\RoleEditScreen;
 use App\Orchid\Screens\Role\RoleListScreen;
 use App\Orchid\Screens\Statistics\CompositeIndex;
+use App\Orchid\Screens\Trading\CheckListItem\CheckListItemEditScreen;
+use App\Orchid\Screens\Trading\CheckListItem\CheckItemListScreen;
 use App\Orchid\Screens\Trading\Deals\DealCloseScreen;
 use App\Orchid\Screens\Trading\Deals\DealEditScreen;
 use App\Orchid\Screens\Trading\Deals\DealsListScreen;
@@ -102,6 +104,18 @@ Route::screen('trading/deals/{trade}/close', DealCloseScreen::class)
             ->push('Закрытие сделки')
     );
 
+Route::screen('trading/report/{period}', TradingReportScreen::class)
+    ->name('platform.trading.report');
+
+Route::screen('trading/check-list', CheckItemListScreen::class)
+    ->name('platform.trading.check-list');
+
+Route::screen('trading/check-list/{checkListItem?}/edit', CheckListItemEditScreen::class)
+    ->name('platform.trading.check-item.edit');
+
+Route::screen('trading/check-list/create', CheckListItemEditScreen::class)
+    ->name('platform.trading.check-item.create');
+
 Route::screen('currencies/{currency}/edit', CurrencyEditScreen::class)
     ->name('platform.currencies.edit')
     ->breadcrumbs(fn (Trail $trail, $currency) => $trail
@@ -181,6 +195,3 @@ Route::screen('/examples/charts', ExampleChartsScreen::class)->name('platform.ex
 Route::screen('/examples/cards', ExampleCardsScreen::class)->name('platform.example.cards');
 
 //Route::screen('idea', Idea::class, 'platform.screens.idea');
-
-Route::screen('trading/report/{period}', TradingReportScreen::class)
-    ->name('platform.trading.report');

@@ -14,6 +14,7 @@ use Orchid\Screen\AsSource;
  * @property int $id
  * @property string $name
  * @property string $code
+ * @property string $tradingview_code
  * @property integer $type
  * @property float $last_price
  * @property float $volume
@@ -66,6 +67,7 @@ class Currency extends BaseModel
         'created_at',
         'volume',
         'last_price',
+        'tradingview_code',
     ];
 
 
