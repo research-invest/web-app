@@ -21,7 +21,6 @@ use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Fields\CheckBox;
 use Orchid\Screen\Fields\Group;
 use Orchid\Screen\Fields\Input;
-use Orchid\Screen\Fields\Picture;
 use Orchid\Screen\Fields\RadioButtons;
 use Orchid\Screen\Fields\Relation;
 use Orchid\Screen\Fields\Select;
@@ -44,7 +43,7 @@ class DealEditScreen extends Screen
     public function name(): ?string
     {
         if ($this->trade->exists) {
-            return sprintf('Сделка:%s (%s)', $this->trade->currency->name, $this->trade->position_size);
+            return sprintf('Сделка: %s [%s]', $this->trade->currency->name, $this->trade->position_size);
         }
 
         return 'Новая сделка';

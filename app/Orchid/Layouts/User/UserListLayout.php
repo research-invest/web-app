@@ -77,4 +77,9 @@ class UserListLayout extends Table
                     ])),
         ];
     }
+
+    protected function striped(): bool
+    {
+        return true;
+    }
 }

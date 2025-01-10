@@ -144,4 +144,9 @@ class CurrenciesListLayout extends Table
                     ])),
         ];
     }
+
+    protected function striped(): bool
+    {
+        return true;
+    }
 }

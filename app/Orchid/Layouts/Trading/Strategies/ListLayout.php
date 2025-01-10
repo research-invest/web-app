@@ -47,4 +47,9 @@ class ListLayout extends Table
 //                    ])),
         ];
     }
+
+    protected function striped(): bool
+    {
+        return true;
+    }
 }
