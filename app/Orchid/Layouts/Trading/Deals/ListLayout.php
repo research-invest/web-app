@@ -110,6 +110,12 @@ class ListLayout extends Table
                             ->target('_blank')
                             ->icon('dollar'),
 
+                        Link::make('Открыть TradingView')
+                            ->icon('grid')
+                            ->target('_blank')
+                            ->rawClick()
+                            ->href($trade->currency->getTVLink()),
+
                         Link::make(__('Изменить'))
                             ->route('platform.trading.deal.edit', $trade->id)
                             ->icon('bs.pencil'),

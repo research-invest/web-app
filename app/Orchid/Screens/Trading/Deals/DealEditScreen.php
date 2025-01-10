@@ -43,7 +43,11 @@ class DealEditScreen extends Screen
 
     public function name(): ?string
     {
-        return $this->trade->exists ? 'Редактирование сделки' : 'Новая сделка';
+        if ($this->trade->exists) {
+            return sprintf('Сделка:%s (%s)', $this->trade->currency->name, $this->trade->position_size);
+        }
+
+        return 'Новая сделка';
     }
 
     public function query(Trade $trade): iterable

@@ -14,6 +14,7 @@ use App\Services\Api\Tickers;
 use App\Services\Strategy\SmartMoneyStrategy;
 use App\Services\Trading\TradingStatsService;
 use Orchid\Screen\Actions\Button;
+use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Screen;
 use Orchid\Support\Facades\Layout;
 use Orchid\Support\Color;
@@ -84,6 +85,13 @@ class CurrencyEditScreen extends Screen
         $isFav = $this->currency->isFavorite();
 
         return [
+
+            Link::make('TV')
+                ->icon('grid')
+                ->target('_blank')
+                ->rawClick()
+                ->href($this->currency->getTVLink()),
+
             Button::make($isFav ? 'Удалить из избранного' : 'Добавить в избранное')
                 ->method('toggleFavorite')
                 ->icon('heart')
