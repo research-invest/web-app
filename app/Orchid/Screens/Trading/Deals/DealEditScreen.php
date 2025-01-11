@@ -204,7 +204,7 @@ class DealEditScreen extends Screen
                             Input::make('trade.stop_loss_price')
                                 ->title('Стоп-лосс')
                                 ->type('number')
-                                ->value($this->trade->exists ? $this->trade->stop_loss_price : 10)
+                                ->value($this->trade->exists ? $this->trade->stop_loss_price : 1)
                                 ->step('0.00000001')
                                 ->required(),
 
