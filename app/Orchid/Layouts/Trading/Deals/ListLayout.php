@@ -42,7 +42,7 @@ class ListLayout extends Table
                     $route = route('platform.trading.deal.edit', $trade);
                     $text = $trade->currency->name;
                     if ($trade->is_fake) {
-                        $text = "{$text} (Fake Trade)";
+                        $text .= Trade::FAKE_TRADE_TEXT;
                         return "<a href='{$route}' class='text-danger'>{$text}</a>";
                     }
                     return "<a href='{$route}'>{$text}</a>";

@@ -5,7 +5,7 @@
                 <div class="card">
                     <div class="card-body">
                         <h5>Общая статистика</h5>
-                        <p>Всего сделок: {{ $tradingStats['total_trades'] }}</p>
+                        <p>Всего сделок: <a href="{{ route('platform.trading.deals', ['currency_id' => $currency->id]) }}" target="_blank">{{ $tradingStats['total_trades'] }}</a></p>
                         <p>Успешных: {{ $tradingStats['successful_trades'] }}</p>
                         <p>Прибыльность: {{ $tradingStats['success_rate'] }}%</p>
                     </div>
@@ -35,4 +35,4 @@
             Статистика торгов отсутствует
         </div>
     @endif
-</div> 
+</div>

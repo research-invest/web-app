@@ -43,6 +43,7 @@ use Orchid\Screen\Concerns\ModelStateRetrievable;
  * @property  CheckListItem[] $checkListItems
  * @property  TradePeriod $tradePeriod
  * @property  float $currentPnL
+ * @property string $currency_name_format
  */
 class Trade extends BaseModel
 {
@@ -53,6 +54,7 @@ class Trade extends BaseModel
     public const string STATUS_OPEN = 'open';
     public const string STATUS_CLOSED = 'closed';
     public const string STATUS_LIQUIDATED = 'liquidated';
+    public const string FAKE_TRADE_TEXT = ' (Fake Trade)';
 
     protected $fillable = [
         'currency_id',
@@ -424,6 +426,16 @@ class Trade extends BaseModel
             return $this->closed_at->diffForHumans($this->created_at, true);
         }
 
-        return $this->created_at->diffForHumans(now(), true);
+        return $this->created_at ? $this->created_at->diffForHumans(now(), true) : '';
     }
+
+    /**
+     * currency_name_format
+     * @return string
+     */
+    public function getCurrencyNameFormatAttribute(): string
+    {
+        return $this->is_fake ? ($this->currency->name . self::FAKE_TRADE_TEXT) : $this->currency->name;
+    }
+
 }

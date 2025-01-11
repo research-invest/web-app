@@ -91,7 +91,7 @@ class DealEditScreen extends Screen
                 ->icon('bitcoin')
                 ->target('_blank')
                 ->canSee($this->trade->exists)
-                ->route('platform.currencies.edit', ['currency' => $this->trade->currency_id])
+                ->route('platform.currencies.edit', ['currency' => $this->trade->currency_id ?? '-'])
                 ->class('btn btn-default'),
 
             ModalToggle::make('Добавить ордер')
@@ -170,6 +170,13 @@ class DealEditScreen extends Screen
                             ])
                             ->required(),
 
+                        CheckBox::make('trade.is_fake')
+                            ->placeholder('Фейковая сделка')
+                            ->help('Не учитывается в статистике, можно проверять гипотезы')
+                            ->canSee(!$this->trade->exists)
+                            ->sendTrueOrFalse()
+                            ->value(0),
+
                         Group::make([
                             Input::make('trade.entry_price')
                                 ->title('Цена входа')
@@ -213,13 +220,6 @@ class DealEditScreen extends Screen
                                 ->title('Целевая прибыль ($)')
                                 ->type('number'),
                         ]),
-
-                        CheckBox::make('trade.is_fake')
-                            ->title('Фейковая сделка')
-                            ->help('Не учитывается в статистике, можно проверять гипотезы')
-                            ->canSee(!$this->trade->exists)
-                            ->sendTrueOrFalse()
-                            ->value(0),
 
                         Group::make([
                             Select::make('trade.status')
@@ -552,7 +552,7 @@ class DealEditScreen extends Screen
             // Добавляем группу с полями
             $fields[] = Group::make([
                 CheckBox::make("checklist.{$item->id}.is_completed")
-                    ->title($item->title)
+                    ->placeholder($item->title)
                     ->sendTrueOrFalse()
                     ->value($checkListItem?->is_completed ?? false)
                     ->help($item->description),
@@ -565,7 +565,7 @@ class DealEditScreen extends Screen
 
                 Upload::make("checklist.{$item->id}.attachment")
                     ->title('Скриншот')
-                    ->maxFiles(1)
+                    ->maxFiles(5)
                     ->value($attachments)
                     ->targetId()
                     ->groups('trades')

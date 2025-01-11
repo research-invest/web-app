@@ -65,8 +65,6 @@ Route::screen('/statistics/composite-index', CompositeIndex::class)
 Route::screen('/trading/futures-calculator', \App\Orchid\Screens\Trading\FuturesCalculator::class)
     ->name('platform.trading.futures-calculator');
 
-
-
 Route::screen('/trading/deals/periods', TradingPeriodScreen::class)
 ->name('platform.trading.periods');
 

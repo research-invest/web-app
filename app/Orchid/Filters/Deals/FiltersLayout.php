@@ -2,6 +2,7 @@
 
 namespace App\Orchid\Filters\Deals;
 
+use App\Orchid\Filters\Currency\CurrenciesIdFilter;
 use Orchid\Filters\Filter;
 use Orchid\Screen\Layouts\Selection;
 
@@ -20,6 +21,7 @@ class FiltersLayout extends Selection
         return [
             PeriodFilter::class,
             StatusFilter::class,
+            CurrenciesIdFilter::class,
         ];
     }
 }

@@ -71,14 +71,19 @@ class TradingReportScreen extends Screen
             Layout::table('topTrades', [
                 TD::make('created_at', 'Дата'),
                 TD::make('position_type', 'Позиция'),
+
                 TD::make('symbol', 'Валюта')
-                    ->render(fn (Trade $trade) => $trade->currency->code),
+                    ->render(fn (Trade $trade) => $trade->currency_name_format),
+
                 TD::make('entry_price', 'Цена входа')
                     ->render(fn (Trade $trade) => MathHelper::formatNumber($trade->entry_price)),
+
                 TD::make('exit_price', 'Цена выхода')
                     ->render(fn (Trade $trade) => MathHelper::formatNumber($trade->exit_price)),
+
                 TD::make('realized_pnl', 'PNL')
                     ->render(fn (Trade $trade) => number_format($trade->realized_pnl, 2) . '$'),
+
                 TD::make('notes', 'Комментарий'),
             ])->title('Топ 5 лучших сделок'),
 

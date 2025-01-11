@@ -54,6 +54,7 @@ class TradingAnalyticsService
         return $trades
             ->where('realized_pnl', '>', 0)
             ->sortByDesc('realized_pnl')
+            ->where('is_fake', false)
             ->take(5);
     }
 
@@ -61,6 +62,7 @@ class TradingAnalyticsService
     {
         return $trades
             ->where('realized_pnl', '<', 0)
+            ->where('is_fake', false)
             ->sortBy('realized_pnl');
     }
 }
