@@ -47,7 +47,7 @@ class PositionCalculator
                     'y' => $priceUp,
                     'dataLabels' => [
                         'enabled' => true,
-                        'format' => "Ус: {y:.2f} ($averagePrice)"
+                        'format' => "Ус: {y:.4f} ($averagePrice)"
                     ]
                 ];
 
@@ -56,7 +56,7 @@ class PositionCalculator
                     'y' => $priceDown,
                     'dataLabels' => [
                         'enabled' => true,
-                        'format' => "Пр: {y:.2f} ($profit)"
+                        'format' => "Пр: {y:.4f} ($profit)"
                     ]
                 ];
             } else {
@@ -69,7 +69,7 @@ class PositionCalculator
                     'y' => $priceUp,
                     'dataLabels' => [
                         'enabled' => true,
-                        'format' => "Пр: {y:.2f} ($profit)"
+                        'format' => "Пр: {y:.4f} ($profit)"
                     ]
                 ];
 
@@ -78,7 +78,7 @@ class PositionCalculator
                     'y' => $priceDown,
                     'dataLabels' => [
                         'enabled' => true,
-                        'format' => "Ус: {y:.2f} ($averagePrice)"
+                        'format' => "Ус: {y:.4f} ($averagePrice)"
                     ]
                 ];
             }
@@ -305,7 +305,7 @@ class PositionCalculator
             'y' => (float)$this->trade->entry_price,
             'dataLabels' => [
                 'enabled' => true,
-                'format' => 'Вход: {y:.2f}'
+                'format' => 'Вход: {y:.4f}'
             ]
         ];
 
@@ -325,7 +325,7 @@ class PositionCalculator
                 'y' => (float)$order->price,
                 'dataLabels' => [
                     'enabled' => true,
-                    'format' => 'Закуп: {y:.2f}'
+                    'format' => 'Закуп: {y:.4f}'
                 ]
             ];
         }
@@ -336,7 +336,7 @@ class PositionCalculator
             'y' => (float)$this->trade->currency->last_price,
             'dataLabels' => [
                 'enabled' => true,
-                'format' => 'Текущая: {y:.2f}'
+                'format' => 'Текущая: {y:.4f}'
             ]
         ];
 
