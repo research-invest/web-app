@@ -126,9 +126,10 @@
                             @if($trade->currency->last_price)
                                 <br>
                                 <small class="text-muted">
-                                    До ликвидации: {{ number_format($trade->getDistanceToLiquidation($trade->currency->last_price), 2) }}%
+                                    До ликвидации: {{ number_format($trade->getDistanceToLiquidation($trade->currency->last_price), 2) }}
+                                    %
                                 </small>
-                            </div>
+                        </div>
                         @endif
                     </div>
                 </div>
@@ -140,14 +141,14 @@
             <div class="card {{ $trade->isStatusOpen() ? 'border-info' : 'border-success' }} mb-3">
                 <div class="card-header">{{ $trade->isStatusOpen() ? 'Текущий P&L' : 'Результат' }}</div>
                 <div class="card-body">
-                    @if($trade->status === 'open')
+                    @if($trade->isStatusOpen())
                         @php
                             // Здесь можно добавить расчет текущего P&L
                             $currentPrice = $trade->currency->last_price ?? $trade->entry_price;
 //                            $unrealizedPnl = $trade->position_type === 'long'
 //                                ? ($currentPrice - $trade->entry_price) * $trade->position_size * $trade->leverage / $trade->entry_price
 //                                : ($trade->entry_price - $currentPrice) * $trade->position_size * $trade->leverage / $trade->entry_price;
-                            $unrealizedPnl = $trade->position_type === 'long'
+                            $unrealizedPnl = $trade->isTypeLong()
                                 ? ($currentPrice - $averagePrice) * $trade->position_size * $trade->leverage / $averagePrice
                                 : ($averagePrice - $currentPrice) * $trade->position_size * $trade->leverage / $averagePrice;
                         @endphp
@@ -171,6 +172,20 @@
                             <span>Длительность:</span>
                             <span>{{ $trade->getDurationTime() }}</span>
                         </div>
+
+                        @if($trade->target_profit_amount)
+                            <div class="d-flex justify-content-between">
+                                <span>Целевая прибыль:</span>
+                                <span>{{ $trade->target_profit_amount }}$</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span>Необходимая цена:</span>
+                                <span class="text-success">{{ $trade->target_profit_price }}
+                                <small class="text-muted">({{ $trade->target_profit_percent }}%)</small>
+                                </span>
+
+                            </div>
+                        @endif
                     @else
                         <div class="d-flex justify-content-between mb-2">
                             <span>Реализованный P&L:</span>

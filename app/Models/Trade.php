@@ -43,6 +43,8 @@ use Orchid\Screen\Concerns\ModelStateRetrievable;
  * @property  CheckListItem[] $checkListItems
  * @property  TradePeriod $tradePeriod
  * @property  float $currentPnL
+ * @property  float $target_profit_price
+ * @property  float $target_profit_percent
  * @property string $currency_name_format
  */
 class Trade extends BaseModel
@@ -152,7 +154,7 @@ class Trade extends BaseModel
      */
     public function getCurrentPnLAttribute(): ?float
     {
-        return $this->status === self::STATUS_OPEN
+        return $this->isStatusOpen()
             ? $this->getUnrealizedPnL($this->currency->last_price)
             : $this->realized_pnl;
     }
@@ -277,7 +279,7 @@ class Trade extends BaseModel
 
         // Обновляем PNL для каждого ордера
         foreach ($this->orders as $order) {
-            if ($order->type === TradeOrder::TYPE_EXIT) {
+            if ($order->isTypeExit()) {
                 continue; // Пропускаем ордера выхода
             }
 
@@ -336,10 +338,13 @@ class Trade extends BaseModel
         $maintenanceMargin = 1 / $this->leverage; // Упрощенная формула, может отличаться на разных биржах
 
         if ($this->isTypeLong()) {
-            return $averagePrice * (1 - $maintenanceMargin);
+            $price = $averagePrice * (1 - $maintenanceMargin);
+        } else {
+            $price = $averagePrice * (1 + $maintenanceMargin);
         }
 
-        return $averagePrice * (1 + $maintenanceMargin);
+        return MathHelper::addPercent($price, 0.8); // прибавляем чучуть для запаса
+
     }
 
     /**
@@ -436,6 +441,41 @@ class Trade extends BaseModel
     public function getCurrencyNameFormatAttribute(): string
     {
         return $this->is_fake ? ($this->currency->name . self::FAKE_TRADE_TEXT) : $this->currency->name;
+    }
+
+    /**
+     * target_profit_price
+     * @return float
+     */
+    public function getTargetProfitPriceAttribute(): float
+    {
+        $averagePrice = $this->getAverageEntryPrice();
+        $totalContracts = $this->position_size * $this->leverage;
+
+        if ($this->isTypeLong()) {
+            $price = $averagePrice + ($this->target_profit_amount * $averagePrice / $totalContracts);
+        } else {
+            $price = $averagePrice - ($this->target_profit_amount * $averagePrice / $totalContracts);
+        }
+
+        return MathHelper::formatNumber($price, 2);
+    }
+
+    /**
+     * target_profit_percent
+     * @return float
+     */
+    public function getTargetProfitPercentAttribute(): float
+    {
+        $averagePrice = $this->getAverageEntryPrice();
+
+        if ($this->isTypeLong()) {
+            $percent = (($this->target_profit_price - $averagePrice) / $averagePrice) * 100;
+        } else {
+            $percent = (($averagePrice - $this->target_profit_price) / $averagePrice) * 100;
+        }
+
+        return round($percent, 2);
     }
 
 }
