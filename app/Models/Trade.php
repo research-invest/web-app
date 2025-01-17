@@ -43,7 +43,7 @@ use Orchid\Screen\Concerns\ModelStateRetrievable;
  * @property  CheckListItem[] $checkListItems
  * @property  TradePeriod $tradePeriod
  * @property  float $currentPnL
- * @property  float $target_profit_price
+ * @property  string $target_profit_price
  * @property  float $target_profit_percent
  * @property string $currency_name_format
  */
@@ -102,6 +102,8 @@ class Trade extends BaseModel
         'profit_percentage',
         'realized_pnl',
     ];
+
+    private float $avgEntryPrice = 0;
 
     public static function getStatuses(): array
     {
@@ -166,6 +168,10 @@ class Trade extends BaseModel
      */
     public function getAverageEntryPrice(): float
     {
+        if ($this->avgEntryPrice) {
+            return $this->avgEntryPrice;
+        }
+
         $entryOrders = $this->orders()
             ->whereIn('type', [TradeOrder::TYPE_ENTRY, TradeOrder::TYPE_ADD])
             ->get();
@@ -179,7 +185,7 @@ class Trade extends BaseModel
             $totalValue += $order->size;
         }
 
-        return $totalQuantity > 0 ? $totalValue / $totalQuantity : 0;
+        return $this->avgEntryPrice = $totalQuantity > 0 ? $totalValue / $totalQuantity : 0;
     }
 
     /**
@@ -445,9 +451,9 @@ class Trade extends BaseModel
 
     /**
      * target_profit_price
-     * @return float
+     * @return string
      */
-    public function getTargetProfitPriceAttribute(): float
+    public function getTargetProfitPriceAttribute(): string
     {
         $averagePrice = $this->getAverageEntryPrice();
         $totalContracts = $this->position_size * $this->leverage;
@@ -458,7 +464,7 @@ class Trade extends BaseModel
             $price = $averagePrice - ($this->target_profit_amount * $averagePrice / $totalContracts);
         }
 
-        return MathHelper::formatNumber($price, 2);
+        return MathHelper::formatNumber($price);
     }
 
     /**

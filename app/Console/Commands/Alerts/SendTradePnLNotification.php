@@ -65,9 +65,10 @@ class SendTradePnLNotification extends Command
             $message .= "{$emoji} <b>{$name}</b> {$direction}\n";
             $message .= "💰 PNL: " . MathHelper::formatNumber($unrealizedPnl) . " USDT\n";
             $message .= "📊 ROE: " . MathHelper::formatNumber($roe) . "%\n";
-            $message .= "💵 Размер позиции: " . MathHelper::formatNumber($trade->getCurrentPositionSize()) . "\n";
+            $message .= "👙 Размер позиции: " . MathHelper::formatNumber($trade->getCurrentPositionSize()) . "\n";
             $message .= "💵 Средняя цена: " . MathHelper::formatNumber($trade->getAverageEntryPrice()) . "\n";
-            $message .= "🎯 Текущая цена: " . MathHelper::formatNumber($currentPrice) . "\n";
+            $message .= "💵 Текущая цена: " . MathHelper::formatNumber($currentPrice) . "\n";
+            $message .= "🎯 Целевая цена: " . $trade->target_profit_price . "\n";
             $message .= "⚠️ Ликвидация: " . MathHelper::formatNumber($liquidationPrice) . "\n";
             $message .= "🛡️ До ликвидации: " . MathHelper::formatNumber($distanceToLiquidation) . "%\n\n";
         }
