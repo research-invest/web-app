@@ -45,7 +45,7 @@ class ListLayout extends Table
                         $text .= Trade::FAKE_TRADE_TEXT;
                         return "<a href='{$route}' class='text-danger'>{$text}</a>";
                     }
-                    return "<a href='{$route}'>{$text}</a>";
+                    return "<a data-turbo=\"false\" href='{$route}'>{$text}</a>";
                 }),
 
             TD::make('position_type', 'Тип'),
@@ -117,6 +117,7 @@ class ListLayout extends Table
                             ->href($trade->currency->getTVLink()),
 
                         Link::make(__('Изменить'))
+                            ->rawClick()
                             ->route('platform.trading.deal.edit', $trade->id)
                             ->icon('bs.pencil'),
 
