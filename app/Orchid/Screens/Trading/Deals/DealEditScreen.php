@@ -490,8 +490,8 @@ class DealEditScreen extends Screen
         $maxPrice = $averagePrice * 1.5;
         $minPrice = $averagePrice * 0.5;
 
-        // Рассчитываем оптимальное количество шагов (например, 20 шагов)
-        $steps = 30;
+        // Рассчитываем оптимальное количество шагов
+        $steps = 50;
         $stepSize = ($maxPrice - $minPrice) / $steps;
 
         $results = [];
