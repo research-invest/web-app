@@ -173,6 +173,8 @@
                             <span>{{ $trade->getDurationTime() }}</span>
                         </div>
 
+                        <hr>
+
                         @if($trade->target_profit_amount)
                             <div class="d-flex justify-content-between">
                                 <span>Целевая прибыль:</span>
