@@ -142,13 +142,14 @@ class WatchController extends Controller
             ->map(function (Trade $trade) {
                 return [
                     'id' => $trade->id,
-                    'symbol' => $trade->currency->code . ($trade->is_fake ? ' (Fake Trade)' : ''),
+                    'symbol' => $trade->currency_name_format,
                     'type' => $trade->position_type, // buy/sell
                     'entry_price' => (float)$trade->entry_price,
                     'current_price' => (float)$trade->currency->last_price,
                     'pnl' => round($trade->currentPnL, 3),
                     'can_cancel' => true,
                     'average_price' => (float)$trade->getAverageEntryPrice(),
+                    'liquidation_price' => (float)$trade->getLiquidationPrice(),
                     'orders' => $trade->orders()->get()
                         ->map(function (TradeOrder $order) {
                             return [

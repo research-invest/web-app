@@ -108,6 +108,6 @@ class Currency extends BaseModel
     {
         return sprintf('https://ru.tradingview.com/chart/?symbol=%s&interval=%s',
             $this->tradingview_code ?: $this->code,
-            60);
+            240);
     }
 }
