@@ -150,6 +150,7 @@ class WatchController extends Controller
                     'can_cancel' => true,
                     'average_price' => (float)$trade->getAverageEntryPrice(),
                     'liquidation_price' => (float)$trade->getLiquidationPrice(),
+                    'target_profit_amount' => $trade->target_profit_amount,
                     'target_profit_price' => $trade->target_profit_price,
                     'target_profit_percent' => $trade->target_profit_percent,
                     'orders' => $trade->orders()->get()
