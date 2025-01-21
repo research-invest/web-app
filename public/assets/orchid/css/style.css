@@ -1,0 +1,26 @@
+.picture-preview {
+    max-width: 200px;
+}
+.text-black {
+    word-break: break-all;
+}
+.group-in-line {
+    display: flex;
+    flex-direction: column;
+}
+.workspace-limit {
+    max-width: 10000px!important;
+    overscroll-behavior-y: none;
+}
+
+.px-md-5 {
+    padding-left:0rem!important;
+    padding-right:0rem!important;
+}
+
+@media (min-width: 1400px) {
+    .container,.container-lg,.container-md,.container-sm,.container-xl,.container-xxl {
+        max-width: none!important;
+    }
+}
+

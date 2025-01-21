@@ -126,7 +126,9 @@ return [
      */
 
     'resource' => [
-        'stylesheets' => [],
+        'stylesheets' => [
+            '/assets/orchid/css/style.css'
+        ],
         'scripts'     => [
             '/assets/highcharts/js/highcharts-min.js',
         ],
