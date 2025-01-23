@@ -25,12 +25,12 @@ class TradingAnalyticsService
     private function getSummary(Collection $trades): array
     {
         $totalProfit = $trades->sum('realized_pnl');
-        $totalLoss = $trades->where('realized_pnl', '<', 0)->sum('realized_pnl');
+//        $totalLoss = $trades->where('realized_pnl', '<', 0)->sum('realized_pnl');
 
         return [
-            'totalProfit' => $totalProfit,
-            'totalLoss' => $totalLoss,
-            'netResult' => $totalProfit + $totalLoss,
+//            'totalProfit' => $totalProfit,
+//            'totalLoss' => $totalLoss,
+            'netResult' => $totalProfit, //  + $totalLoss
             'tradesCount' => $trades->count(),
             'winRate' => $trades->where('realized_pnl', '>', 0)->count()
                 / max(1, $trades->count()) * 100,
