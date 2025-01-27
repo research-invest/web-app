@@ -48,9 +48,9 @@ class CollectFundingRates extends Command
             );
 
             $fundingRate = new FundingRate([
-                'funding_rate' => $item['fundingRate'],
-                'max_funding_rate' => $item['maxFundingRate'],
-                'min_funding_rate' => $item['minFundingRate'],
+                'funding_rate' => $item['fundingRate'] * 100,
+                'max_funding_rate' => $item['maxFundingRate'] * 100,
+                'min_funding_rate' => $item['minFundingRate'] * 100,
                 'collect_cycle' => $item['collectCycle'],
                 'next_settle_time' => $item['nextSettleTime'],
                 'timestamp' => $item['timestamp']
@@ -90,7 +90,7 @@ class CollectFundingRates extends Command
 
             if ($oldRate) {
                 $newRate->$field = $newRate->funding_rate - $oldRate->funding_rate;
-                
+
                 // Обновляем начальное значение фандинга в валюте
                 $startField = $startFields[$field];
                 if ($currency->$startField === null) {
