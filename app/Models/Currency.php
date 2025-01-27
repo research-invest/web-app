@@ -30,16 +30,35 @@ use Orchid\Screen\AsSource;
  *
  * @property TopPerformingCoinSnapshot[] $topPerformingSnapshots
  * @property float $price_change_24h
+ * @property string $type_name
  */
 class Currency extends BaseModel
 {
     use HasFactory, AsSource, Filterable;
 
+    public const int TYPE_SPOT = 1;
+    public const int TYPE_FEATURE = 2;
+    public const string EXCHANGE_BINANCE = 'binance';
+    public const string EXCHANGE_MEXC = 'mexc';
+
     protected $guarded = [];
+
+    public static function getTypes(): array
+    {
+        return [
+            self::TYPE_SPOT => 'Spot',
+            self::TYPE_FEATURE => 'Feature',
+        ];
+    }
 
     public function getNamePriceAttribute(): string
     {
         return sprintf('%s (%s)', $this->name, $this->last_price);
+    }
+
+    public function getTypeNameAttribute(): string
+    {
+        return self::getTypes()[$this->type] ?? '-';
     }
 
 
@@ -109,5 +128,25 @@ class Currency extends BaseModel
         return sprintf('https://ru.tradingview.com/chart/?symbol=%s&interval=%s',
             $this->tradingview_code ?: $this->code,
             240);
+    }
+
+    public function fundingRates()
+    {
+        return $this->hasMany(FundingRate::class);
+    }
+
+    public function isSpot(): bool
+    {
+        return $this->type === self::TYPE_SPOT;
+    }
+
+    public function isExchangeBinance(): bool
+    {
+        return $this->exchange === self::EXCHANGE_BINANCE;
+    }
+
+    public function isExchangeMexc(): bool
+    {
+        return $this->exchange === self::EXCHANGE_MEXC;
     }
 }

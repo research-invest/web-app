@@ -8,19 +8,19 @@
                         <tbody>
                             <tr>
                                 <td>RSI (14)</td>
-                                <td>{{ $technicalAnalysis['rsi'] }}</td>
+                                <td>{{ $technicalAnalysis['rsi'] ?? '-' }}</td>
                             </tr>
                             <tr>
                                 <td>MACD</td>
-                                <td>{{ $technicalAnalysis['macd'] }}</td>
+                                <td>{{ $technicalAnalysis['macd'] ?? '-'  }}</td>
                             </tr>
                             <tr>
                                 <td>MA (50)</td>
-                                <td>{{ $technicalAnalysis['ma50'] }}</td>
+                                <td>{{ $technicalAnalysis['ma50'] ?? '-'  }}</td>
                             </tr>
                             <tr>
                                 <td>MA (200)</td>
-                                <td>{{ $technicalAnalysis['ma200'] }}</td>
+                                <td>{{ $technicalAnalysis['ma200'] ?? '-'  }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -28,8 +28,8 @@
             </div>
             <div class="col-md-6">
                 <h4>Сигналы</h4>
-                <div class="alert alert-{{ $technicalAnalysis['signal_type'] }}">
-                    {{ $technicalAnalysis['signal_message'] }}
+                <div class="alert alert-{{ $technicalAnalysis['signal_type'] ?? '-'  }}">
+                    {{ $technicalAnalysis['signal_message'] ?? '-'  }}
                 </div>
             </div>
         </div>
@@ -38,4 +38,4 @@
             Технический анализ недоступен
         </div>
     @endif
-</div> 
+</div>

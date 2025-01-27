@@ -50,7 +50,9 @@ class CurrencyEditScreen extends Screen
             ->where('currency_id', $currency->id)
             ->exists();
 
-        $this->candles = (new Tickers())->getTickers($currency->code, (int)request()->get('interval', 1800));
+        if ($currency->isSpot() && $currency->isExchangeBinance()) {
+            $this->candles = (new Tickers())->getTickers($currency->code, (int)request()->get('interval', 1800));
+        }
 
 //        "symbol" => "BTCUSDT"
 //  "open" => 99150.01
@@ -234,6 +236,7 @@ class CurrencyEditScreen extends Screen
             ]]
         ];
     }
+
     private function getVolumeChart(): array
     {
         $candleData = [];
@@ -306,6 +309,7 @@ class CurrencyEditScreen extends Screen
             ]]
         ];
     }
+
     private function getDeltaVolumeChart(): array
     {
         $candleData = [];

@@ -13,6 +13,7 @@ use App\Console\Commands\CollectTopPerformingCoinSnapshots;
 use App\Console\Commands\SendIndexChart;
 use App\Console\Commands\UpdateCurrencies;
 use App\Console\Commands\UpdateTradesPnL;
+use App\Models\FundingRate;
 use Illuminate\Console\Scheduling\Schedule;
 
 class Handler
@@ -39,6 +40,8 @@ class Handler
         $schedule->command(CollectTopPerformingCoinSnapshots::class)
             ->everyTenMinutes()
             ->withoutOverlapping();
+
+        $schedule->command(FundingRate::class)->everyFifteenMinutes();
 
 //        $schedule->command(AnalyzeTopPerformingCoinSnapshots::class)
 //            ->everyThirtyMinutes()

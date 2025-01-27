@@ -45,9 +45,18 @@ class CurrenciesListLayout extends Table
 
             TD::make('code', 'Код'),
 
+            TD::make('type', 'Тип')
+                ->defaultHidden()
+                ->render(fn (Currency $currency) => $currency->type_name),
+
+
             TD::make('last_price', 'Цена')
                 ->sort()
                 ->render(function(Currency $currency) {
+                    if(!$currency->last_price){
+                        return '';
+                    }
+
                     $periods = [
                         '24H' => $currency->start_price_24h,
                         '4H' => $currency->start_price_4h,
@@ -76,6 +85,12 @@ class CurrenciesListLayout extends Table
             TD::make('volume', 'Объем')
                 ->sort()
                 ->render(function(Currency $currency) {
+
+                    if(!$currency->volume){
+                        return '';
+                    }
+
+
                     $current = $currency->volume;
                     $html = [];
 

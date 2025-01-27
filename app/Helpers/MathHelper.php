@@ -115,9 +115,9 @@ class MathHelper
      * @param float $finalValue
      * @return float
      */
-    public static function getPercentOfNumber(float $initialValue, float $finalValue): float
+    public static function getPercentOfNumber(?float $initialValue, ?float $finalValue): float
     {
-        if (!$initialValue) {
+        if (!$initialValue || !$finalValue) {
             return 0;
         }
 

@@ -19,6 +19,7 @@ class FiltersLayout extends Selection
     {
         return [
             CodeFilter::class,
+            TypeFilter::class,
         ];
     }
 }
