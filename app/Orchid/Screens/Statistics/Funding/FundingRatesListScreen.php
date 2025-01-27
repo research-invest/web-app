@@ -6,6 +6,7 @@ namespace App\Orchid\Screens\Statistics\Funding;
 
 use App\Models\Currency;
 use App\Models\User;
+use App\Orchid\Filters\Statistics\Funding\FiltersLayout;
 use App\Orchid\Layouts\Currency\Funding\CurrenciesFundingListLayout;
 use Orchid\Screen\Screen;
 
@@ -20,11 +21,10 @@ class FundingRatesListScreen extends Screen
     public function query(): iterable
     {
         return [
-            'currencies' => Currency::query()
+            'currencies' => Currency::filters(FiltersLayout::class)
                 ->with(['latestFundingRate'])
                 ->isActive()
                 ->features()
-                ->filters()
                 ->select('currencies.*')
                 ->paginate(30),
         ];
@@ -35,7 +35,7 @@ class FundingRatesListScreen extends Screen
      */
     public function name(): ?string
     {
-        return 'Валюты';
+        return 'Funding Rates';
     }
 
     /**
@@ -71,23 +71,8 @@ class FundingRatesListScreen extends Screen
     public function layout(): iterable
     {
         return [
-//            UserFiltersLayout::class,
+            FiltersLayout::class,
             CurrenciesFundingListLayout::class,
-
-//            Layout::modal('editUserModal', UserEditLayout::class)
-//                ->deferred('loadUserOnOpenModal'),
-        ];
-    }
-
-    /**
-     * Loads user data when opening the modal window.
-     *
-     * @return array
-     */
-    public function loadUserOnOpenModal(User $user): iterable
-    {
-        return [
-            'user' => $user,
         ];
     }
 }
