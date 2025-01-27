@@ -4,6 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property float $funding_rate
+ * @property float $max_funding_rate
+ * @property float $min_funding_rate
+ * @property float $collect_cycle
+ */
 class FundingRate extends Model
 {
     protected $fillable = [
@@ -15,7 +21,7 @@ class FundingRate extends Model
         'next_settle_time',
         'timestamp',
         'diff_4h',
-        'diff_8h', 
+        'diff_8h',
         'diff_12h',
         'diff_24h'
     ];
@@ -24,4 +30,4 @@ class FundingRate extends Model
     {
         return $this->belongsTo(Currency::class);
     }
-} 
+}

@@ -27,10 +27,17 @@ use Orchid\Screen\AsSource;
  * @property float $start_price_1h
  * @property float $start_price_4h
  * @property float $start_price_24h
+ * @property float $start_funding_8h
+ * @property float $start_funding_24h
+ * @property float $start_funding_48h
+ * @property float $start_funding_7d
+ * @property float $start_funding_30d
  *
  * @property TopPerformingCoinSnapshot[] $topPerformingSnapshots
  * @property float $price_change_24h
  * @property string $type_name
+ * @property FundingRate $latestFundingRate
+ * @property FundingRate[] $fundingRates
  */
 class Currency extends BaseModel
 {
@@ -69,6 +76,11 @@ class Currency extends BaseModel
         'volume',
         'last_price',
         'tradingview_code',
+        'start_funding_8h',
+        'start_funding_24h',
+        'start_funding_48h',
+        'start_funding_7d',
+        'start_funding_30d',
     ];
 
     public function scopeFeatures($query)
@@ -144,6 +156,12 @@ class Currency extends BaseModel
     {
         return $this->hasMany(FundingRate::class);
     }
+
+    public function latestFundingRate()
+    {
+        return $this->hasOne(FundingRate::class)->latestOfMany();
+    }
+
 
     public function isSpot(): bool
     {

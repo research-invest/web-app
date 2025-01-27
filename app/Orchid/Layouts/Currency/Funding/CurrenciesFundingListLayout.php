@@ -45,11 +45,37 @@ class CurrenciesFundingListLayout extends Table
 
             TD::make('code', 'Код'),
 
-            TD::make('start_funding_8h', 'Funding - 8h'),
-            TD::make('start_funding_24h', 'Funding - 12h'),
-            TD::make('start_funding_48h', 'Funding - 48h'),
-            TD::make('start_funding_7d', 'Funding - 7d'),
-            TD::make('start_funding_30d', 'Funding - 30d'),
+            TD::make('funding_rate', 'Funding')
+                ->render(fn (Currency $currency) => $currency->latestFundingRate->funding_rate),
+
+            TD::make('max_funding_rate', 'Max funding')
+                ->render(fn (Currency $currency) => $currency->latestFundingRate->max_funding_rate),
+
+            TD::make('max_funding_rate', 'Min funding')
+                ->render(fn (Currency $currency) => $currency->latestFundingRate->min_funding_rate),
+
+            TD::make('max_funding_rate', 'Collect cycle')
+                ->render(fn (Currency $currency) => $currency->latestFundingRate->collect_cycle),
+
+            TD::make('start_funding_8h', 'Funding 8h')
+                ->defaultHidden()
+                ->sort(),
+
+            TD::make('start_funding_24h', 'Funding 12h')
+                ->defaultHidden()
+                ->sort(),
+
+            TD::make('start_funding_48h', 'Funding 48h')
+                ->defaultHidden()
+                ->sort(),
+
+            TD::make('start_funding_7d', 'Funding 7d')
+                ->defaultHidden()
+                ->sort(),
+
+            TD::make('start_funding_30d', 'Funding 30d')
+                ->defaultHidden()
+                ->sort(),
 
             TD::make('created_at', __('Created'))
                 ->usingComponent(DateTimeSplit::class)

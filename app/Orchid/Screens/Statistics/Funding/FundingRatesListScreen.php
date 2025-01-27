@@ -20,12 +20,13 @@ class FundingRatesListScreen extends Screen
     public function query(): iterable
     {
         return [
-            'currencies' => Currency::filters(\App\Orchid\Filters\Currency\FiltersLayout::class)
+            'currencies' => Currency::query()
+                ->with(['latestFundingRate'])
                 ->isActive()
                 ->features()
                 ->filters()
                 ->select('currencies.*')
-                ->paginate(),
+                ->paginate(30),
         ];
     }
 
