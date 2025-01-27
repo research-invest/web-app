@@ -88,9 +88,12 @@ class TradingPeriodScreen extends Screen
             ])
             ->save();
     }
+
     public function togglePeriodActive(TradePeriod $period): void
     {
-        TradePeriod::query()->update(['is_active' => false]);
+        TradePeriod::query()
+            ->byCreator()
+            ->update(['is_active' => false]);
 
         $period->update(['is_active' => true]);
 
