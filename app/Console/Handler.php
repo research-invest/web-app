@@ -41,7 +41,7 @@ class Handler
             ->everyTenMinutes()
             ->withoutOverlapping();
 
-        $schedule->command(CollectFundingRates::class)->everyFifteenMinutes();
+        $schedule->command(CollectFundingRates::class)->everyFourHours();
 
 //        $schedule->command(AnalyzeTopPerformingCoinSnapshots::class)
 //            ->everyThirtyMinutes()
