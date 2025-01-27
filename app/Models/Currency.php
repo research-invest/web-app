@@ -43,24 +43,6 @@ class Currency extends BaseModel
 
     protected $guarded = [];
 
-    public static function getTypes(): array
-    {
-        return [
-            self::TYPE_SPOT => 'Spot',
-            self::TYPE_FEATURE => 'Feature',
-        ];
-    }
-
-    public function getNamePriceAttribute(): string
-    {
-        return sprintf('%s (%s)', $this->name, $this->last_price);
-    }
-
-    public function getTypeNameAttribute(): string
-    {
-        return self::getTypes()[$this->type] ?? '-';
-    }
-
 
     /**
      * The attributes for which you can use filters in url.
@@ -89,6 +71,15 @@ class Currency extends BaseModel
         'tradingview_code',
     ];
 
+    public function scopeFeatures($query)
+    {
+        return $query->where('type', self::TYPE_FEATURE);
+    }
+
+    public function scopeSpot($query)
+    {
+        return $query->where('type', self::TYPE_SPOT);
+    }
 
     public function isFavorite()
     {
@@ -129,6 +120,25 @@ class Currency extends BaseModel
             $this->tradingview_code ?: $this->code,
             240);
     }
+
+    public static function getTypes(): array
+    {
+        return [
+            self::TYPE_SPOT => 'Spot',
+            self::TYPE_FEATURE => 'Feature',
+        ];
+    }
+
+    public function getNamePriceAttribute(): string
+    {
+        return sprintf('%s (%s)', $this->name, $this->last_price);
+    }
+
+    public function getTypeNameAttribute(): string
+    {
+        return self::getTypes()[$this->type] ?? '-';
+    }
+
 
     public function fundingRates()
     {

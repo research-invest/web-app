@@ -18,6 +18,16 @@ class CollectFundingRates extends Command
 
     public function handle()
     {
+        $timeStart = microtime(true);
+
+        $this->collect();
+
+        $this->info('Использовано памяти: ' . (memory_get_peak_usage() / 1024 / 1024) . " MB");
+        $this->info('Время выполнения в секундах: ' . ((microtime(true) - $timeStart)));
+    }
+
+    private function collect(): int
+    {
         $response = Http::get('https://contract.mexc.com/api/v1/contract/funding_rate');
 
         if (!$response->successful()) {
@@ -51,17 +61,25 @@ class CollectFundingRates extends Command
             $currency->fundingRates()->save($fundingRate);
         }
 
-        $this->info('Funding rates collected successfully');
         return 0;
     }
 
     private function calculateDiffs(Currency $currency, FundingRate $newRate): void
     {
         $periods = [
-            'diff_4h' => 4 * 3600,
             'diff_8h' => 8 * 3600,
-            'diff_12h' => 12 * 3600,
-            'diff_24h' => 24 * 3600
+            'diff_24h' => 24 * 3600,
+            'diff_48h' => 48 * 3600,
+            'diff_7d' => 7 * 24 * 3600,
+            'diff_30d' => 30 * 24 * 3600
+        ];
+
+        $startFields = [
+            'diff_8h' => 'start_funding_8h',
+            'diff_24h' => 'start_funding_24h',
+            'diff_48h' => 'start_funding_48h',
+            'diff_7d' => 'start_funding_7d',
+            'diff_30d' => 'start_funding_30d'
         ];
 
         foreach ($periods as $field => $seconds) {
@@ -72,6 +90,13 @@ class CollectFundingRates extends Command
 
             if ($oldRate) {
                 $newRate->$field = $newRate->funding_rate - $oldRate->funding_rate;
+                
+                // Обновляем начальное значение фандинга в валюте
+                $startField = $startFields[$field];
+                if ($currency->$startField === null) {
+                    $currency->$startField = $oldRate->funding_rate;
+                    $currency->save();
+                }
             }
         }
     }

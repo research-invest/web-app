@@ -49,6 +49,9 @@ Route::screen('/main', PlatformScreen::class)
 Route::screen('/statistics/normalize', \App\Orchid\Screens\Statistics\Normalize::class)
     ->name('platform.statistics.normalize');
 
+Route::screen('/statistics/funding', \App\Orchid\Screens\Statistics\Funding\FundingRatesListScreen::class)
+    ->name('platform.statistics.funding');
+
 Route::screen('/statistics/top-performing-coins', \App\Orchid\Screens\Statistics\TopPerformingCoins\TopPerformingCoins::class)
     ->name('platform.statistics.top-performing-coins');
 

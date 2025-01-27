@@ -48,6 +48,10 @@ class PlatformProvider extends OrchidServiceProvider
                 ->icon('bs.book')
                 ->title('Статистика')
                 ->list([
+                    Menu::make('Funding')
+                        ->icon('bs.book')
+                        ->route('platform.statistics.funding'),
+
                     Menu::make('Нормализация')
                         ->icon('bs.book')
                         ->rawClick()
