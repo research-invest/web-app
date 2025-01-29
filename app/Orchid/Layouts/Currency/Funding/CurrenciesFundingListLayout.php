@@ -46,18 +46,19 @@ class CurrenciesFundingListLayout extends Table
             TD::make('code', 'Код'),
 
             TD::make('funding_rate', 'Funding')
-                ->render(fn (Currency $currency) => $currency->latestFundingRate->funding_rate),
+                ->sort()
+                ->render(fn (Currency $currency) => $currency->funding_rate),
 
-            TD::make('max_funding_rate', 'Max funding')
-                ->defaultHidden()
-                ->render(fn (Currency $currency) => $currency->latestFundingRate->max_funding_rate),
-
-            TD::make('max_funding_rate', 'Min funding')
-                ->defaultHidden()
-                ->render(fn (Currency $currency) => $currency->latestFundingRate->min_funding_rate),
-
-            TD::make('max_funding_rate', 'Collect cycle')
-                ->render(fn (Currency $currency) => $currency->latestFundingRate->collect_cycle),
+//            TD::make('max_funding_rate', 'Max funding')
+//                ->defaultHidden()
+//                ->render(fn (Currency $currency) => $currency->latestFundingRate->max_funding_rate),
+//
+//            TD::make('max_funding_rate', 'Min funding')
+//                ->defaultHidden()
+//                ->render(fn (Currency $currency) => $currency->latestFundingRate->min_funding_rate),
+//
+//            TD::make('max_funding_rate', 'Collect cycle')
+//                ->render(fn (Currency $currency) => $currency->latestFundingRate->collect_cycle),
 
             TD::make('start_funding_8h', 'Funding 8h')
                 ->defaultHidden()

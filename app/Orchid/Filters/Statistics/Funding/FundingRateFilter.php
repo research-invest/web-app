@@ -10,29 +10,43 @@ class FundingRateFilter extends Filter
 {
     public function name(): string
     {
-        return 'Funding Rate >=';
+        return 'Funding Rate >= <=';
     }
 
     public function parameters(): array
     {
-        return ['funding_rate'];
+        return [
+            'fr_less', //<=
+            'fr_more', //>=
+        ];
     }
 
     public function run(Builder $builder): Builder
     {
-        return $builder->whereHas('latestFundingRate', function (Builder $query) {
-            $query->where('funding_rate', '>=', $this->request->get('funding_rate'));
-        });
+        if ($less = $this->request->get('fr_less')) {
+            $builder->where('funding_rate', '<=', $less);
+        }
+        if ($more = $this->request->get('fr_more')) {
+            $builder->where('funding_rate', '>=', $more);
+        }
+
+        return $builder;
+//        return $builder->whereHas('latestFundingRate', function (Builder $query) {
+//        });
     }
 
     public function display(): array
     {
         return [
-            Input::make('funding_rate')
+            Input::make('fr_less')
                 ->type('number')
                 ->step(0.000001)
-                ->title('Funding Rate >=')
-                ->placeholder('Мин значение')
+                ->title('Funding Rate <='),
+
+            Input::make('fr_more')
+                ->type('number')
+                ->step(0.000001)
+                ->title('Funding Rate >='),
         ];
     }
 }

@@ -18,6 +18,7 @@ use Orchid\Screen\AsSource;
  * @property integer $type
  * @property float $last_price
  * @property float $volume
+ * @property float $funding_rate
  * @property integer $is_favorite
  * @property string $exchange
  * @property integer $is_active
@@ -81,6 +82,7 @@ class Currency extends BaseModel
         'start_funding_48h',
         'start_funding_7d',
         'start_funding_30d',
+        'funding_rate',
     ];
 
     public function scopeFeatures($query)

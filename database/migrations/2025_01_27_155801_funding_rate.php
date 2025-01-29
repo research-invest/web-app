@@ -9,6 +9,7 @@ return new class extends Migration
     public function up()
     {
         Schema::table('currencies', function (Blueprint $table) {
+            $table->decimal('funding_rate', 10, 8)->nullable();
             $table->decimal('start_funding_8h', 10, 8)->nullable();
             $table->decimal('start_funding_24h', 10, 8)->nullable();
             $table->decimal('start_funding_48h', 10, 8)->nullable();
@@ -35,6 +36,7 @@ return new class extends Migration
     public function down()
     {
         Schema::dropColumns('currencies', [
+            'funding_rate',
             'start_funding_8h',
             'start_funding_24h',
             'start_funding_48h',

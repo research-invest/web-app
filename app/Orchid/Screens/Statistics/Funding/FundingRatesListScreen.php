@@ -22,7 +22,7 @@ class FundingRatesListScreen extends Screen
     {
         return [
             'currencies' => Currency::filters(FiltersLayout::class)
-                ->with(['latestFundingRate'])
+//                ->with(['latestFundingRate'])
                 ->isActive()
                 ->features()
                 ->select('currencies.*')

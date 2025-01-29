@@ -37,18 +37,25 @@ class CollectFundingRates extends Command
 
         $data = $response->json()['data'];
 
+        /**
+         * @var Currency $currency
+         */
         foreach ($data as $item) {
             $currency = Currency::firstOrCreate(
                 [
                     'code' => $item['symbol'],
                     'name' => $item['symbol'],
-                    'exchange' => 'mexc',
+                    'exchange' => Currency::EXCHANGE_MEXC,
                     'type' => Currency::TYPE_FEATURE
                 ]
             );
 
-            $fundingRate = new FundingRate([
+            $currency->update([
                 'funding_rate' => $item['fundingRate'] * 100,
+            ]);
+
+            $fundingRate = new FundingRate([
+                'funding_rate' => $currency->funding_rate,
                 'max_funding_rate' => $item['maxFundingRate'] * 100,
                 'min_funding_rate' => $item['minFundingRate'] * 100,
                 'collect_cycle' => $item['collectCycle'],
