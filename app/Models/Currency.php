@@ -130,9 +130,13 @@ class Currency extends BaseModel
      */
     public function getTVLink(): string
     {
+        $code = $this->tradingview_code ?: $this->code;
+
+        if ($this->isExchangeMexc() && $this->isTypeFeature()) {
+            $code = str_replace('_', '', $code);
+        }
         return sprintf('https://ru.tradingview.com/chart/?symbol=%s&interval=%s',
-            $this->tradingview_code ?: $this->code,
-            240);
+            $code, 240);
     }
 
     public static function getTypes(): array
@@ -178,5 +182,15 @@ class Currency extends BaseModel
     public function isExchangeMexc(): bool
     {
         return $this->exchange === self::EXCHANGE_MEXC;
+    }
+
+    public function isTypeFeature(): bool
+    {
+        return $this->type === self::TYPE_FEATURE;
+    }
+
+    public function isTypeSpot(): bool
+    {
+        return $this->type === self::TYPE_SPOT;
     }
 }
