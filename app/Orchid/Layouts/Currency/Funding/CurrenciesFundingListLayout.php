@@ -49,9 +49,11 @@ class CurrenciesFundingListLayout extends Table
                 ->render(fn (Currency $currency) => $currency->latestFundingRate->funding_rate),
 
             TD::make('max_funding_rate', 'Max funding')
+                ->defaultHidden()
                 ->render(fn (Currency $currency) => $currency->latestFundingRate->max_funding_rate),
 
             TD::make('max_funding_rate', 'Min funding')
+                ->defaultHidden()
                 ->render(fn (Currency $currency) => $currency->latestFundingRate->min_funding_rate),
 
             TD::make('max_funding_rate', 'Collect cycle')
