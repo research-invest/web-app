@@ -158,6 +158,7 @@ class DealEditScreen extends Screen
 
                         Relation::make('trade.currency_id')
                             ->fromModel(Currency::class, 'code', 'id')
+                            ->applyScope('spot')
                             ->displayAppend('namePrice')
                             ->required()
                             ->title('Выберите валюту'),

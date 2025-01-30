@@ -312,6 +312,13 @@ class PnlAnalyticsService
                     'text' => ''
                 ]
             ],
+
+            'navigator' => [
+                'enabled' => true,
+            ],
+            'scrollbar' => [
+                'enabled' => true
+            ],
             'series' => [
                 [
                     'name' => 'Нереализованный P&L',

@@ -53,6 +53,7 @@ class CurrenciesIdFilter extends Filter
         return [
             Select::make('currency_id')
                 ->fromModel(Currency::class, 'name', 'id')
+                ->applyScope('spot')
                 ->displayAppend('namePrice')
                 ->title('Выберите валюту')
                 ->empty('Все валюты')

@@ -22,6 +22,7 @@ use Orchid\Screen\AsSource;
  * @property integer $is_favorite
  * @property string $exchange
  * @property integer $is_active
+ * @property int $next_settle_time
  * @property float $start_volume_1h
  * @property float $start_volume_4h
  * @property float $start_volume_24h
@@ -51,6 +52,10 @@ class Currency extends BaseModel
 
     protected $guarded = [];
 
+
+    protected $casts = [
+        'next_settle_time' => 'date'
+    ];
 
     /**
      * The attributes for which you can use filters in url.

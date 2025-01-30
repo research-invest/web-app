@@ -30,7 +30,7 @@ class CurrenciesFundingListLayout extends Table
                 ->sort()
                 ->cantHide()
                 ->filter(Input::make())
-                ->render(fn (Currency $currency) =>  Link::make((string)$currency->id)
+                ->render(fn(Currency $currency) => Link::make((string)$currency->id)
                     ->route('platform.currencies.edit', $currency->id)
                     ->rawClick()
                     ->icon('bs.pencil')),
@@ -39,7 +39,7 @@ class CurrenciesFundingListLayout extends Table
                 ->sort()
                 ->cantHide()
                 ->filter(Input::make())
-                ->render(fn (Currency $currency) => Link::make($currency->name)
+                ->render(fn(Currency $currency) => Link::make($currency->name)
                     ->route('platform.currencies.edit', $currency->id)
                     ->rawClick()),
 
@@ -47,7 +47,12 @@ class CurrenciesFundingListLayout extends Table
 
             TD::make('funding_rate', 'Funding')
                 ->sort()
-                ->render(fn (Currency $currency) => $currency->funding_rate),
+                ->render(fn(Currency $currency) => $currency->funding_rate),
+
+
+            TD::make('next_settle_time', 'Следующее изменение')
+                ->render(fn(Currency $currency) => $currency->latestFundingRate->next_settle_time->toDateString()
+                ),
 
 //            TD::make('max_funding_rate', 'Max funding')
 //                ->defaultHidden()
@@ -98,7 +103,7 @@ class CurrenciesFundingListLayout extends Table
             TD::make(__('Actions'))
                 ->align(TD::ALIGN_CENTER)
                 ->width('100px')
-                ->render(fn (Currency $currency) => DropDown::make()
+                ->render(fn(Currency $currency) => DropDown::make()
                     ->icon('bs.three-dots-vertical')
                     ->list([
                         Link::make(__('Edit'))

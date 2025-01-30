@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property float $max_funding_rate
  * @property float $min_funding_rate
  * @property float $collect_cycle
+ * @property float $next_settle_time
  */
 class FundingRate extends Model
 {

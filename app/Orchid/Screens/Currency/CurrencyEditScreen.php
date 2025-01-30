@@ -6,6 +6,7 @@ namespace App\Orchid\Screens\Currency;
 
 use App\Models\Currency;
 use App\Models\CurrencyFavorite;
+use App\Models\FundingRate;
 use App\Models\TopPerformingCoinSnapshot;
 use App\Orchid\Filters\Statistics\Normalize\IntervalsFilter;
 use App\Orchid\Layouts\Charts\HighchartsChart;
@@ -132,6 +133,11 @@ class CurrencyEditScreen extends Screen
                 'Статистика сделок' => Layout::view('currencies.trading-stats'),
                 'Технический анализ' => Layout::view('currencies.technical-analysis'),
                 'Smart Money' => Layout::view('currencies.smart-money'),
+                'Funding rates' => [
+                    new HighchartsChart(
+                        $this->getFundingRates()
+                    ),
+                ],
             ]),
         ];
     }
@@ -457,6 +463,79 @@ class CurrencyEditScreen extends Screen
                 [
                     'name' => 'Изменение объема',
                     'data' => $volumeData,
+                    'color' => '#434348',
+                    'tooltip' => [
+                        'valueSuffix' => '%',
+                        'valueDecimals' => 2
+                    ]
+                ]
+            ],
+            'plotOptions' => [
+                'series' => [
+                    'marker' => [
+                        'enabled' => true,
+                        'radius' => 3
+                    ]
+                ]
+            ]
+        ];
+    }
+
+    private function getFundingRates(): array
+    {
+        if ($this->currency->isSpot()) {
+            return [];
+        }
+
+        $data = [];
+        /**
+         * @var FundingRate $fundingRate
+         */
+        foreach ($this->currency->fundingRates as $funding) {
+
+            $timestamp = $funding->created_at->getTimestamp() * 1000;
+
+            $data[] = [
+                $timestamp,
+                (float)$funding->funding_rate
+            ];
+        }
+
+        return [
+            'chart' => [
+                'height' => 600,
+                'type' => 'line'
+            ],
+            'title' => [
+                'text' => 'Динамика изменений цены и объема'
+            ],
+            'rangeSelector' => [
+                'enabled' => false,
+            ],
+            'navigator' => [
+                'enabled' => true,
+            ],
+            'scrollbar' => [
+                'enabled' => true
+            ],
+            'xAxis' => [
+                'type' => 'datetime',
+                'labels' => [
+                    'format' => '{value:%Y-%m-%d %H:%M}'  //  '{value:%d.%m %H:%M}'
+                ]
+            ],
+            'yAxis' => [
+                'title' => [
+                    'text' => 'Изменение (%)'
+                ],
+                'labels' => [
+                    'format' => '{value}%'
+                ]
+            ],
+            'series' => [
+                [
+                    'name' => 'Funding',
+                    'data' => $data,
                     'color' => '#434348',
                     'tooltip' => [
                         'valueSuffix' => '%',
