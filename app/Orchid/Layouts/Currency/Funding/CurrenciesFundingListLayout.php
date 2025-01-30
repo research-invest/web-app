@@ -53,10 +53,21 @@ class CurrenciesFundingListLayout extends Table
 
             TD::make('next_settle_time', 'Следующее изменение')
                 ->render(function(Currency $currency) {
-                    return Carbon::createFromTimestamp($currency->latestFundingRate->next_settle_time / 1000)->toDateTimeString();
-                }
+                    $timestamp = $currency->latestFundingRate->next_settle_time / 1000;
+                    $utc = Carbon::createFromTimestamp($timestamp)
+                        ->timezone('UTC')
+                        ->format('Y-m-d H:i:s');
+                    $msk = Carbon::createFromTimestamp($timestamp)
+                        ->timezone('Europe/Moscow')
+                        ->format('H:i:s');
 
-                ),
+                    return sprintf(
+                        '%s UTC<br>%s MSK',
+                        $utc,
+                        $msk
+                    );
+                })
+                ->alignLeft(),
 
 //            TD::make('max_funding_rate', 'Max funding')
 //                ->defaultHidden()
