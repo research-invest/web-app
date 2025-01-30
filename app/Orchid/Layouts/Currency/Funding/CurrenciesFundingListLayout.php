@@ -6,6 +6,7 @@ namespace App\Orchid\Layouts\Currency\Funding;
 
 use App\Helpers\MathHelper;
 use App\Models\Currency;
+use Carbon\Carbon;
 use Orchid\Screen\Actions\DropDown;
 use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Components\Cells\DateTimeSplit;
@@ -51,7 +52,10 @@ class CurrenciesFundingListLayout extends Table
 
 
             TD::make('next_settle_time', 'Следующее изменение')
-                ->render(fn(Currency $currency) => $currency->latestFundingRate->next_settle_time->toDateString()
+                ->render(function(Currency $currency) {
+                    return Carbon::createFromTimestamp($currency->latestFundingRate->next_settle_time / 1000)->toDateTimeString();
+                }
+
                 ),
 
 //            TD::make('max_funding_rate', 'Max funding')

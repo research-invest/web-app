@@ -53,9 +53,6 @@ class Currency extends BaseModel
     protected $guarded = [];
 
 
-    protected $casts = [
-        'next_settle_time' => 'date'
-    ];
 
     /**
      * The attributes for which you can use filters in url.
