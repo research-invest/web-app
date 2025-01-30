@@ -29,7 +29,7 @@ class HunterFunding extends Command
         $currencies = Currency::query()
             ->with('latestFundingRate')
             ->whereHas('latestFundingRate', function ($query) {
-                $query->where('funding_rate', '<=', -1);
+                $query->where('funding_rate', '<=', -0.9);
             })
             ->get();
 
