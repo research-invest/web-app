@@ -200,7 +200,10 @@ class Currency extends BaseModel
         if ($this->isExchangeMexc() && $this->isTypeFeature()) {
             return sprintf('https://futures.mexc.com/ru-RU/exchange/%s?type=linear_swap', $this->code);
         }
+        if ($this->isExchangeBinance() && $this->isTypeFeature()) {
+            return sprintf('https://www.binance.com/ru/trade/%s?type=cross', $this->code);
+        }
 
-        return '';
+        return sprintf('https://www.binance.com/ru/trade/%s', $this->code);
     }
 }

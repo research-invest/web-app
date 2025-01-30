@@ -146,16 +146,23 @@ class CurrenciesListLayout extends Table
                 ->render(fn (Currency $currency) => DropDown::make()
                     ->icon('bs.three-dots-vertical')
                     ->list([
-                        Link::make(__('Edit'))
-                            ->route('platform.currencies.edit', $currency->id)
-                            ->rawClick()
-                            ->icon('bs.pencil'),
-
                         Link::make('Открыть TradingView')
                             ->icon('grid')
                             ->target('_blank')
                             ->rawClick()
                             ->href($currency->getTVLink()),
+
+                        Link::make('Открыть на бирже')
+                            ->icon('grid')
+                            ->target('_blank')
+                            ->rawClick()
+                            ->href($currency->getExchangeLink()),
+
+                        Link::make(__('Edit'))
+                            ->route('platform.currencies.edit', $currency->id)
+                            ->rawClick()
+                            ->icon('bs.pencil'),
+
                     ])),
         ];
     }
