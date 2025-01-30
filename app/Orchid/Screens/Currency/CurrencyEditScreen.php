@@ -507,7 +507,7 @@ class CurrencyEditScreen extends Screen
                 'type' => 'line'
             ],
             'title' => [
-                'text' => 'Динамика изменений цены и объема'
+                'text' => 'Динамика изменений фандинга'
             ],
             'rangeSelector' => [
                 'enabled' => false,
@@ -539,7 +539,7 @@ class CurrencyEditScreen extends Screen
                     'color' => '#434348',
                     'tooltip' => [
                         'valueSuffix' => '%',
-                        'valueDecimals' => 2
+                        'valueDecimals' => 5
                     ]
                 ]
             ],

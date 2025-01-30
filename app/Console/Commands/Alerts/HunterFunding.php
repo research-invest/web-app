@@ -1,0 +1,102 @@
+<?php
+/**
+ * php artisan hunter-funding:alert
+ */
+namespace App\Console\Commands\Alerts;
+
+use App\Models\Currency;
+use App\Services\TelegramService;
+use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Cache;
+use Carbon\Carbon;
+
+class HunterFunding extends Command
+{
+    protected $signature = 'hunter-funding:alert';
+    protected $description = '';
+
+    // Интервал между уведомлениями (в минутах)
+    private const int NOTIFICATION_COOLDOWN = 60;
+
+    private TelegramService $telegram;
+
+    public function __construct(TelegramService $telegram)
+    {
+        parent::__construct();
+        $this->telegram = $telegram;
+    }
+
+    public function handle()
+    {
+        $currencies = Currency::query()
+            ->with('latestFundingRate')
+            ->whereHas('latestFundingRate', function ($query) {
+                $query->where('funding_rate', '<=', -1);
+            })
+            ->get();
+
+
+        if ($currencies->isNotEmpty()) {
+            $this->sendAlertIfNeeded($currencies);
+        }
+    }
+
+    private function sendAlertIfNeeded($currencies)
+    {
+        $message = $this->formatAlertMessage($currencies);
+
+        $this->telegram->sendMessage($message, '-1002466965376');
+
+//        $cacheKey = "funding_alert_hourly";
+//
+//        if (!Cache::has($cacheKey)) {
+//
+//            if ($this->telegram->sendMessage($message, '-1002466965376')) {
+//                Cache::put($cacheKey, true, now()->addMinutes(self::NOTIFICATION_COOLDOWN));
+//            }
+//        }
+    }
+
+    private function formatAlertMessage($currencies): string
+    {
+        $message = "🔔 <b>Обнаружены валюты с высоким отрицательным фандингом</b>\n\n";
+
+        /**
+         * @var Currency $currency
+         */
+        foreach ($currencies as $currency) {
+            $nextSettleTime = Carbon::createFromTimestamp($currency->latestFundingRate->next_settle_time / 1000);
+            $remaining = now()->diff($nextSettleTime);
+
+            // Определяем цвет для оставшегося времени
+            $totalHours = $remaining->h + ($remaining->d * 24);
+            $timeStatus = "⏳";
+            if ($totalHours < 1) {
+                $timeStatus = "⚠️";
+            } elseif ($totalHours < 2) {
+                $timeStatus = "⚡";
+            }
+
+            $message .= "💰 <b>{$currency->code}</b>\n";
+            $message .= "• Фандинг: {$currency->latestFundingRate->funding_rate}\n";
+            $message .= sprintf(
+                "• Следующее изменение:\n  %s UTC\n  %s MSK\n",
+                $nextSettleTime->timezone('UTC')->format('Y-m-d H:i:s'),
+                $nextSettleTime->timezone('Europe/Moscow')->format('Y-m-d H:i:s')
+            );
+            $message .= sprintf(
+                "• %s Осталось: %02dч %02dм\n\n",
+                $timeStatus,
+                $totalHours,
+                $remaining->i
+            );
+        }
+
+//        $message .= "\n⚡ <b>Рекомендуемые действия:</b>\n";
+//        $message .= "• Проверьте возможность открытия позиции\n";
+//        $message .= "• Оцените риски и потенциальную прибыль\n";
+//        $message .= "• Учитывайте время до следующего изменения фандинга";
+
+        return $message;
+    }
+}

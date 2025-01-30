@@ -68,11 +68,6 @@ class CurrenciesFundingListLayout extends Table
                     $timestamp = $currency->latestFundingRate->next_settle_time / 1000;
                     $nextSettleTime = Carbon::createFromTimestamp($timestamp);
 
-                    $utc = $nextSettleTime->timezone('UTC')
-                        ->format('Y-m-d H:i:s');
-                    $msk = $nextSettleTime->timezone('Europe/Moscow')
-                        ->format('H:i:s');
-
                     // Расчет оставшегося времени
                     $remainingTime = now()->diff($nextSettleTime);
                     $totalHours = $remainingTime->h + ($remainingTime->d * 24);
@@ -91,8 +86,8 @@ class CurrenciesFundingListLayout extends Table
 
                     return sprintf(
                         '%s UTC<br>%s MSK<br><span class="%s">осталось: %s</span>',
-                        $utc,
-                        $msk,
+                        $currency->latestFundingRate->next_settle_time_utc,
+                        $currency->latestFundingRate->next_settle_time_msk,
                         $colorClass,
                         $remaining
                     );

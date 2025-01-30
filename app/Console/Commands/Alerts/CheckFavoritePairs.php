@@ -28,7 +28,7 @@ class CheckFavoritePairs extends Command
         $users = User::with('favorites.currency')->get();
 
         foreach ($users as $user) {
-            if (!$user->telegram_chat_id || $user->favorites->isEmpty()) {
+            if ($user->favorites->isEmpty()) { // !$user->telegram_chat_id ||
                 continue;
             }
 
