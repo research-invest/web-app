@@ -15,8 +15,6 @@ class HunterFunding extends Command
     protected $signature = 'hunter-funding:alert';
     protected $description = '';
 
-    // Интервал между уведомлениями (в минутах)
-    private const int NOTIFICATION_COOLDOWN = 60;
 
     private TelegramService $telegram;
 
@@ -45,7 +43,7 @@ class HunterFunding extends Command
     {
         $message = $this->formatAlertMessage($currencies);
 
-        $this->telegram->sendMessage($message, '-1002466965376');
+        $this->telegram->sendMessage($message, config('services.telegram.hunter_funding_chat_id'));
 
 //        $cacheKey = "funding_alert_hourly";
 //

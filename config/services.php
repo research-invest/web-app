@@ -42,6 +42,7 @@ return [
     'telegram' => [
         'bot_token' => env('TELEGRAM_BOT_TOKEN'),
         'chat_id' => env('TELEGRAM_CHAT_ID'),
+        'hunter_funding_chat_id' => env('HUNTER_FUNDING_TELEGRAM_CHAT_ID'),
     ],
 
 
