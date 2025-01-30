@@ -6,6 +6,7 @@ use App\Console\Commands\Alerts\CheckFavoritePairs;
 use App\Console\Commands\Alerts\CheckLiquidationWarnings;
 use App\Console\Commands\Alerts\CheckTradeLevels;
 use App\Console\Commands\Alerts\FreeSpaceAlert;
+use App\Console\Commands\Alerts\HunterFunding;
 use App\Console\Commands\Alerts\SendSmartMoneyAlert;
 use App\Console\Commands\Alerts\SendTradePnLNotification;
 use App\Console\Commands\AnalyzeTopPerformingCoinSnapshots;
@@ -41,7 +42,8 @@ class Handler
             ->everyTenMinutes()
             ->withoutOverlapping();
 
-        $schedule->command(CollectFundingRates::class)->hourly();
+        $schedule->command(CollectFundingRates::class)->everyThirtyMinutes();
+        $schedule->command(HunterFunding::class)->hourly();
 
 //        $schedule->command(AnalyzeTopPerformingCoinSnapshots::class)
 //            ->everyThirtyMinutes()
