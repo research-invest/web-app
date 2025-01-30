@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use Orchid\Screen\Actions\DropDown;
 use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Components\Cells\DateTimeSplit;
+use Orchid\Screen\Fields\Group;
 use Orchid\Screen\Fields\Input;
 use Orchid\Screen\Layouts\Table;
 use Orchid\Screen\TD;
@@ -40,9 +41,20 @@ class CurrenciesFundingListLayout extends Table
                 ->sort()
                 ->cantHide()
                 ->filter(Input::make())
-                ->render(fn(Currency $currency) => Link::make($currency->name)
-                    ->route('platform.currencies.edit', $currency->id)
-                    ->rawClick()),
+                ->render(function (Currency $currency) {
+                    return Group::make([
+
+                        Link::make($currency->name)
+                            ->route('platform.currencies.edit', $currency->id)
+                            ->rawClick(),
+
+                        Link::make('')
+                            ->icon('share-alt')
+                            ->target('_blank')
+                            ->rawClick()
+                            ->href($currency->getExchangeLink()),
+                    ])->alignBaseLine()->alignCenter();
+                }),
 
             TD::make('code', 'Код'),
 
@@ -54,17 +66,26 @@ class CurrenciesFundingListLayout extends Table
             TD::make('next_settle_time', 'Следующее изменение')
                 ->render(function(Currency $currency) {
                     $timestamp = $currency->latestFundingRate->next_settle_time / 1000;
-                    $utc = Carbon::createFromTimestamp($timestamp)
-                        ->timezone('UTC')
+                    $nextSettleTime = Carbon::createFromTimestamp($timestamp);
+                    
+                    $utc = $nextSettleTime->timezone('UTC')
                         ->format('Y-m-d H:i:s');
-                    $msk = Carbon::createFromTimestamp($timestamp)
-                        ->timezone('Europe/Moscow')
+                    $msk = $nextSettleTime->timezone('Europe/Moscow')
                         ->format('H:i:s');
-
+                    
+                    // Расчет оставшегося времени
+                    $remainingTime = now()->diff($nextSettleTime);
+                    $remaining = sprintf(
+                        '%02dч %02dм',
+                        $remainingTime->h + ($remainingTime->d * 24),
+                        $remainingTime->i
+                    );
+                    
                     return sprintf(
-                        '%s UTC<br>%s MSK',
+                        '%s UTC<br>%s MSK<br><span class="text-muted">осталось: %s</span>', 
                         $utc,
-                        $msk
+                        $msk,
+                        $remaining
                     );
                 })
                 ->alignLeft(),
@@ -121,16 +142,23 @@ class CurrenciesFundingListLayout extends Table
                 ->render(fn(Currency $currency) => DropDown::make()
                     ->icon('bs.three-dots-vertical')
                     ->list([
-                        Link::make(__('Edit'))
-                            ->route('platform.currencies.edit', $currency->id)
-                            ->rawClick()
-                            ->icon('bs.pencil'),
-
                         Link::make('Открыть TradingView')
                             ->icon('grid')
                             ->target('_blank')
                             ->rawClick()
                             ->href($currency->getTVLink()),
+
+                        Link::make('Открыть на бирже')
+                            ->icon('grid')
+                            ->target('_blank')
+                            ->rawClick()
+                            ->href($currency->getExchangeLink()),
+
+                        Link::make(__('Edit'))
+                            ->route('platform.currencies.edit', $currency->id)
+                            ->rawClick()
+                            ->icon('bs.pencil'),
+
                     ])),
         ];
     }

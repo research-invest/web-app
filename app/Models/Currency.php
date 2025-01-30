@@ -53,7 +53,6 @@ class Currency extends BaseModel
     protected $guarded = [];
 
 
-
     /**
      * The attributes for which you can use filters in url.
      *
@@ -194,5 +193,14 @@ class Currency extends BaseModel
     public function isTypeSpot(): bool
     {
         return $this->type === self::TYPE_SPOT;
+    }
+
+    public function getExchangeLink(): string
+    {
+        if ($this->isExchangeMexc() && $this->isTypeFeature()) {
+            return sprintf('https://futures.mexc.com/ru-RU/exchange/%s?type=linear_swap', $this->code);
+        }
+
+        return '';
     }
 }
