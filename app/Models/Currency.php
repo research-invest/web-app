@@ -206,4 +206,9 @@ class Currency extends BaseModel
 
         return sprintf('https://www.binance.com/ru/trade/%s', $this->code);
     }
+
+    public function getAdminPageLink(): string
+    {
+        return route('platform.currencies.edit', $this);
+    }
 }

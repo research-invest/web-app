@@ -83,11 +83,14 @@ class HunterFunding extends Command
                 $nextSettleTime->timezone('Europe/Moscow')->format('Y-m-d H:i:s')
             );
             $message .= sprintf(
-                "• %s Осталось: %02dч %02dм\n\n",
+                "• %s Осталось: %02dч %02dм\n",
                 $timeStatus,
                 $totalHours,
                 $remaining->i
             );
+
+            $message .= "• {$currency->getExchangeLink()}\n";
+            $message .= "• {$currency->getAdminPageLink()}\n\n";
         }
 
 //        $message .= "\n⚡ <b>Рекомендуемые действия:</b>\n";
