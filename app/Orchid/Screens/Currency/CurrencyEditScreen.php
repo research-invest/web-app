@@ -493,7 +493,7 @@ class CurrencyEditScreen extends Screen
          */
         foreach ($this->currency->fundingRates as $funding) {
 
-            $timestamp = $funding->timestamp->getTimestamp() * 1000;
+            $timestamp = $funding->timestamp;
 
             $data[] = [
                 $timestamp,

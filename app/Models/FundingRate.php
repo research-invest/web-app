@@ -34,7 +34,7 @@ class FundingRate extends Model
     ];
 
     protected $casts = [
-        'timestamp' => 'datetime'
+//        'timestamp' => 'datetime'
     ];
 
     public function currency()
