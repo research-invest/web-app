@@ -63,7 +63,7 @@ class CollectFundingRates extends Command
                 'timestamp' => $item['timestamp']
             ]);
 
-            $this->calculateDiffs($currency, $fundingRate);
+//            $this->calculateDiffs($currency, $fundingRate);
 
             $currency->fundingRates()->save($fundingRate);
         }
