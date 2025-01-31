@@ -493,7 +493,7 @@ class CurrencyEditScreen extends Screen
          */
         foreach ($this->currency->fundingRates as $funding) {
 
-            $timestamp = $funding->created_at->getTimestamp() * 1000;
+            $timestamp = $funding->timestamp->getTimestamp() * 1000;
 
             $data[] = [
                 $timestamp,
@@ -539,7 +539,7 @@ class CurrencyEditScreen extends Screen
                     'color' => '#434348',
                     'tooltip' => [
                         'valueSuffix' => '%',
-                        'valueDecimals' => 5
+                        'valueDecimals' => 7
                     ]
                 ]
             ],

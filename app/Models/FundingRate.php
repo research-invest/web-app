@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property float $min_funding_rate
  * @property float $collect_cycle
  * @property float $next_settle_time
+ * @property int $timestamp
  *
  * @property string $next_settle_time_utc
  * @property string $next_settle_time_msk
@@ -30,6 +31,10 @@ class FundingRate extends Model
         'diff_8h',
         'diff_12h',
         'diff_24h'
+    ];
+
+    protected $casts = [
+        'timestamp' => 'datetime'
     ];
 
     public function currency()
