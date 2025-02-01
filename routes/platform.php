@@ -16,6 +16,7 @@ use App\Orchid\Screens\Examples\ExampleTextEditorsScreen;
 use App\Orchid\Screens\PlatformScreen;
 use App\Orchid\Screens\Role\RoleEditScreen;
 use App\Orchid\Screens\Role\RoleListScreen;
+use App\Orchid\Screens\Settings\SettingsScreen;
 use App\Orchid\Screens\Statistics\CompositeIndex;
 use App\Orchid\Screens\Trading\CheckListItem\CheckListItemEditScreen;
 use App\Orchid\Screens\Trading\CheckListItem\CheckItemListScreen;
@@ -128,6 +129,16 @@ Route::screen('currencies', CurrencyListScreen::class)
     ->breadcrumbs(fn (Trail $trail) => $trail
         ->parent('platform.index')
         ->push('Валюты', route('platform.currencies')));
+
+
+Route::screen('settings', SettingsScreen::class)
+    ->name('platform.settings.list');
+
+
+
+
+
+
 
 // Platform > Profile
 Route::screen('profile', UserProfileScreen::class)

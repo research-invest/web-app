@@ -9,6 +9,7 @@ namespace App\Console\Commands\Features;
 use App\Models\Currency;
 use App\Models\FundingRate;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 
 class CollectFundingRates extends Command
@@ -34,6 +35,8 @@ class CollectFundingRates extends Command
             $this->error('Failed to fetch funding rates');
             return 1;
         }
+
+        $this->resetAllFunding();
 
         $data = $response->json()['data'];
 
@@ -106,5 +109,16 @@ class CollectFundingRates extends Command
                 }
             }
         }
+    }
+
+    private function resetAllFunding(): void
+    {
+        $update = <<<SQL
+        UPDATE currencies AS c
+            SET funding_rate = 0
+        WHERE funding_rate is not null
+        SQL;
+
+        DB::update($update);
     }
 }

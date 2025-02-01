@@ -121,6 +121,11 @@ class PlatformProvider extends OrchidServiceProvider
                 ])
                 ->divider(),
 
+
+            Menu::make('Настройки')
+                ->icon('wrench')
+                ->route('platform.settings.list'),
+
             Menu::make(__('Users'))
                 ->icon('bs.people')
                 ->route('platform.systems.users')

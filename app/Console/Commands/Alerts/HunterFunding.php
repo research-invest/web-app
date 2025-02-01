@@ -2,13 +2,16 @@
 /**
  * php artisan hunter-funding:alert
  */
+
 namespace App\Console\Commands\Alerts;
 
 use App\Models\Currency;
+use App\Models\Setting;
 use App\Services\TelegramService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Cache;
 use Carbon\Carbon;
+use App\Jobs\SimulateFundingTrade;
 
 class HunterFunding extends Command
 {
@@ -28,9 +31,7 @@ class HunterFunding extends Command
     {
         $currencies = Currency::query()
             ->with('latestFundingRate')
-            ->whereHas('latestFundingRate', function ($query) {
-                $query->where('funding_rate', '<=', -0.75);
-            })
+            ->where('currencies.funding_rate', '<=', Setting::getHunterFundingLessValue())
             ->get();
 
 
@@ -44,6 +45,26 @@ class HunterFunding extends Command
         $message = $this->formatAlertMessage($currencies);
 
         $this->telegram->sendMessage($message, config('services.telegram.hunter_funding_chat_id'));
+
+        /**
+         * @var Currency $currency
+         */
+
+        foreach ($currencies as $currency) {
+            $fundingTime = Carbon::createFromTimestamp(
+                $currency->latestFundingRate->next_settle_time / 1000
+            );
+
+//            $fundingTime = now()->addMinutes(1);
+
+            // Запускаем job за минуту до изменения фандинга
+//            SimulateFundingTrade::dispatchSync($currency, $fundingTime)//->delay($fundingTime->copy()->subMinute())
+            ;
+
+            SimulateFundingTrade::dispatch($currency, $fundingTime)
+                ->delay($fundingTime->copy()->subMinute());
+        }
+
 
 //        $cacheKey = "funding_alert_hourly";
 //
