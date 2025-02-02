@@ -428,16 +428,42 @@ class Trade extends BaseModel
     }
 
     /**
-     * Длительность сделки
+     * Длительность сделки в днях
      * @return string
      */
     public function getDurationTime(): string
     {
         if ($this->closed_at) {
+            $days = $this->created_at->diffInDays($this->closed_at);
+            $hours = $this->created_at->copy()->addDays($days)->diffInHours($this->closed_at);
+
+            if ($days > 0) {
+                return $days . 'д ' . $hours . 'ч';
+            }
+
+            return $hours . 'ч';
+        }
+
+        if ($this->created_at) {
+            $days = $this->created_at->diffInDays(now());
+            $hours = $this->created_at->copy()->addDays($days)->diffInHours(now());
+
+            if ($days > 0) {
+                return $days . 'д ' . $hours . 'ч';
+            }
+
+            return $hours . 'ч';
+        }
+
+        return '';
+
+        if ($this->closed_at) {
             return $this->closed_at->diffForHumans($this->created_at, true);
         }
 
         return $this->created_at ? $this->created_at->diffForHumans(now(), true) : '';
+
+
     }
 
     /**
