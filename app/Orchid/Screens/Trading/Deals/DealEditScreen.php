@@ -345,6 +345,7 @@ class DealEditScreen extends Screen
 
             $currentPeriod = TradePeriod::isActive()
                 ->latest()
+                ->byCreator()
                 ->first();
 
             $currency = Currency::where('id', $data['currency_id'])->firstOrFail();
