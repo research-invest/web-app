@@ -42,7 +42,7 @@ class UpdateCurrencies extends Command
         foreach ($currencies as $currency) {
 
 
-            if(!is_array($currency)){
+            if (!is_array($currency)) {
 
                 Log::info("UpdateCurrencies: No Array ", [
                     '$currency' => $currency,
@@ -88,13 +88,13 @@ class UpdateCurrencies extends Command
             $bar->advance();
         }
 
-        Log::info("UpdateCurrencies: Check conditions " . $now->hour, [
-            'time' => $now->format('Y-m-d H:i:s'),
-            'minute' => $now->minute,
-            'hour' => $now->hour,
-            'timezone' => config('app.timezone'),
-            'data' => $data
-        ]);
+//        Log::info("UpdateCurrencies: Check conditions " . $now->hour, [
+//            'time' => $now->format('Y-m-d H:i:s'),
+//            'minute' => $now->minute,
+//            'hour' => $now->hour,
+//            'timezone' => config('app.timezone'),
+//            'data' => $data
+//        ]);
 
         $bar->finish();
         $this->info("\nВалюты успешно обновлены.\n");
