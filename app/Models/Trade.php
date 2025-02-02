@@ -435,7 +435,7 @@ class Trade extends BaseModel
     {
         if ($this->closed_at) {
             $days = $this->created_at->diffInDays($this->closed_at);
-            $hours = $this->created_at->copy()->addDays($days)->diffInHours($this->closed_at);
+            $hours = $this->created_at->diffInHours($this->closed_at) % 24;
 
             if ($days > 0) {
                 return sprintf('%dд %dч', (int)$days, (int)$hours);
@@ -446,7 +446,7 @@ class Trade extends BaseModel
 
         if ($this->created_at) {
             $days = $this->created_at->diffInDays(now());
-            $hours = $this->created_at->copy()->addDays($days)->diffInHours(now());
+            $hours = $this->created_at->diffInHours(now()) % 24;
 
             if ($days > 0) {
                 return sprintf('%dд %dч', (int)$days, (int)$hours);
