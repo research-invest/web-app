@@ -438,10 +438,10 @@ class Trade extends BaseModel
             $hours = $this->created_at->copy()->addDays($days)->diffInHours($this->closed_at);
 
             if ($days > 0) {
-                return $days . 'д ' . $hours . 'ч';
+                return sprintf('%dд %dч', (int)$days, (int)$hours);
             }
 
-            return $hours . 'ч';
+            return sprintf('%dч', (int)$hours);
         }
 
         if ($this->created_at) {
@@ -449,10 +449,10 @@ class Trade extends BaseModel
             $hours = $this->created_at->copy()->addDays($days)->diffInHours(now());
 
             if ($days > 0) {
-                return $days . 'д ' . $hours . 'ч';
+                return sprintf('%dд %dч', (int)$days, (int)$hours);
             }
 
-            return $hours . 'ч';
+            return sprintf('%dч', (int)$hours);
         }
 
         return '';
