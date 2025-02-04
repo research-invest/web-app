@@ -49,7 +49,7 @@ class SimulateFundingTrade implements ShouldQueue, ShouldBeUnique
 
             // Начинаем мониторинг за минуту до
             $startTime = $this->fundingTime->copy()->subMinute();
-            $endTime = $this->fundingTime->copy()->addSeconds(90); // +90 секунд (1 минута после + 30 секунд дополнительно)
+            $endTime = $this->fundingTime->copy()->addSeconds(180); // +90 секунд (1 минута после + 30 секунд дополнительно)
 
             $entryPrice = null;
             $positionClosed = false;
@@ -118,10 +118,10 @@ class SimulateFundingTrade implements ShouldQueue, ShouldBeUnique
         return 'trade_currency_' . $this->currency->id;
     }
 
-    public function uniqueFor()
-    {
-        return $this->fundingTime->addMinutes(2)->diffInSeconds(now());
-    }
+//    public function uniqueFor()
+//    {
+//        return $this->fundingTime->addMinutes(2)->diffInSeconds(now());
+//    }
 
     public function tags()
     {
