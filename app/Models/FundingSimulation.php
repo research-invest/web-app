@@ -16,6 +16,7 @@ use Orchid\Screen\Concerns\ModelStateRetrievable;
  * @property float $profit_loss
  * @property float $funding_rate
  * @property Carbon $funding_time
+ * @property Carbon $created_at
  * @property array $price_history
  *
  * @property Currency $currency

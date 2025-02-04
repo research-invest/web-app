@@ -20,11 +20,11 @@ class InfoBlock extends Legend
 
         return [
 
-            Sight::make('funding_time', 'Время')
-                ->render(fn(FundingSimulation $trade) => $trade->funding_time->toDateTimeString()),
-
             Sight::make('created_at', 'Дата создания')
                 ->render(fn(FundingSimulation $trade) => $trade->created_at->format('Y-m-d H:i:s')),
+
+            Sight::make('funding_time', 'Funding time')
+                ->render(fn(FundingSimulation $trade) => $trade->funding_time->toDateTimeString()),
 
             Sight::make('funding_rate', 'Rate')
                 ->render(fn(FundingSimulation $trade) => $trade->funding_rate),
