@@ -38,8 +38,7 @@ class ListLayout extends Table
                         ->route('platform.trading.funding_simulation.edit', $funding);
                 }),
 
-
-            TD::make('funding_time', 'Время')
+            TD::make('funding_time', 'Funding time')
                 ->render(function(FundingSimulation $funding) {
                     return $funding->funding_time->toDateTimeString();
                 }),
