@@ -118,7 +118,7 @@ class ListLayout extends Table
 
                         Link::make(__('Изменить'))
                             ->rawClick()
-                            ->route('platform.trading.deal.edit', $trade->id)
+                            ->route('platform.trading.funding_simulations.edit', $trade->id)
                             ->icon('bs.pencil'),
 
                         Button::make(__('Delete'))

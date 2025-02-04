@@ -20,9 +20,9 @@ return new class extends Migration
             $table->foreignId('currency_id')->constrained();
             $table->timestamp('funding_time');
             $table->decimal('funding_rate', 10, 8);
-            $table->decimal('entry_price', 20, 8);
-            $table->decimal('exit_price', 20, 8);
-            $table->decimal('profit_loss', 20, 8);
+            $table->decimal('entry_price', 20, 8)->default(0);
+            $table->decimal('exit_price', 20, 8)->default(0);
+            $table->decimal('profit_loss', 20, 8)->default(0);
             $table->json('price_history')->nullable(); // Для хранения истории цен
             $table->timestamps();
         });

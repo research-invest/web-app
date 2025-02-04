@@ -2,10 +2,28 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Orchid\Attachment\Attachable;
+use Orchid\Filters\Filterable;
+use Orchid\Screen\AsSource;
+use Orchid\Screen\Concerns\ModelStateRetrievable;
 
+/**
+ * @property float $entry_price
+ * @property float $exit_price
+ * @property float $profit_loss
+ * @property Carbon $funding_time
+ * @property array $price_history
+ *
+ * @property Currency $currency
+ */
 class FundingSimulation extends Model
 {
+
+    use AsSource, Filterable, ModelStateRetrievable, Attachable;
+
     protected $fillable = [
         'currency_id',
         'funding_time',

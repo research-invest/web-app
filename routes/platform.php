@@ -31,6 +31,9 @@ use App\Orchid\Screens\User\UserListScreen;
 use App\Orchid\Screens\User\UserProfileScreen;
 use Illuminate\Support\Facades\Route;
 use Tabuna\Breadcrumbs\Trail;
+use \App\Orchid\Screens\Trading\FundingSimalations\FundingSimulationsDealsListScreen;
+use \App\Orchid\Screens\Trading\FundingSimalations\FundingSimulationDealEditScreen;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -70,40 +73,50 @@ Route::screen('/trading/futures-calculator', \App\Orchid\Screens\Trading\Futures
     ->name('platform.trading.futures-calculator');
 
 Route::screen('/trading/deals/periods', TradingPeriodScreen::class)
-->name('platform.trading.periods');
+    ->name('platform.trading.periods');
 
 Route::screen('/trading/deals/strategies', StrategiesScreen::class)
-->name('platform.trading.strategies');
+    ->name('platform.trading.strategies');
 
 Route::screen('/trading/deals', DealsListScreen::class)
-->name('platform.trading.deals')
-->breadcrumbs(fn (Trail $trail) =>
-    $trail->parent('platform.index')
+    ->name('platform.trading.deals')
+    ->breadcrumbs(fn(Trail $trail) => $trail->parent('platform.index')
         ->push('Журнал сделок', route('platform.trading.deals'))
-);
+    );
 
 Route::screen('/trading/deals/create', DealEditScreen::class)
-->name('platform.trading.deal.create')
-->breadcrumbs(fn (Trail $trail) =>
-    $trail
+    ->name('platform.trading.deal.create')
+    ->breadcrumbs(fn(Trail $trail) => $trail
         ->parent('platform.trading.deals')
         ->push('Новая сделка')
-);
+    );
 
 Route::screen('/trading/deals/{trade}/edit', DealEditScreen::class)
-->name('platform.trading.deal.edit')
-->breadcrumbs(fn (Trail $trail, $trade) =>
-    $trail
+    ->name('platform.trading.deal.edit')
+    ->breadcrumbs(fn(Trail $trail, $trade) => $trail
         ->parent('platform.trading.deals')
         ->push('Редактирование сделки #' . $trade->id)
-);
+    );
 
 Route::screen('trading/deals/{trade}/close', DealCloseScreen::class)
     ->name('platform.trading.deal.close')
-    ->breadcrumbs(fn (Trail $trail, $trade) =>
-        $trail
-            ->parent('platform.trading.deal.edit', $trade)
-            ->push('Закрытие сделки')
+    ->breadcrumbs(fn(Trail $trail, $trade) => $trail
+        ->parent('platform.trading.deal.edit', $trade)
+        ->push('Закрытие сделки')
+    );
+
+
+Route::screen('/trading/funding-simulations', FundingSimulationsDealsListScreen::class)
+    ->name('platform.trading.funding_simulations')
+    ->breadcrumbs(fn(Trail $trail) => $trail->parent('platform.index')
+        ->push('Журнал сделок', route('platform.trading.funding_simulations'))
+    );
+
+Route::screen('/trading/funding-simulation/{trade}/edit', FundingSimulationDealEditScreen::class)
+    ->name('platform.trading.funding_simulation.edit')
+    ->breadcrumbs(fn(Trail $trail, $trade) => $trail
+        ->parent('platform.trading.funding_simulations')
+        ->push('Просмотр сделки #' . $trade->id)
     );
 
 Route::screen('trading/report/{period}', TradingReportScreen::class)
@@ -120,13 +133,13 @@ Route::screen('trading/check-list/create', CheckListItemEditScreen::class)
 
 Route::screen('currencies/{currency}/edit', CurrencyEditScreen::class)
     ->name('platform.currencies.edit')
-    ->breadcrumbs(fn (Trail $trail, $currency) => $trail
+    ->breadcrumbs(fn(Trail $trail, $currency) => $trail
         ->parent('platform.currencies')
         ->push($currency->name, route('platform.currencies.edit', $currency)));
 
 Route::screen('currencies', CurrencyListScreen::class)
     ->name('platform.currencies')
-    ->breadcrumbs(fn (Trail $trail) => $trail
+    ->breadcrumbs(fn(Trail $trail) => $trail
         ->parent('platform.index')
         ->push('Валюты', route('platform.currencies')));
 
@@ -135,64 +148,59 @@ Route::screen('settings', SettingsScreen::class)
     ->name('platform.settings.list');
 
 
-
-
-
-
-
 // Platform > Profile
 Route::screen('profile', UserProfileScreen::class)
     ->name('platform.profile')
-    ->breadcrumbs(fn (Trail $trail) => $trail
+    ->breadcrumbs(fn(Trail $trail) => $trail
         ->parent('platform.index')
         ->push(__('Profile'), route('platform.profile')));
 
 // Platform > System > Users > User
 Route::screen('users/{user}/edit', UserEditScreen::class)
     ->name('platform.systems.users.edit')
-    ->breadcrumbs(fn (Trail $trail, $user) => $trail
+    ->breadcrumbs(fn(Trail $trail, $user) => $trail
         ->parent('platform.systems.users')
         ->push($user->name, route('platform.systems.users.edit', $user)));
 
 // Platform > System > Users > Create
 Route::screen('users/create', UserEditScreen::class)
     ->name('platform.systems.users.create')
-    ->breadcrumbs(fn (Trail $trail) => $trail
+    ->breadcrumbs(fn(Trail $trail) => $trail
         ->parent('platform.systems.users')
         ->push(__('Create'), route('platform.systems.users.create')));
 
 // Platform > System > Users
 Route::screen('users', UserListScreen::class)
     ->name('platform.systems.users')
-    ->breadcrumbs(fn (Trail $trail) => $trail
+    ->breadcrumbs(fn(Trail $trail) => $trail
         ->parent('platform.index')
         ->push(__('Users'), route('platform.systems.users')));
 
 // Platform > System > Roles > Role
 Route::screen('roles/{role}/edit', RoleEditScreen::class)
     ->name('platform.systems.roles.edit')
-    ->breadcrumbs(fn (Trail $trail, $role) => $trail
+    ->breadcrumbs(fn(Trail $trail, $role) => $trail
         ->parent('platform.systems.roles')
         ->push($role->name, route('platform.systems.roles.edit', $role)));
 
 // Platform > System > Roles > Create
 Route::screen('roles/create', RoleEditScreen::class)
     ->name('platform.systems.roles.create')
-    ->breadcrumbs(fn (Trail $trail) => $trail
+    ->breadcrumbs(fn(Trail $trail) => $trail
         ->parent('platform.systems.roles')
         ->push(__('Create'), route('platform.systems.roles.create')));
 
 // Platform > System > Roles
 Route::screen('roles', RoleListScreen::class)
     ->name('platform.systems.roles')
-    ->breadcrumbs(fn (Trail $trail) => $trail
+    ->breadcrumbs(fn(Trail $trail) => $trail
         ->parent('platform.index')
         ->push(__('Roles'), route('platform.systems.roles')));
 
 // Example...
 Route::screen('example', ExampleScreen::class)
     ->name('platform.example')
-    ->breadcrumbs(fn (Trail $trail) => $trail
+    ->breadcrumbs(fn(Trail $trail) => $trail
         ->parent('platform.index')
         ->push('Example Screen'));
 
