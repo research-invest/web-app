@@ -32,9 +32,10 @@ class ListLayout extends Table
 
             TD::make('currency', 'Пара')
                 ->render(function(FundingSimulation $funding) {
-                    $route = route('platform.trading.funding_simulation.edit', $funding);
-                    $text = $funding->currency->name;
-                    return "<a data-turbo=\"false\" href='{$route}'>{$text}</a>";
+                    return Link::make($funding->currency->name)
+                        ->rawClick()
+                        ->icon('share-alt')
+                        ->route('platform.trading.funding_simulation.edit', $funding);
                 }),
 
 

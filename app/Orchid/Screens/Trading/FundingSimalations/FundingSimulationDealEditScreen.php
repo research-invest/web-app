@@ -6,9 +6,12 @@ namespace App\Orchid\Screens\Trading\FundingSimalations;
 
 use App\Models\FundingSimulation;
 use App\Orchid\Layouts\Charts\HighchartsChart;
+use App\Orchid\Layouts\Operations\WalletInfoBlock;
+use App\Orchid\Layouts\Trading\Deals\FundingSimulations\InfoBlock;
 use App\Services\Trading\FundingSimulationChartCalculator;
 use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Screen;
+use Orchid\Support\Facades\Layout;
 
 class FundingSimulationDealEditScreen extends Screen
 {
@@ -54,6 +57,7 @@ class FundingSimulationDealEditScreen extends Screen
     public function layout(): iterable
     {
         return [
+            Layout::block(InfoBlock::class)->vertical(),
 
             new HighchartsChart(
                 $this->getFundingSimulationsChart()

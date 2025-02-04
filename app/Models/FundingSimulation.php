@@ -14,6 +14,7 @@ use Orchid\Screen\Concerns\ModelStateRetrievable;
  * @property float $entry_price
  * @property float $exit_price
  * @property float $profit_loss
+ * @property float $funding_rate
  * @property Carbon $funding_time
  * @property array $price_history
  *
