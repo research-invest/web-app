@@ -62,7 +62,7 @@ class HunterFunding extends Command
             ;
 
             SimulateFundingTrade::dispatch($currency, $fundingTime)
-                ->delay($fundingTime->copy()->subMinute());
+                ->delay($fundingTime->copy()->subMinutes(2));
         }
 
 
