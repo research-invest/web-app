@@ -182,7 +182,7 @@
                             </div>
                             <div class="d-flex justify-content-between">
                                 <span>Необходимая цена:</span>
-                                <span class="text-success">{{ $trade->target_profit_price }}
+                                <span class="text-success">{{ $trade->target_profit_price_format }}
                                 <small class="text-muted">({{ $trade->target_profit_percent }}%)</small>
                                 </span>
 

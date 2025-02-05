@@ -43,7 +43,8 @@ use Orchid\Screen\Concerns\ModelStateRetrievable;
  * @property  CheckListItem[] $checkListItems
  * @property  TradePeriod $tradePeriod
  * @property  float $currentPnL
- * @property  string $target_profit_price
+ * @property  float $target_profit_price
+ * @property  string $target_profit_price_format
  * @property  float $target_profit_percent
  * @property string $currency_name_format
  */
@@ -476,10 +477,19 @@ class Trade extends BaseModel
     }
 
     /**
-     * target_profit_price
+     * target_profit_price_format
      * @return string
      */
-    public function getTargetProfitPriceAttribute(): string
+    public function getTargetProfitPriceFormatAttribute(): string
+    {
+        return MathHelper::formatNumber($this->target_profit_price);
+    }
+
+    /**
+     * target_profit_price
+     * @return float
+     */
+    public function getTargetProfitPriceAttribute(): float
     {
         $averagePrice = $this->getAverageEntryPrice();
         $totalContracts = $this->position_size * $this->leverage;
@@ -490,7 +500,7 @@ class Trade extends BaseModel
             $price = $averagePrice - ($this->target_profit_amount * $averagePrice / $totalContracts);
         }
 
-        return MathHelper::formatNumber($price);
+        return $price;
     }
 
     /**
