@@ -43,6 +43,12 @@ class ListLayout extends Table
                     return $funding->funding_time->toDateTimeString();
                 }),
 
+            TD::make('created_at', 'Дата создания')
+                ->defaultHidden()
+                ->render(function(FundingSimulation $funding) {
+                    return $funding->created_at->toDateTimeString();
+                }),
+
             TD::make('funding_rate', 'rate'),
             TD::make('entry_price', 'Цена входа'),
             TD::make('exit_price', 'Цена выхода'),
