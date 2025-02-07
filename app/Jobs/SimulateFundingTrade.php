@@ -31,7 +31,7 @@ class SimulateFundingTrade implements ShouldQueue, ShouldBeUnique
     public function handle(MexcService $mexc)
     {
         // Проверяем, не прошло ли уже время фандинга
-        if (now()->isAfter($this->fundingTime->copy()->addMinutes(5))) {
+        if (now()->isAfter($this->fundingTime->copy()->addMinutes(1))) {
             Log::info('уже прошло время фандинга', [
                 'code' => $this->currency->code,
                 'funding_time' => $this->fundingTime
@@ -48,7 +48,7 @@ class SimulateFundingTrade implements ShouldQueue, ShouldBeUnique
 
         // Начинаем мониторинг за минуту до
         $startTime = $this->fundingTime->copy()->subMinute();
-        $endTime = $this->fundingTime->copy()->addSeconds(240); // +90 секунд (1 минута после + 30 секунд дополнительно)
+        $endTime = $this->fundingTime->copy()->addSeconds(180); // +90 секунд (1 минута после + 30 секунд дополнительно)
 
         $entryPrice = null;
         $positionClosed = false;
