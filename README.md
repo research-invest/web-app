@@ -39,7 +39,7 @@ serverurl=unix:///tmp/supervisor.sock
 [program:worker_cryptosasha]
 directory=/var/www/web-app
 process_name=%(program_name)s_%(process_num)02d
-command=php artisan queue:work --sleep=3 --tries=3
+command=php artisan queue:work --sleep=1 --tries=3 --timeout=900
 autostart=true
 autorestart=true
 stopasgroup=true
@@ -47,16 +47,15 @@ killasgroup=true
 user=root
 numprocs=2
 redirect_stderr=true
-stdout_logfile = /dev/fd/1
-stdout_logfile_maxbytes=0
-stderr_logfile = /dev/fd/2
-stderr_logfile_maxbytes=0
-redirect_stderr=true
-stopwaitsecs=3600
-priority = 6
 stdout_logfile=/var/www/web-app/storage/logs/worker_cryptosasha.log
+stdout_logfile_maxbytes=0
+stopwaitsecs=10
+priority=6
 
 
 supervisorctl update
 supervisorctl reload
 supervisorctl restart all
+
+sudo supervisorctl reread && supervisorctl update
+sudo supervisorctl restart worker_cryptosasha:*

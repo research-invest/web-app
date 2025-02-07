@@ -30,31 +30,32 @@ class SimulateFundingTrade implements ShouldQueue, ShouldBeUnique
 
     public function handle(MexcService $mexc)
     {
-        try {
-            // Проверяем, не прошло ли уже время фандинга
-            if (now()->isAfter($this->fundingTime->copy()->addMinutes(5))) {
-                Log::info('уже прошло время фандинга', [
-                    'code' => $this->currency->code,
-                    'funding_time' => $this->fundingTime
-                ]);
-                return;
-            }
-
-            $simulation = FundingSimulation::create([
-                'currency_id' => $this->currency->id,
-                'funding_time' => $this->fundingTime,
-                'funding_rate' => $this->currency->latestFundingRate->funding_rate,
-                'price_history' => [],
+        // Проверяем, не прошло ли уже время фандинга
+        if (now()->isAfter($this->fundingTime->copy()->addMinutes(5))) {
+            Log::info('уже прошло время фандинга', [
+                'code' => $this->currency->code,
+                'funding_time' => $this->fundingTime
             ]);
+            return;
+        }
 
-            // Начинаем мониторинг за минуту до
-            $startTime = $this->fundingTime->copy()->subMinute();
-            $endTime = $this->fundingTime->copy()->addSeconds(240); // +90 секунд (1 минута после + 30 секунд дополнительно)
+        $simulation = FundingSimulation::create([
+            'currency_id' => $this->currency->id,
+            'funding_time' => $this->fundingTime,
+            'funding_rate' => $this->currency->latestFundingRate->funding_rate,
+            'price_history' => [],
+        ]);
 
-            $entryPrice = null;
-            $positionClosed = false;
+        // Начинаем мониторинг за минуту до
+        $startTime = $this->fundingTime->copy()->subMinute();
+        $endTime = $this->fundingTime->copy()->addSeconds(240); // +90 секунд (1 минута после + 30 секунд дополнительно)
 
-            while (now() <= $endTime) {
+        $entryPrice = null;
+        $positionClosed = false;
+
+        while (now() <= $endTime) {
+            try {
+
                 $currentTime = now();
                 $price = $mexc->getCurrentPrice($this->currency->code);
 
@@ -103,13 +104,14 @@ class SimulateFundingTrade implements ShouldQueue, ShouldBeUnique
                 }
 
                 sleep(1);
+
+            } catch (\Exception $e) {
+                Log::error('Funding simulation failed', [
+                    'code' => $this->currency->code,
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString()
+                ]);
             }
-        } catch (\Exception $e) {
-            Log::error('Funding simulation failed', [
-                'code' => $this->currency->code,
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
         }
     }
 
