@@ -48,7 +48,7 @@ class SimulateFundingTrade implements ShouldQueue, ShouldBeUnique
 
         // Начинаем мониторинг за минуту до
         $startTime = $this->fundingTime->copy()->subMinute();
-        $endTime = $this->fundingTime->copy()->addSeconds(180); // +90 секунд (1 минута после + 30 секунд дополнительно)
+        $endTime = $this->fundingTime->copy()->addSeconds(60); // +90 секунд (1 минута после + 30 секунд дополнительно)
 
         $entryPrice = null;
         $positionClosed = false;
@@ -66,6 +66,12 @@ class SimulateFundingTrade implements ShouldQueue, ShouldBeUnique
 
                 $simulation->update([
                     'price_history' => $this->priceHistory
+                ]);
+
+                Log::info('diffInSeconds ' . $this->currency->code, [
+                    'diffInSeconds' => $currentTime->diffInSeconds($this->fundingTime),
+                    'isAfter' => $currentTime->isAfter($this->fundingTime->copy()->addSecond()),
+                    '$entryPrice' => $entryPrice,
                 ]);
 
                 // Если время фандинга - 1 секунда, открываем позицию
@@ -94,14 +100,14 @@ class SimulateFundingTrade implements ShouldQueue, ShouldBeUnique
                 }
 
                 // Продолжаем собирать данные еще 30 секунд после закрытия позиции
-                if ($positionClosed && $currentTime->isAfter($this->fundingTime->copy()->addSeconds(31))) {
-                    Log::info('Simulation completed with additional monitoring', [
-                        'code' => $this->currency->code,
-                        'total_price_points' => count($this->priceHistory),
-                        'simulation_id' => $simulation->id
-                    ]);
-                    return;
-                }
+//                if ($positionClosed && $currentTime->isAfter($this->fundingTime->copy()->addSeconds(31))) {
+//                    Log::info('Simulation completed with additional monitoring', [
+//                        'code' => $this->currency->code,
+//                        'total_price_points' => count($this->priceHistory),
+//                        'simulation_id' => $simulation->id
+//                    ]);
+//                    return;
+//                }
 
                 sleep(1);
 
