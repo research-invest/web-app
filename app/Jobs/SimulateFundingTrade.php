@@ -125,7 +125,7 @@ class SimulateFundingTrade implements ShouldQueue, ShouldBeUnique
                     ]);
                 }
 
-                if ($entryPrice && !$positionClosed && $secondsAfterFunding >= 1 && $secondsAfterFunding < 3) {
+                if ($entryPrice && !$positionClosed && $secondsAfterFunding >= -1) {
                     $exitPrice = $price;
                     $positionClosed = true;
 
