@@ -32,7 +32,14 @@ class InfoBlock extends Legend
             Sight::make('entry_price', 'Цена входа в сделку'),
             Sight::make('exit_price', 'Цена выхода в сделку'),
             Sight::make('profit_loss', 'Профит'),
-
+            Sight::make('position_size', 'Размер позиции'),
+            Sight::make('contract_quantity', 'Количество контрактов'),
+            Sight::make('leverage', 'Плечо'),
+            Sight::make('initial_margin', 'Начальная сумма'),
+            Sight::make('funding_fee', 'Комиссия фандинга'),
+            Sight::make('pnl_before_funding', 'pnl_before_funding'),
+            Sight::make('total_pnl', 'pnl'),
+            Sight::make('roi_percent', 'roi'),
         ];
     }
 
