@@ -74,8 +74,9 @@ class SimulateFundingTrade implements ShouldQueue, ShouldBeUnique
                     '$entryPrice' => $entryPrice,
                 ]);
 
-                // Если время фандинга - 1 секунда, открываем позицию
-                if ($currentTime->diffInSeconds($this->fundingTime) === 1 && !$entryPrice) {
+                // Если время фандинга - 1 секунда (с погрешностью), открываем позицию
+                $secondsUntilFunding = $currentTime->diffInSeconds($this->fundingTime);
+                if ($secondsUntilFunding <= 1 && $secondsUntilFunding > 0 && !$entryPrice) {
                     $entryPrice = $price;
                     $simulation->update([
                         'entry_price' => $entryPrice
@@ -84,12 +85,14 @@ class SimulateFundingTrade implements ShouldQueue, ShouldBeUnique
                     Log::info('Position opened', [
                         'code' => $this->currency->code,
                         'price' => $entryPrice,
+                        'seconds_until_funding' => $secondsUntilFunding,
                         'simulation_id' => $simulation->id
                     ]);
                 }
 
-                // Если время фандинга + 1 секунда, закрываем позицию
-                if ($entryPrice && !$positionClosed && $currentTime->isAfter($this->fundingTime->copy()->addSecond())) {
+                // Если время фандинга + 1 секунда (с погрешностью), закрываем позицию
+                $secondsAfterFunding = $currentTime->diffInSeconds($this->fundingTime);
+                if ($entryPrice && !$positionClosed && $secondsAfterFunding >= 1 && $secondsAfterFunding < 2) {
                     $exitPrice = $price;
                     $positionClosed = true;
 
