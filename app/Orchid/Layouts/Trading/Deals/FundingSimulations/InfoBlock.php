@@ -29,8 +29,8 @@ class InfoBlock extends Legend
             Sight::make('funding_rate', 'Rate')
                 ->render(fn(FundingSimulation $trade) => $trade->funding_rate),
 
-            Sight::make('entry_price', 'Цена входа в сделку'),
-            Sight::make('exit_price', 'Цена выхода в сделку'),
+            Sight::make('entry_price', 'Цена входа'),
+            Sight::make('exit_price', 'Цена выхода'),
             Sight::make('profit_loss', 'Профит'),
             Sight::make('position_size', 'Размер позиции'),
             Sight::make('contract_quantity', 'Количество контрактов'),
