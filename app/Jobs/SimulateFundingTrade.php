@@ -89,7 +89,7 @@ class SimulateFundingTrade implements ShouldQueue, ShouldBeUnique
                     $positionSize = $initialAmount * $leverage;
                     $contractQuantity = $positionSize / $entryPrice;
                     $fundingRate = $this->currency->latestFundingRate->funding_rate;
-                    $fundingFee = ($positionSize * abs($fundingRate));
+                    $fundingFee = ($positionSize * abs($fundingRate) / 100);
 
                     $simulation->update([
                         'entry_price' => $entryPrice,
