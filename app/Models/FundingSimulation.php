@@ -18,6 +18,14 @@ use Orchid\Screen\Concerns\ModelStateRetrievable;
  * @property Carbon $funding_time
  * @property Carbon $created_at
  * @property array $price_history
+ * @property float $position_size
+ * @property float $contract_quantity
+ * @property int $leverage
+ * @property float $initial_margin
+ * @property float $funding_fee
+ * @property float $pnl_before_funding
+ * @property float $total_pnl
+ * @property float $roi_percent
  *
  * @property Currency $currency
  */
@@ -33,7 +41,16 @@ class FundingSimulation extends Model
         'entry_price',
         'exit_price',
         'profit_loss',
-        'price_history'
+        'price_history',
+        'position_size',
+        'contract_quantity',
+        'leverage',
+        'initial_margin',
+        'funding_fee',
+        'pnl_before_funding',
+        'total_pnl',
+        'roi_percent',
+
     ];
 
     protected $casts = [

@@ -39,6 +39,9 @@ class SimulateFundingTrade implements ShouldQueue, ShouldBeUnique
             return;
         }
 
+        /**
+         * @var FundingSimulation $simulation
+         */
         $simulation = FundingSimulation::create([
             'currency_id' => $this->currency->id,
             'funding_time' => $this->fundingTime,
@@ -46,8 +49,6 @@ class SimulateFundingTrade implements ShouldQueue, ShouldBeUnique
             'price_history' => [],
         ]);
 
-        // Начинаем мониторинг за минуту до
-        $startTime = $this->fundingTime->copy()->subMinute();
         $endTime = $this->fundingTime->copy()->addSeconds(60); // +90 секунд (1 минута после + 30 секунд дополнительно)
 
         $entryPrice = null;
@@ -78,13 +79,35 @@ class SimulateFundingTrade implements ShouldQueue, ShouldBeUnique
                 $secondsUntilFunding = $currentTime->diffInSeconds($this->fundingTime);
                 if ($secondsUntilFunding <= 1 && $secondsUntilFunding > 0 && !$entryPrice) {
                     $entryPrice = $price;
+
+                    // Параметры сделки
+                    $initialAmount = 1000; // Начальная сумма в USD
+                    $leverage = 50; // Плечо
+                    $positionSize = $initialAmount * $leverage; // Размер позиции
+                    $contractQuantity = $positionSize / $entryPrice; // Количество контрактов
+
+                    // Расчет комиссии за фандинг
+                    $fundingRate = $this->currency->latestFundingRate->funding_rate;
+                    $fundingFee = ($positionSize * abs($fundingRate)); // Комиссия за фандинг
+
                     $simulation->update([
-                        'entry_price' => $entryPrice
+                        'entry_price' => $entryPrice,
+                        'position_size' => $positionSize,
+                        'contract_quantity' => $contractQuantity,
+                        'leverage' => $leverage,
+                        'initial_margin' => $initialAmount,
+                        'funding_fee' => $fundingFee
                     ]);
 
                     Log::info('Position opened', [
                         'code' => $this->currency->code,
                         'price' => $entryPrice,
+                        'position_size' => $positionSize,
+                        'contract_quantity' => $contractQuantity,
+                        'leverage' => $leverage,
+                        'initial_margin' => $initialAmount,
+                        'funding_rate' => $fundingRate,
+                        'funding_fee' => $fundingFee,
                         'seconds_until_funding' => $secondsUntilFunding,
                         'simulation_id' => $simulation->id
                     ]);
@@ -96,9 +119,28 @@ class SimulateFundingTrade implements ShouldQueue, ShouldBeUnique
                     $exitPrice = $price;
                     $positionClosed = true;
 
+                    // Расчет PnL
+                    $priceChange = ($exitPrice - $entryPrice) / $entryPrice;
+                    $pnlBeforeFunding = $simulation->position_size * $priceChange;
+                    $totalPnL = $pnlBeforeFunding - $simulation->funding_fee;
+                    $roiPercent = ($totalPnL / $simulation->initial_margin) * 100;
+
                     $simulation->update([
                         'exit_price' => $exitPrice,
-                        'profit_loss' => $exitPrice - $entryPrice
+                        'pnl_before_funding' => $pnlBeforeFunding,
+                        'total_pnl' => $totalPnL,
+                        'roi_percent' => $roiPercent
+                    ]);
+
+                    Log::info('Position closed', [
+                        'code' => $this->currency->code,
+                        'entry_price' => $entryPrice,
+                        'exit_price' => $exitPrice,
+                        'pnl_before_funding' => $pnlBeforeFunding,
+                        'funding_fee' => $simulation->funding_fee,
+                        'total_pnl' => $totalPnL,
+                        'roi_percent' => $roiPercent,
+                        'simulation_id' => $simulation->id
                     ]);
                 }
 

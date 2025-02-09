@@ -3,6 +3,7 @@
 
 namespace App\Orchid\Layouts\Trading\Deals\FundingSimulations;
 
+use App\Helpers\MathHelper;
 use App\Models\FundingSimulation;
 use Orchid\Screen\Actions\DropDown;
 use Orchid\Screen\Actions\Link;
@@ -31,7 +32,7 @@ class ListLayout extends Table
                 ),
 
             TD::make('currency', 'Пара')
-                ->render(function(FundingSimulation $funding) {
+                ->render(function (FundingSimulation $funding) {
                     return Link::make($funding->currency->name)
                         ->rawClick()
                         ->icon('share-alt')
@@ -39,19 +40,35 @@ class ListLayout extends Table
                 }),
 
             TD::make('funding_time', 'Funding time')
-                ->render(function(FundingSimulation $funding) {
+                ->render(function (FundingSimulation $funding) {
                     return $funding->funding_time->toDateTimeString();
                 }),
 
             TD::make('created_at', 'Дата создания')
                 ->defaultHidden()
-                ->render(function(FundingSimulation $funding) {
+                ->render(function (FundingSimulation $funding) {
                     return $funding->created_at->toDateTimeString();
                 }),
 
             TD::make('funding_rate', 'rate'),
             TD::make('entry_price', 'Цена входа'),
             TD::make('exit_price', 'Цена выхода'),
+
+            TD::make('diff_percent', '% изменения')
+                ->render(function (FundingSimulation $funding) {
+                    if (!$funding->entry_price) {
+                        return '';
+                    }
+
+                    $change = MathHelper::getPercentOfNumber($funding->entry_price, $funding->exit_price);
+                    $color = $change > 0 ? 'green' : ($change < 0 ? 'red' : 'inherit');
+
+                    return sprintf(
+                        ' <small style="color: %s">%+.1f%%</small>',
+                        $color,
+                        $change
+                    );
+                }),
             TD::make('profit_loss', 'Профит'),
 
             TD::make(__('Actions'))

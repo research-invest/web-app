@@ -112,7 +112,7 @@ Route::screen('/trading/funding-simulations', FundingSimulationsDealsListScreen:
         ->push('Журнал сделок', route('platform.trading.funding_simulations'))
     );
 
-Route::screen('/trading/funding-simulation/{trade}/edit', FundingSimulationDealEditScreen::class)
+Route::screen('/trading/funding-simulations/{trade}/edit', FundingSimulationDealEditScreen::class)
     ->name('platform.trading.funding_simulation.edit')
     ->breadcrumbs(fn(Trail $trail, $trade) => $trail
         ->parent('platform.trading.funding_simulations')
