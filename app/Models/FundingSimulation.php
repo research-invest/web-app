@@ -26,6 +26,7 @@ use Orchid\Screen\Concerns\ModelStateRetrievable;
  * @property float $pnl_before_funding
  * @property float $total_pnl
  * @property float $roi_percent
+ * @property float $pre_funding_volatility
  *
  * @property Currency $currency
  */
@@ -50,6 +51,7 @@ class FundingSimulation extends Model
         'pnl_before_funding',
         'total_pnl',
         'roi_percent',
+        'pre_funding_volatility',
 
     ];
 

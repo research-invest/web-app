@@ -80,15 +80,21 @@ class SimulateFundingTrade implements ShouldQueue, ShouldBeUnique
                 if ($secondsUntilFunding <= 1 && $secondsUntilFunding > 0 && !$entryPrice) {
                     $entryPrice = $price;
 
-                    // Параметры сделки
-                    $initialAmount = 1000; // Начальная сумма в USD
-                    $leverage = 50; // Плечо
-                    $positionSize = $initialAmount * $leverage; // Размер позиции
-                    $contractQuantity = $positionSize / $entryPrice; // Количество контрактов
+                    $lastMinutePrices = collect($this->priceHistory)
+                        ->where('timestamp', '>=', $currentTime->copy()->subMinute()->timestamp)
+                        ->pluck('price')
+                        ->toArray();
 
-                    // Расчет комиссии за фандинг
+                    // Рассчитываем индекс волатильности
+                    $volatilityIndex = $this->calculateVolatilityIndex($lastMinutePrices);
+
+                    // Параметры сделки
+                    $initialAmount = 1000;
+                    $leverage = 50;
+                    $positionSize = $initialAmount * $leverage;
+                    $contractQuantity = $positionSize / $entryPrice;
                     $fundingRate = $this->currency->latestFundingRate->funding_rate;
-                    $fundingFee = ($positionSize * abs($fundingRate)); // Комиссия за фандинг
+                    $fundingFee = ($positionSize * abs($fundingRate));
 
                     $simulation->update([
                         'entry_price' => $entryPrice,
@@ -96,7 +102,8 @@ class SimulateFundingTrade implements ShouldQueue, ShouldBeUnique
                         'contract_quantity' => $contractQuantity,
                         'leverage' => $leverage,
                         'initial_margin' => $initialAmount,
-                        'funding_fee' => $fundingFee
+                        'funding_fee' => $fundingFee,
+                        'pre_funding_volatility' => $volatilityIndex
                     ]);
 
                     Log::info('Position opened', [
@@ -108,6 +115,7 @@ class SimulateFundingTrade implements ShouldQueue, ShouldBeUnique
                         'initial_margin' => $initialAmount,
                         'funding_rate' => $fundingRate,
                         'funding_fee' => $fundingFee,
+                        'volatility_index' => $volatilityIndex,
                         'seconds_until_funding' => $secondsUntilFunding,
                         'simulation_id' => $simulation->id
                     ]);
@@ -189,5 +197,27 @@ class SimulateFundingTrade implements ShouldQueue, ShouldBeUnique
     public function retryUntil()
     {
         return $this->fundingTime->copy()->addMinutes(5);
+    }
+
+    /**
+     * Рассчитывает индекс волатильности на основе массива цен
+     */
+    private function calculateVolatilityIndex(array $prices): float
+    {
+        if (empty($prices)) {
+            return 0;
+        }
+
+        // Находим максимальную и минимальную цены
+        $maxPrice = max($prices);
+        $minPrice = min($prices);
+
+        // Находим среднюю цену
+        $avgPrice = array_sum($prices) / count($prices);
+
+        // Рассчитываем процентный размах от средней цены
+        $volatilityIndex = (($maxPrice - $minPrice) / $avgPrice) * 100;
+
+        return round($volatilityIndex, 4);
     }
 }
