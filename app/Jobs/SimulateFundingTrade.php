@@ -18,6 +18,10 @@ class SimulateFundingTrade implements ShouldQueue, ShouldBeUnique
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    public $tries = 1;
+
+    public $timeout = 180;
+
     private Currency $currency;
     private Carbon $fundingTime;
     private array $priceHistory = [];
@@ -80,13 +84,10 @@ class SimulateFundingTrade implements ShouldQueue, ShouldBeUnique
                 if ($secondsUntilFunding <= 1 && $secondsUntilFunding > 0 && !$entryPrice) {
                     $entryPrice = $price;
 
-                    $lastMinutePrices = collect($this->priceHistory)
-                        ->where('timestamp', '>=', $currentTime->copy()->subMinute()->timestamp)
-                        ->pluck('price')
-                        ->toArray();
+                    $prices = array_column($this->priceHistory, 'price');
 
                     // Рассчитываем индекс волатильности
-                    $volatilityIndex = $this->calculateVolatilityIndex($lastMinutePrices);
+                    $volatilityIndex = $this->calculateVolatilityIndex($prices);
 
                     // Параметры сделки
                     $initialAmount = 1000;
