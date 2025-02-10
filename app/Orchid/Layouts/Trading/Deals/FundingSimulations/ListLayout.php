@@ -69,7 +69,8 @@ class ListLayout extends Table
                         $change
                     );
                 }),
-            TD::make('profit_loss', 'Профит'),
+            TD::make('funding_fee', 'fee'),
+            TD::make('total_pnl', 'pnl'),
 
             TD::make(__('Actions'))
                 ->align(TD::ALIGN_CENTER)
