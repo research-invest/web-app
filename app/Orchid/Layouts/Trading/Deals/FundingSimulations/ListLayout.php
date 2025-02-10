@@ -69,8 +69,14 @@ class ListLayout extends Table
                         $change
                     );
                 }),
-            TD::make('funding_fee', 'fee'),
-            TD::make('total_pnl', 'pnl'),
+            TD::make('funding_fee', 'fee')
+                ->render(function (FundingSimulation $funding) {
+                    return MathHelper::formatNumber($funding->funding_fee);
+                }),
+            TD::make('total_pnl', 'pnl')
+                ->render(function (FundingSimulation $funding) {
+                    return MathHelper::formatNumber($funding->total_pnl);
+                }),
 
             TD::make(__('Actions'))
                 ->align(TD::ALIGN_CENTER)
