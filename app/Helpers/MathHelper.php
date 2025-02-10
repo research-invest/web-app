@@ -180,9 +180,9 @@ class MathHelper
      * @param int $round
      * @return string Отформатированное число
      */
-    public static function formatNumber(float $number, int $round = 2): string
+    public static function formatNumber(?float $number, int $round = 2): string
     {
-        if ($number == 0) {
+        if ((float)$number === 0.0) {
             return '0.00';
         }
 
