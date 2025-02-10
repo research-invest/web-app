@@ -100,20 +100,6 @@ class SimulateFundingTrade implements ShouldQueue, ShouldBeUnique
                         'funding_fee' => $fundingFee,
                         'pre_funding_volatility' => $volatilityIndex
                     ]);
-
-                    Log::info('Position opened', [
-                        'code' => $this->currency->code,
-                        'price' => $entryPrice,
-                        'position_size' => $positionSize,
-                        'contract_quantity' => $contractQuantity,
-                        'leverage' => $leverage,
-                        'initial_margin' => $initialAmount,
-                        'funding_rate' => $fundingRate,
-                        'funding_fee' => $fundingFee,
-                        'volatility_index' => $volatilityIndex,
-                        'seconds_until_funding' => $secondsUntilFunding,
-                        'simulation_id' => $simulation->id
-                    ]);
                 }
 
                 // Если время фандинга + 1 секунда (с погрешностью), закрываем позицию
@@ -126,7 +112,7 @@ class SimulateFundingTrade implements ShouldQueue, ShouldBeUnique
                     // Расчет PnL
                     $priceChange = ($exitPrice - $entryPrice) / $entryPrice;
                     $pnlBeforeFunding = $simulation->position_size * $priceChange;
-                    $totalPnL = $pnlBeforeFunding - $simulation->funding_fee;
+                    $totalPnL = $pnlBeforeFunding + $simulation->funding_fee;
                     $roiPercent = ($totalPnL / $simulation->initial_margin) * 100;
 
                     $simulation->update([
@@ -134,17 +120,6 @@ class SimulateFundingTrade implements ShouldQueue, ShouldBeUnique
                         'pnl_before_funding' => $pnlBeforeFunding,
                         'total_pnl' => $totalPnL,
                         'roi_percent' => $roiPercent
-                    ]);
-
-                    Log::info('Position closed', [
-                        'code' => $this->currency->code,
-                        'entry_price' => $entryPrice,
-                        'exit_price' => $exitPrice,
-                        'pnl_before_funding' => $pnlBeforeFunding,
-                        'funding_fee' => $simulation->funding_fee,
-                        'total_pnl' => $totalPnL,
-                        'roi_percent' => $roiPercent,
-                        'simulation_id' => $simulation->id
                     ]);
                 }
 
@@ -179,16 +154,6 @@ class SimulateFundingTrade implements ShouldQueue, ShouldBeUnique
 //    {
 //        return $this->fundingTime->addMinutes(2)->diffInSeconds(now());
 //    }
-
-    public function tags()
-    {
-        return [
-            'funding_simulation',
-            'currency_' . $this->currency->id,
-            'symbol_' . $this->currency->symbol,
-            'funding_time_' . $this->fundingTime->timestamp
-        ];
-    }
 
     public function retryUntil()
     {
