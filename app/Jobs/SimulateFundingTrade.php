@@ -84,8 +84,8 @@ class SimulateFundingTrade implements ShouldQueue, ShouldBeUnique
                     $volatilityIndex = $this->calculateVolatilityIndex($prices);
 
                     // Параметры сделки
-                    $initialAmount = 1000;
-                    $leverage = 50;
+                    $initialAmount = 200;
+                    $leverage = 20;
                     $positionSize = $initialAmount * $leverage;
                     $contractQuantity = $positionSize / $entryPrice;
                     $fundingRate = $this->currency->latestFundingRate->funding_rate;
