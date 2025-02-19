@@ -350,8 +350,11 @@ class Trade extends BaseModel
             $price = $averagePrice * (1 + $maintenanceMargin);
         }
 
-        return MathHelper::addPercent($price, 2); // прибавляем чучуть для запаса и защиты от проскальзывания
+        if ($this->isTypeLong()) {  // прибавляем чучуть для запаса и защиты от проскальзывания
+            return MathHelper::addPercent($price, 2);
+        }
 
+        return MathHelper::subPercent($price, 2);
     }
 
     /**
