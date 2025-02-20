@@ -67,8 +67,7 @@ class HunterFunding extends Command
                 SimulateFundingTrade::dispatch($currency, $fundingTime)
                     ->delay($fundingTime->copy()->subMinutes(1));
 
-                // Сохраняем в кеш
-                Cache::put($cacheKey, true, $fundingTime->timestamp);
+                Cache::put($cacheKey, true, $fundingTime->copy()->addMinutes(3));
             }
         }
 
