@@ -294,9 +294,9 @@ class DealEditScreen extends Screen
                         $this->getPnlHistoryVolumeChart()
                     ),
 
-                    new HighchartsChart(
-                        $this->getPnlHistoryFundingRateChart()
-                    ),
+//                    new HighchartsChart(
+//                        $this->getPnlHistoryFundingRateChart()
+//                    ),
 
                     Layout::view('trading.trade-potential-pnl', [
                         'trade' => $this->trade,
