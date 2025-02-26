@@ -278,9 +278,11 @@ class Trade extends BaseModel
     /**
      * Обновить PNL для всех ордеров и сохранить историю
      */
-    public function updatePnL(float $currentPrice)
+    public function updatePnL()
     {
 //        $averagePrice = $this->getAverageEntryPrice();
+
+        $currentPrice = $this->currency->last_price ?? $this->entry_price;
 
         $unrealizedTradePnl = 0;
 
@@ -322,7 +324,9 @@ class Trade extends BaseModel
             'price' => $currentPrice,
             'unrealized_pnl' => $totalUnrealizedPnl,
             'realized_pnl' => $this->realized_pnl ?? 0,
-            'roe' => $roe
+            'roe' => $roe,
+            'volume' => $this->currency->volume,
+            'funding_rate' => $this->currency->funding_rate,
         ]);
     }
 

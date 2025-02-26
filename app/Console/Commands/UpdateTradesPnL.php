@@ -21,8 +21,7 @@ class UpdateTradesPnL extends Command
          * @var Trade $trade
          */
         foreach ($openTrades as $trade) {
-            $currentPrice = $trade->currency->last_price ?? $trade->entry_price;
-            $trade->updatePnL($currentPrice);
+            $trade->updatePnL();
         }
 
         $this->info('PNL updated for ' . $openTrades->count() . ' trades');

@@ -8,6 +8,8 @@ use Orchid\Screen\AsSource;
  * @property float $price
  * @property float $roe
  * @property float $unrealized_pnl
+ * @property float $volume
+ * @property float $funding_rate
  */
 class TradePnlHistory extends BaseModel
 {
@@ -20,7 +22,9 @@ class TradePnlHistory extends BaseModel
         'price',
         'unrealized_pnl',
         'realized_pnl',
-        'roe'
+        'roe',
+        'volume',
+        'funding_rate',
     ];
 
     protected $casts = [
