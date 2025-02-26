@@ -336,6 +336,48 @@ class PnlAnalyticsService
         ];
     }
 
+    public function getPnlHistoryVolumeChart(Trade $trade)
+    {
+        $volumesData = $labels = [];
+        foreach ($trade->pnlHistory as $history) {
+            $volumesData[] = (float)$history->volume;
+            $labels[] = MathHelper::formatNumber($history->price);
+        }
+
+        return [
+            'chart' => [
+                'type' => 'line'
+            ],
+            'title' => [
+                'text' => 'Торговый объем'
+            ],
+            'xAxis' => [
+                'categories' => $labels
+            ],
+            'yAxis' => [
+                'title' => [
+                    'text' => ''
+                ]
+            ],
+            'navigator' => [
+                'enabled' => true,
+            ],
+            'scrollbar' => [
+                'enabled' => true
+            ],
+            'series' => [
+                [
+                    'name' => 'Торговый объем',
+                    'data' => $volumesData
+                ],
+            ],
+            'tooltip' => [
+                'valuePrefix' => '',
+                'valueSuffix' => ' '
+            ]
+        ];
+    }
+
     public function getTopProfitableTradesChart(): array
     {
         // выбираем топ-10 прибыльных сделок

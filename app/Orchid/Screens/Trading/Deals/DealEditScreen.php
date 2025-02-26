@@ -290,6 +290,10 @@ class DealEditScreen extends Screen
                         $this->getPnlHistoryChart()
                     ),
 
+                    new HighchartsChart(
+                        $this->getPnlHistoryVolumeChart()
+                    ),
+
                     Layout::view('trading.trade-potential-pnl', [
                         'trade' => $this->trade,
                         'steps' => $this->calculatePnLSteps($this->trade)
@@ -334,6 +338,15 @@ class DealEditScreen extends Screen
         }
 
         return (new PnlAnalyticsService())->getPnlHistoryChart(trade: $this->trade);
+    }
+
+    private function getPnlHistoryVolumeChart(): array
+    {
+        if (!$this->trade->exists) {
+            return [];
+        }
+
+        return (new PnlAnalyticsService())->getPnlHistoryVolumeChart(trade: $this->trade);
     }
 
     public function save(Trade $trade, Request $request)
