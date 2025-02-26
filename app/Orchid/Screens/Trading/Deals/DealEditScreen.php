@@ -294,6 +294,10 @@ class DealEditScreen extends Screen
                         $this->getPnlHistoryVolumeChart()
                     ),
 
+                    new HighchartsChart(
+                        $this->getPnlHistoryFundingRateChart()
+                    ),
+
                     Layout::view('trading.trade-potential-pnl', [
                         'trade' => $this->trade,
                         'steps' => $this->calculatePnLSteps($this->trade)
@@ -347,6 +351,15 @@ class DealEditScreen extends Screen
         }
 
         return (new PnlAnalyticsService())->getPnlHistoryVolumeChart(trade: $this->trade);
+    }
+
+    private function getPnlHistoryFundingRateChart(): array
+    {
+        if (!$this->trade->exists) {
+            return [];
+        }
+
+        return (new PnlAnalyticsService())->getPnlHistoryFundingRateChart(trade: $this->trade);
     }
 
     public function save(Trade $trade, Request $request)

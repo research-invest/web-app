@@ -378,6 +378,48 @@ class PnlAnalyticsService
         ];
     }
 
+    public function getPnlHistoryFundingRateChart(Trade $trade)
+    {
+        $fundingRatesData = $labels = [];
+        foreach ($trade->pnlHistory as $history) {
+            $fundingRatesData[] = (float)$history->funding_rate;
+            $labels[] = MathHelper::formatNumber($history->price);
+        }
+
+        return [
+            'chart' => [
+                'type' => 'line'
+            ],
+            'title' => [
+                'text' => 'Funding rates'
+            ],
+            'xAxis' => [
+                'categories' => $labels
+            ],
+            'yAxis' => [
+                'title' => [
+                    'text' => ''
+                ]
+            ],
+            'navigator' => [
+                'enabled' => true,
+            ],
+            'scrollbar' => [
+                'enabled' => true
+            ],
+            'series' => [
+                [
+                    'name' => 'Funding Rates',
+                    'data' => $fundingRatesData
+                ],
+            ],
+            'tooltip' => [
+                'valuePrefix' => '',
+                'valueSuffix' => ' '
+            ]
+        ];
+    }
+
     public function getTopProfitableTradesChart(): array
     {
         // выбираем топ-10 прибыльных сделок
