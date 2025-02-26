@@ -12,6 +12,7 @@ return new class extends Migration
             $table->double('volume')
                 ->default(0);
             $table->decimal('funding_rate', 10, 8)
+                ->nullable()
                 ->default(0);
      });
     }
