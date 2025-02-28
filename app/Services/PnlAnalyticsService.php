@@ -339,11 +339,22 @@ class PnlAnalyticsService
     public function getPnlHistoryVolumeChart(Trade $trade)
     {
         $volumesData = $volumesDataBtc = $volumesDataEth = $labels = [];
+        $firstVolume = (float)$trade->pnlHistory->first()->volume ?: 1;
+        $firstVolumeBtc = (float)$trade->pnlHistory->first()->volume_btc ?: 1;
+        $firstVolumeEth = (float)$trade->pnlHistory->first()->volume_eth ?: 1;
+
         foreach ($trade->pnlHistory as $history) {
-            $volumesData[] = (float)$history->volume;
-            $volumesDataBtc[] = (float)$history->volume_btc;
-            $volumesDataEth[] = (float)$history->volume_eth;
-            $labels[] = MathHelper::formatNumber($history->price);
+            $volumesData[] = ((float)$history->volume / $firstVolume) * 100;
+            $volumesDataBtc[] = ((float)$history->volume_btc / $firstVolumeBtc) * 100;
+            $volumesDataEth[] = ((float)$history->volume_eth / $firstVolumeEth) * 100;
+
+            $labels[] = sprintf(
+                "Price: %s | Vol: %s | BTC: %s | ETH: %s",
+                MathHelper::formatNumber($history->price),
+                MathHelper::formatNumber($history->volume),
+                MathHelper::formatNumber($history->volume_btc),
+                MathHelper::formatNumber($history->volume_eth)
+            );
         }
 
         return [
