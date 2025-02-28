@@ -338,9 +338,11 @@ class PnlAnalyticsService
 
     public function getPnlHistoryVolumeChart(Trade $trade)
     {
-        $volumesData = $labels = [];
+        $volumesData = $volumesDataBtc = $volumesDataEth = $labels = [];
         foreach ($trade->pnlHistory as $history) {
             $volumesData[] = (float)$history->volume;
+            $volumesDataBtc[] = (float)$history->volume_btc;
+            $volumesDataEth[] = (float)$history->volume_eth;
             $labels[] = MathHelper::formatNumber($history->price);
         }
 
@@ -367,8 +369,16 @@ class PnlAnalyticsService
             ],
             'series' => [
                 [
-                    'name' => 'Торговый объем',
+                    'name' => 'Торговый объем ' . $trade->currency->name,
                     'data' => $volumesData
+                ],
+                [
+                    'name' => 'Торговый объем BTC',
+                    'data' => $volumesDataBtc
+                ],
+                [
+                    'name' => 'Торговый объем ETH',
+                    'data' => $volumesDataEth
                 ],
             ],
             'tooltip' => [
