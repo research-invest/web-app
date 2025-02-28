@@ -49,6 +49,8 @@ class Currency extends BaseModel
     public const int TYPE_FEATURE = 2;
     public const string EXCHANGE_BINANCE = 'binance';
     public const string EXCHANGE_MEXC = 'mexc';
+    const CODE_BTC = 'BTCUSDT';
+    const CODE_ETH = 'ETHUSDT';
 
     protected $guarded = [];
 

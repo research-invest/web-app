@@ -319,6 +319,10 @@ class Trade extends BaseModel
         $totalUnrealizedPnl = $this->getUnrealizedPnL($currentPrice);
         $roe = $this->getCurrentRoe($currentPrice);
 
+        $volumes = Currency::query()
+            ->whereIn('code', [Currency::CODE_BTC, Currency::CODE_ETH])
+            ->pluck('volume', 'code');
+
         // Сохраняем запись в историю
         $this->pnlHistory()->create([
             'price' => $currentPrice,
@@ -327,6 +331,8 @@ class Trade extends BaseModel
             'roe' => $roe,
             'volume' => $this->currency->volume,
             'funding_rate' => $this->currency->funding_rate,
+            'volume_btc' =>  $volumes[Currency::CODE_BTC] ?? 0,
+            'volume_eth' =>  $volumes[Currency::CODE_ETH] ?? 0,
         ]);
     }
 
