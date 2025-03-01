@@ -5,8 +5,8 @@
     <link rel="icon" href="/assets/calc/favicon.ico">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Калькулятор позиции</title>
-    <script type="module" crossorigin src="/assets/calc/index-BwUgqL6h.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/calc/index-CKt7ydIr.css">
+    <script type="module" crossorigin src="/assets/calc/index-DP8fo86u.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/calc/index-e2mcWDVl.css">
 </head>
 <body>
 <div id="app"></div>
