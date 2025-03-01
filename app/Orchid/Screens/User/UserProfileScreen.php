@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Orchid\Screens\User;
 
 use App\Orchid\Layouts\User\ProfilePasswordLayout;
-use App\Orchid\Layouts\User\UseApiKeysLayout;
+use App\Orchid\Layouts\User\UserApiKeysLayout;
 use App\Orchid\Layouts\User\UserEditLayout;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -86,7 +86,7 @@ class UserProfileScreen extends Screen
                         ->icon('bs.check-circle')
                         ->method('save')
                 ),
-            Layout::block(UseApiKeysLayout::class)
+            Layout::block(UserApiKeysLayout::class)
                 ->title('API Keys')
                 ->commands(
                     Button::make(__('Save'))

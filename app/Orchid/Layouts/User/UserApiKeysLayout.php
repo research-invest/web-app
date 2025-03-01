@@ -9,7 +9,7 @@ use Orchid\Screen\Fields\Group;
 use Orchid\Screen\Fields\Input;
 use Orchid\Screen\Layouts\Rows;
 
-class UseApiKeysLayout extends Rows
+class UserApiKeysLayout extends Rows
 {
     /**
      * The screen's layout elements.
