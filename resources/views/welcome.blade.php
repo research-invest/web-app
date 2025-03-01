@@ -1,32 +1,14 @@
-@php
-    $colors = ['palevioletred', 'aqua', 'brown', 'chartreuse'];
-@endphp
-    <!DOCTYPE html>
-<html>
+<!DOCTYPE html>
+<html lang="">
 <head>
-    <title>Welcome to nginx!</title>
-    <style>
-        html {
-            background-color: {{ $colors[array_rand($colors)] }};
-        }
-
-        body {
-            width: 35em;
-            margin: 0 auto;
-            font-family: Tahoma, Verdana, Arial, sans-serif;
-        }
-    </style>
+    <meta charset="UTF-8">
+    <link rel="icon" href="/assets/calc/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор позиции</title>
+    <script type="module" crossorigin src="/assets/calc/index-BwUgqL6h.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/calc/index-CKt7ydIr.css">
 </head>
 <body>
-<h1>Welcome to nginx!</h1>
-<p>If you see this page, the nginx web server is successfully installed and
-    working. Further configuration is required.</p>
-
-<p>For online documentation and support please refer to
-    <a href="http://nginx.org/">nginx.org</a>.<br/>
-    Commercial support is available at
-    <a href="http://nginx.com/">nginx.com</a>.</p>
-
-<p><em>Thank you for using nginx.</em></p>
+<div id="app"></div>
 </body>
 </html>
