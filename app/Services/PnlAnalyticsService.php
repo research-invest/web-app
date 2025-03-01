@@ -338,6 +338,10 @@ class PnlAnalyticsService
 
     public function getPnlHistoryVolumeChart(Trade $trade)
     {
+        if ($trade->pnlHistory->isEmpty()) {
+            return [];
+        }
+
         $volumesData = $volumesDataBtc = $volumesDataEth = $labels = [];
         $firstVolume = (float)$trade->pnlHistory->first()->volume ?: 1;
         $firstVolumeBtc = (float)$trade->pnlHistory->first()->volume_btc ?: 1;

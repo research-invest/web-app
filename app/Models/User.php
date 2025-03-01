@@ -24,6 +24,18 @@ class User extends Authenticatable
         'email',
         'password',
         'api_token',
+
+        'bybit_secret_key',
+        'bybit_api_key',
+
+        'mexc_secret_key',
+        'mexc_api_key',
+
+        'binance_secret_key',
+        'binance_api_key',
+
+        'bigx_secret_key',
+        'bigx_api_key',
     ];
 
     /**

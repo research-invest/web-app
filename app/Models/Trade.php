@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Helpers\MathHelper;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Orchid\Attachment\Attachable;
 use Orchid\Filters\Filterable;
@@ -39,7 +40,7 @@ use Orchid\Screen\Concerns\ModelStateRetrievable;
  * @property  Currency $currency
  * @property  TradeOrder[] $orders
  * @property  User $user
- * @property  TradePnlHistory[] $pnlHistory
+ * @property  TradePnlHistory[]|Collection $pnlHistory
  * @property  CheckListItem[] $checkListItems
  * @property  TradePeriod $tradePeriod
  * @property  float $currentPnL
