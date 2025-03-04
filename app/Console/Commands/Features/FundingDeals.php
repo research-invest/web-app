@@ -6,9 +6,8 @@
 
 namespace App\Console\Commands\Features;
 
-use App\Models\Currency;
+use App\Jobs\FundingTrade;
 use App\Models\Funding\FundingDeal;
-use App\Models\Funding\FundingDealConfig;
 use Illuminate\Console\Command;
 use  \Illuminate\Database\Eloquent\Collection;
 
@@ -29,63 +28,29 @@ class FundingDeals extends Command
 
     private function process(): int
     {
-        $configs = $this->getConfigs();
-
-        foreach ($configs as $config) {
-            $user = $config->user;
+        foreach ($this->getDeals() as $deal) {
+            $user = $deal->user;
 
             if (!$user) {
                 continue;
             }
 
-            $currencies = $this->getCurrency($config);
+            FundingTrade::dispatchSync($deal);
 
-            foreach ($currencies as $currency) {
-
-                $existDeal = $config->deals()
-                    ->new()
-                    ->where('currency_id', $currency->id)
-                    ->exists();
-
-                if ($existDeal) {
-                    continue;
-                }
-
-                $config->deals()->create([
-                    'user_id' => $config->user->id,
-                    'currency_id' => $currency->id,
-                    'funding_time' => $currency->next_settle_time,
-                    'funding_rate' => $currency->funding_rate,
-                    'status' => FundingDeal::STATUS_NEW,
-                    'leverage' => $config->leverage,
-                    'position_size' => $config->position_size,
-                ]);
-            }
+//            FundingTrade::dispatch($deal);
         }
 
         return 0;
     }
 
     /**
-     * @return FundingDealConfig[]
+     * @return FundingDeal[]
      */
-    private function getConfigs(): Collection
+    private function getDeals(): Collection
     {
-        return FundingDealConfig::query()
-            ->isActive()
-            ->get();
-    }
-
-    /**
-     * @param FundingDealConfig $config
-     * @return Currency[]|Collection
-     */
-    private function getCurrency(FundingDealConfig $config): Collection
-    {
-        return Currency::query()
-            ->isActive()
-            ->where('exchange', $config->exchange)
-            ->where('funding_rate', '<=', $config->min_funding_rate)
+        return FundingDeal::query()
+            ->whereDate('run_time', '<=', now())
+            ->new()
             ->get();
     }
 }

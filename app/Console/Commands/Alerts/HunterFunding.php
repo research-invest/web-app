@@ -64,8 +64,8 @@ class HunterFunding extends Command
             $cacheKey = "funding_queue_{$currency->code}_{$fundingTime->timestamp}";
 
             if (!Cache::has($cacheKey)) {
-                SimulateFundingTrade::dispatch($currency, $fundingTime)
-                    ->delay($fundingTime->copy()->subMinutes(1));
+//                SimulateFundingTrade::dispatch($currency, $fundingTime)
+//                    ->delay($fundingTime->copy()->subMinutes(1));
 
                 Cache::put($cacheKey, true, $fundingTime->copy()->addMinutes(3));
             }

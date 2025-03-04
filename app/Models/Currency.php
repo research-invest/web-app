@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Helpers\MathHelper;
 use App\Models\Funding\FundingRate;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Carbon;
 use Orchid\Filters\Filterable;
 use Orchid\Filters\Types\Like;
 use Orchid\Filters\Types\Where;
@@ -23,7 +24,7 @@ use Orchid\Screen\AsSource;
  * @property integer $is_favorite
  * @property string $exchange
  * @property integer $is_active
- * @property int $next_settle_time
+ * @property Carbon|int $next_settle_time
  * @property float $start_volume_1h
  * @property float $start_volume_4h
  * @property float $start_volume_24h

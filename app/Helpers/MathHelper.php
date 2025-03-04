@@ -222,4 +222,27 @@ class MathHelper
 
         return number_format($number, $decimals, ',', '');
     }
+
+
+    /**
+     * Рассчитывает индекс волатильности на основе массива цен
+     */
+    public static function calculateVolatilityIndex(array $prices): float
+    {
+        if (empty($prices)) {
+            return 0;
+        }
+
+        // Находим максимальную и минимальную цены
+        $maxPrice = max($prices);
+        $minPrice = min($prices);
+
+        // Находим среднюю цену
+        $avgPrice = array_sum($prices) / count($prices);
+
+        // Рассчитываем процентный размах от средней цены
+        $volatilityIndex = (($maxPrice - $minPrice) / $avgPrice) * 100;
+
+        return round($volatilityIndex, 4);
+    }
 }

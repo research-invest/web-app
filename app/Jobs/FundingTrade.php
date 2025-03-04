@@ -3,8 +3,7 @@
 namespace App\Jobs;
 
 use App\Helpers\MathHelper;
-use App\Models\Currency;
-use App\Models\Funding\FundingSimulation;
+use App\Models\Funding\FundingDeal;
 use App\Services\MexcService;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
@@ -15,7 +14,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 
-class SimulateFundingTrade implements ShouldQueue, ShouldBeUnique
+class FundingTrade implements ShouldQueue, ShouldBeUnique
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -23,41 +22,28 @@ class SimulateFundingTrade implements ShouldQueue, ShouldBeUnique
 
     public $timeout = 180;
 
-    private Currency $currency;
-    private Carbon $fundingTime;
+    private FundingDeal $deal;
     private array $priceHistory = [];
 
-    public function __construct(Currency $currency, Carbon $fundingTime)
+    public function __construct(FundingDeal $deal)
     {
-        $this->currency = $currency;
-        $this->fundingTime = $fundingTime;
+        $this->deal = $deal;
     }
 
     public function handle()
     {
         // Проверяем, не прошло ли уже время фандинга
-        if (now()->isAfter($this->fundingTime->copy()->addMinutes(1))) {
+        if (now()->isAfter($this->deal->funding_time)) {
             Log::info('уже прошло время фандинга', [
-                'code' => $this->currency->code,
-                'funding_time' => $this->fundingTime
+                'code' => $this->deal->currency->code,
+                'funding_time' => $this->deal->funding_time
             ]);
             return;
         }
 
         $mexc = new MexcService();
 
-
-        /**
-         * @var FundingSimulation $simulation
-         */
-        $simulation = FundingSimulation::create([
-            'currency_id' => $this->currency->id,
-            'funding_time' => $this->fundingTime,
-            'funding_rate' => $this->currency->latestFundingRate->funding_rate,
-            'price_history' => [],
-        ]);
-
-        $endTime = $this->fundingTime->copy()->addSeconds(60); // +90 секунд (1 минута после + 30 секунд дополнительно)
+        $endTime = $this->deal->funding_time->copy()->addSeconds(30); // +90 секунд (1 минута после + 30 секунд дополнительно)
 
         $entryPrice = null;
         $positionClosed = false;
@@ -66,7 +52,7 @@ class SimulateFundingTrade implements ShouldQueue, ShouldBeUnique
             try {
 
                 $currentTime = now();
-                $priceData = $mexc->getCurrentPrice($this->currency->code);
+                $priceData = $mexc->getCurrentPrice($this->deal->currency->code);
                 $price = $priceData['price'];
 
                 $this->priceHistory[] = [
@@ -75,12 +61,13 @@ class SimulateFundingTrade implements ShouldQueue, ShouldBeUnique
                     'execution_time' => $priceData['execution_time']
                 ];
 
-                $simulation->update([
-                    'price_history' => $this->priceHistory
+                $this->deal->update([
+                    'price_history' => $this->priceHistory,
+                    'status' => FundingDeal::STATUS_PROCESS,
                 ]);
 
                 // Если время фандинга - 1 секунда (с погрешностью), открываем позицию
-                $secondsUntilFunding = $currentTime->diffInSeconds($this->fundingTime);
+                $secondsUntilFunding = $currentTime->diffInSeconds($this->deal->funding_time);
                 if ($secondsUntilFunding <= 1 && $secondsUntilFunding > 0 && !$entryPrice) {
 
                     $entryPrice = $price;
@@ -95,7 +82,7 @@ class SimulateFundingTrade implements ShouldQueue, ShouldBeUnique
                     $leverage = 20;
                     $positionSize = $initialAmount * $leverage;
                     $contractQuantity = $positionSize / $entryPrice;
-                    $fundingRate = $this->currency->latestFundingRate->funding_rate;
+                    $fundingRate = $this->deal->currency->funding_rate;
                     $fundingFee = ($positionSize * abs($fundingRate) / 100);
 
                     // Открываем реальную позицию
@@ -106,7 +93,7 @@ class SimulateFundingTrade implements ShouldQueue, ShouldBeUnique
 //                        $leverage
 //                    );
 
-                    $simulation->update([
+                    $this->deal->update([
                         'entry_price' => $entryPrice,
                         'position_size' => $positionSize,
                         'contract_quantity' => $contractQuantity,
@@ -118,14 +105,14 @@ class SimulateFundingTrade implements ShouldQueue, ShouldBeUnique
                 }
 
                 // Если время фандинга + 1 секунда (с погрешностью), закрываем позицию
-                $secondsAfterFunding = $currentTime->diffInSeconds($this->fundingTime);
+                $secondsAfterFunding = $currentTime->diffInSeconds($this->deal->funding_time);
 
                 if ($entryPrice && !$positionClosed && $secondsAfterFunding < 0) {
                     try {
                         // Закрываем реальную позицию
 //                        $closePositionResult = $mexc->closePosition(
 //                            $this->currency->code,
-//                            $simulation->contract_quantity,
+//                            $this->deal->contract_quantity,
 //                            $fundingRate > 0 ? 'BUY' : 'SELL', // Закрываем в противоположную сторону
 //                            $openPositionResult['positionId'] ?? null // Передаем positionId если он был получен при открытии
 //                        );
@@ -135,11 +122,11 @@ class SimulateFundingTrade implements ShouldQueue, ShouldBeUnique
 
                         // Расчет PnL
                         $priceChange = ($exitPrice - $entryPrice) / $entryPrice;
-                        $pnlBeforeFunding = $simulation->position_size * $priceChange;
-                        $totalPnL = $pnlBeforeFunding + $simulation->funding_fee;
-                        $roiPercent = ($totalPnL / $simulation->initial_margin) * 100;
+                        $pnlBeforeFunding = $this->deal->position_size * $priceChange;
+                        $totalPnL = $pnlBeforeFunding + $this->deal->funding_fee;
+                        $roiPercent = ($totalPnL / $this->deal->initial_margin) * 100;
 
-                        $simulation->update([
+                        $this->deal->update([
                             'exit_price' => $exitPrice,
                             'pnl_before_funding' => $pnlBeforeFunding,
                             'total_pnl' => $totalPnL,
@@ -147,7 +134,7 @@ class SimulateFundingTrade implements ShouldQueue, ShouldBeUnique
                         ]);
                     } catch (\Exception $e) {
                         Log::error('Failed to close position after all attempts', [
-                            'code' => $this->currency->code,
+                            'code' => $this->deal->currency->code,
                             'error' => $e->getMessage()
                         ]);
                         throw $e;
@@ -159,7 +146,7 @@ class SimulateFundingTrade implements ShouldQueue, ShouldBeUnique
 //                    Log::info('Simulation completed with additional monitoring', [
 //                        'code' => $this->currency->code,
 //                        'total_price_points' => count($this->priceHistory),
-//                        'simulation_id' => $simulation->id
+//                        'simulation_id' => $this->deal->id
 //                    ]);
 //                    return;
 //                }
@@ -168,7 +155,7 @@ class SimulateFundingTrade implements ShouldQueue, ShouldBeUnique
 
             } catch (\Exception $e) {
                 Log::error('Funding simulation failed', [
-                    'code' => $this->currency->code,
+                    'code' => $this->deal->currency->code,
                     'error' => $e->getMessage(),
                     'trace' => $e->getTraceAsString()
                 ]);
@@ -178,16 +165,12 @@ class SimulateFundingTrade implements ShouldQueue, ShouldBeUnique
 
     public function uniqueId()
     {
-        return 'trade_currency_' . $this->currency->id;
+        return 'trade_deal_' . $this->deal->id;
     }
-
-//    public function uniqueFor()
-//    {
-//        return $this->fundingTime->addMinutes(2)->diffInSeconds(now());
-//    }
 
     public function retryUntil()
     {
-        return $this->fundingTime->copy()->addMinutes(5);
+        return $this->deal->funding_rate->copy()->addMinutes(5);
     }
+
 }

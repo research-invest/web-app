@@ -12,6 +12,7 @@ use App\Console\Commands\Alerts\SendTradePnLNotification;
 use App\Console\Commands\AnalyzeTopPerformingCoinSnapshots;
 use App\Console\Commands\CollectTopPerformingCoinSnapshots;
 use App\Console\Commands\Features\CollectFundingRates;
+use App\Console\Commands\Features\FundingDealsConfig;
 use App\Console\Commands\Features\FundingDeals;
 use App\Console\Commands\SendIndexChart;
 use App\Console\Commands\UpdateCurrencies;
@@ -45,7 +46,8 @@ class Handler
 
         $schedule->command(CollectFundingRates::class)->hourly();
         $schedule->command(HunterFunding::class)->hourly();
-        $schedule->command(FundingDeals::class)->hourly();
+        $schedule->command(FundingDealsConfig::class)->hourly();
+        $schedule->command(FundingDeals::class)->everyMinute();
 
 //        $schedule->command(AnalyzeTopPerformingCoinSnapshots::class)
 //            ->everyThirtyMinutes()

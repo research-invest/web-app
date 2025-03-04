@@ -28,6 +28,7 @@ use Orchid\Screen\AsSource;
  * @property int $leverage
  * @property int $status
  * @property array $price_history
+ * @property int $run_time
  *
  * @property User $user
  * @property Currency $currency
@@ -38,7 +39,7 @@ class FundingDeal extends BaseModel
     use AsSource, SoftDeletes;
 
     public const int STATUS_NEW = 1;
-
+    public const int STATUS_PROCESS = 2;
 
 
     protected $fillable = [
@@ -60,6 +61,7 @@ class FundingDeal extends BaseModel
         'roi_percent',
         'price_history',
         'status',
+        'run_time',
     ];
 
     protected $casts = [
