@@ -41,6 +41,10 @@ class FundingTrade implements ShouldQueue, ShouldBeUnique
             return;
         }
 
+        $this->deal->update([
+            'status' => FundingDeal::STATUS_PROCESS,
+        ]);
+
         $mexc = new MexcService();
 
         $endTime = $this->deal->funding_time->copy()->addSeconds(30); // +90 секунд (1 минута после + 30 секунд дополнительно)
@@ -63,7 +67,6 @@ class FundingTrade implements ShouldQueue, ShouldBeUnique
 
                 $this->deal->update([
                     'price_history' => $this->priceHistory,
-                    'status' => FundingDeal::STATUS_PROCESS,
                 ]);
 
                 // Если время фандинга - 1 секунда (с погрешностью), открываем позицию
@@ -78,8 +81,9 @@ class FundingTrade implements ShouldQueue, ShouldBeUnique
                     $volatilityIndex = MathHelper::calculateVolatilityIndex($prices);
 
                     // Параметры сделки
-                    $initialAmount = 200;
-                    $leverage = 20;
+                    $initialAmount = $this->deal->dealConfig->position_size;
+                    $leverage = $this->deal->dealConfig->leverage;
+
                     $positionSize = $initialAmount * $leverage;
                     $contractQuantity = $positionSize / $entryPrice;
                     $fundingRate = $this->deal->currency->funding_rate;
