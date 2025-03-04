@@ -97,12 +97,12 @@ class SimulateFundingTrade implements ShouldQueue, ShouldBeUnique
                     $fundingFee = ($positionSize * abs($fundingRate) / 100);
 
                     // Открываем реальную позицию
-                    $openPositionResult = $mexc->openPosition(
-                        $this->currency->code,
-                        $contractQuantity,
-                        $fundingRate > 0 ? 'SELL' : 'BUY', // Если funding rate положительный - шортим, если отрицательный - лонгим
-                        $leverage
-                    );
+//                    $openPositionResult = $mexc->openPosition(
+//                        $this->currency->code,
+//                        $contractQuantity,
+//                        $fundingRate > 0 ? 'SELL' : 'BUY', // Если funding rate положительный - шортим, если отрицательный - лонгим
+//                        $leverage
+//                    );
 
                     $simulation->update([
                         'entry_price' => $entryPrice,
@@ -121,12 +121,12 @@ class SimulateFundingTrade implements ShouldQueue, ShouldBeUnique
                 if ($entryPrice && !$positionClosed && $secondsAfterFunding < 0) {
                     try {
                         // Закрываем реальную позицию
-                        $closePositionResult = $mexc->closePosition(
-                            $this->currency->code,
-                            $simulation->contract_quantity,
-                            $fundingRate > 0 ? 'BUY' : 'SELL', // Закрываем в противоположную сторону
-                            $openPositionResult['positionId'] ?? null // Передаем positionId если он был получен при открытии
-                        );
+//                        $closePositionResult = $mexc->closePosition(
+//                            $this->currency->code,
+//                            $simulation->contract_quantity,
+//                            $fundingRate > 0 ? 'BUY' : 'SELL', // Закрываем в противоположную сторону
+//                            $openPositionResult['positionId'] ?? null // Передаем positionId если он был получен при открытии
+//                        );
 
                         $exitPrice = $price;
                         $positionClosed = true;
