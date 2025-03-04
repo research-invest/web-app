@@ -45,7 +45,10 @@ class FundingTrade implements ShouldQueue, ShouldBeUnique
             'status' => FundingDeal::STATUS_PROCESS,
         ]);
 
-        $mexc = new MexcService();
+        $mexc = new MexcService(
+            $this->deal->user->mexc_api_key,
+            $this->deal->user->mexc_secret_key,
+        );
 
         $endTime = $this->deal->funding_time->copy()->addSeconds(30); // +90 секунд (1 минута после + 30 секунд дополнительно)
 
@@ -158,7 +161,7 @@ class FundingTrade implements ShouldQueue, ShouldBeUnique
                 sleep(1);
 
             } catch (\Exception $e) {
-                Log::error('Funding simulation failed', [
+                Log::error('Funding deal failed', [
                     'code' => $this->deal->currency->code,
                     'error' => $e->getMessage(),
                     'trace' => $e->getTraceAsString()

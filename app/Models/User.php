@@ -9,9 +9,11 @@ use Orchid\Filters\Types\WhereDateStartEnd;
 use Orchid\Platform\Models\User as Authenticatable;
 
 /**
- * @var string $name
- * @var string $email
- * @var string $telegram_chat_id
+ * @property  string $name
+ * @property string $email
+ * @property string $telegram_chat_id
+ * @property string $mexc_api_key
+ * @property string $mexc_secret_key
  */
 class User extends Authenticatable
 {

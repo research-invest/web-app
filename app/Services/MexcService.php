@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Lin\Mxc\MxcContract;
 
 class MexcService
 {
@@ -11,13 +12,10 @@ class MexcService
     private string $apiKey;
     private string $apiSecret;
 
-    public function __construct()
+    public function __construct(string $apiKey, string $apiSecret)
     {
-//        $this->apiKey = config('services.mexc.api_key');
-//        $this->apiSecret = config('services.mexc.api_secret');
-
-        $this->apiKey = 'mx0vglCzfKII6c755O';
-        $this->apiSecret = '378514fa14c6470c88196b4908f0410a';
+        $this->apiKey = $apiKey;
+        $this->apiSecret = $apiSecret;
     }
 
     private function generateSignature(array $params, string $timestamp): string
@@ -50,11 +48,6 @@ class MexcService
 
         $url = self::BASE_URL . $endpoint . ($method === 'get' ? $queryString : '');
 
-        dd([
-            $url,
-            $params,
-            $headers,
-        ]);
         if ($method === 'post') {
             return Http::withHeaders($headers)
                 ->timeout(5)
@@ -71,17 +64,15 @@ class MexcService
         $startTime = microtime(true);
 
         try {
-            $response = $this->makeAuthenticatedRequest('get', '/v1/contract/fair_price/' . $symbol);
 
-            if (!$response->successful()) {
-                throw new \Exception("Failed to get current price: " . $response->body());
-            }
-
+            $mexc = new MxcContract($this->apiKey, $this->apiSecret);
+            $result = $mexc->market()->getFairPrice(['symbol' => 'TAO_USDT']);
             $endTime = microtime(true);
+
             $executionTime = ($endTime - $startTime) * 1000; // Конвертируем в миллисекунды
 
             return [
-                'price' => $response->json()['data']['fairPrice'] ?? null,
+                'price' => $result['data']['fairPrice'] ?? null,
                 'execution_time' => round($executionTime, 2),
             ];
         } catch (\Exception $e) {
