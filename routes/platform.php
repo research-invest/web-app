@@ -33,6 +33,8 @@ use Illuminate\Support\Facades\Route;
 use Tabuna\Breadcrumbs\Trail;
 use \App\Orchid\Screens\Trading\FundingSimalations\FundingSimulationsDealsListScreen;
 use \App\Orchid\Screens\Trading\FundingSimalations\FundingSimulationDealEditScreen;
+use \App\Orchid\Screens\Trading\Funding\FundingDealsListScreen;
+use \App\Orchid\Screens\Trading\Funding\FundingDealEditScreen;
 
 
 /*
@@ -116,7 +118,20 @@ Route::screen('/trading/funding-simulations/{trade}/edit', FundingSimulationDeal
     ->name('platform.trading.funding_simulation.edit')
     ->breadcrumbs(fn(Trail $trail, $trade) => $trail
         ->parent('platform.trading.funding_simulations')
-        ->push('Просмотр сделки #' . $trade->id)
+        ->push('Сделка #' . $trade->id)
+    );
+
+Route::screen('/trading/funding-deals/{config?}', FundingDealsListScreen::class)
+    ->name('platform.trading.funding_deals')
+    ->breadcrumbs(fn(Trail $trail) => $trail->parent('platform.index')
+        ->push('Журнал сделок', route('platform.trading.funding_deals'))
+    );
+
+Route::screen('/trading/funding-deals/{deal}/edit', FundingDealEditScreen::class)
+    ->name('platform.trading.funding_deal.edit')
+    ->breadcrumbs(fn(Trail $trail, $trade) => $trail
+        ->parent('platform.trading.funding_deals')
+        ->push('Сделка #' . $trade->id)
     );
 
 Route::screen('trading/report/{period}', TradingReportScreen::class)

@@ -2,36 +2,36 @@
 
 declare(strict_types=1);
 
-namespace App\Orchid\Screens\Trading\FundingSimalations;
+namespace App\Orchid\Screens\Trading\Funding;
 
+use App\Models\Funding\FundingDeal;
 use App\Models\Funding\FundingSimulation;
 use App\Orchid\Layouts\Charts\HighchartsChart;
-use App\Orchid\Layouts\Operations\WalletInfoBlock;
-use App\Orchid\Layouts\Trading\Deals\FundingSimulations\InfoBlock;
+use App\Orchid\Layouts\Trading\Deals\Funding\InfoBlock;
 use App\Services\Trading\FundingSimulationChartCalculator;
 use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Screen;
 use Orchid\Support\Facades\Layout;
 
-class FundingSimulationDealEditScreen extends Screen
+class FundingDealEditScreen extends Screen
 {
 
     /**
-     * @var FundingSimulation
+     * @var FundingDeal
      */
-    public $trade;
+    public $deal;
 
     public function name(): ?string
     {
-        return sprintf('Сделка: %s', $this->trade->currency->name);
+        return sprintf('Сделка: %s', $this->deal->currency->name);
     }
 
-    public function query(FundingSimulation $trade): iterable
+    public function query(FundingDeal $deal): iterable
     {
-        $this->trade = $trade;
+        $this->deal = $deal;
 
         return [
-            'trade' => $trade,
+            'deal' => $deal,
         ];
     }
 
@@ -41,15 +41,15 @@ class FundingSimulationDealEditScreen extends Screen
             Link::make('TV')
                 ->icon('grid')
                 ->target('_blank')
-                ->canSee($this->trade->exists)
-                ->href($this->trade->currency->getTVLink())
+                ->canSee($this->deal->exists)
+                ->href($this->deal->currency->getTVLink())
                 ->class('btn btn-default'),
 
             Link::make('Exchange')
                 ->icon('grid')
                 ->target('_blank')
-                ->canSee($this->trade->exists)
-                ->href($this->trade->currency->getExchangeLink())
+                ->canSee($this->deal->exists)
+                ->href($this->deal->currency->getExchangeLink())
                 ->class('btn btn-default'),
         ];
     }
@@ -59,9 +59,9 @@ class FundingSimulationDealEditScreen extends Screen
         return [
             Layout::block(InfoBlock::class)->vertical(),
 
-            new HighchartsChart(
-                $this->getFundingSimulationsChart()
-            ),
+//            new HighchartsChart(
+//                $this->getFundingSimulationsChart()
+//            ),
 
         ];
     }
@@ -69,7 +69,7 @@ class FundingSimulationDealEditScreen extends Screen
     private function getFundingSimulationsChart(): array
     {
         $calculator = new FundingSimulationChartCalculator(
-            simulation: $this->trade
+            simulation: $this->deal
         );
 
         return $calculator->getChartConfig();

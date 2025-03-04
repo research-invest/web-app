@@ -34,6 +34,8 @@ use Orchid\Screen\Concerns\ModelStateRetrievable;
  * @property  float $commission_close
  * @property  float $commission_finance
  * @property  boolean $is_fake
+ * @property  boolean $is_spot
+ * @property  boolean $is_notify
  *
  * @property  Carbon $closed_at
  * @property  Carbon $created_at
@@ -85,6 +87,8 @@ class Trade extends BaseModel
         'profit_percentage',
         'strategy_id',
         'is_fake',
+        'is_spot',
+        'is_notify',
     ];
 
     protected $casts = [

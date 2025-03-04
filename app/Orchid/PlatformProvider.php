@@ -103,6 +103,11 @@ class PlatformProvider extends OrchidServiceProvider
                         ->rawClick()
                         ->route('platform.trading.funding_simulations'),
 
+                    Menu::make('Сделки фандинга')
+                        ->icon('briefcase')
+                        ->rawClick()
+                        ->route('platform.trading.funding_deals'),
+
                     Menu::make('Калькулятор сделок')
                         ->icon('calculator')
                         ->rawClick()

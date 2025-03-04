@@ -3,12 +3,12 @@
 namespace App\Jobs;
 
 use App\Models\Currency;
-use App\Models\FundingSimulation;
+use App\Models\Funding\FundingSimulation;
 use App\Services\MexcService;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
@@ -32,8 +32,10 @@ class SimulateFundingTrade implements ShouldQueue, ShouldBeUnique
         $this->fundingTime = $fundingTime;
     }
 
-    public function handle(MexcService $mexc)
+    public function handle()
     {
+        $mexc = new MexcService();
+
         // Проверяем, не прошло ли уже время фандинга
         if (now()->isAfter($this->fundingTime->copy()->addMinutes(1))) {
             Log::info('уже прошло время фандинга', [
@@ -62,11 +64,13 @@ class SimulateFundingTrade implements ShouldQueue, ShouldBeUnique
             try {
 
                 $currentTime = now();
-                $price = $mexc->getCurrentPrice($this->currency->code);
+                $priceData = $mexc->getCurrentPrice($this->currency->code);
+                $price = $priceData['price'];
 
                 $this->priceHistory[] = [
                     'timestamp' => $currentTime->timestamp,
-                    'price' => $price
+                    'price' => $price,
+                    'execution_time' => $priceData['execution_time']
                 ];
 
                 $simulation->update([
@@ -76,6 +80,7 @@ class SimulateFundingTrade implements ShouldQueue, ShouldBeUnique
                 // Если время фандинга - 1 секунда (с погрешностью), открываем позицию
                 $secondsUntilFunding = $currentTime->diffInSeconds($this->fundingTime);
                 if ($secondsUntilFunding <= 1 && $secondsUntilFunding > 0 && !$entryPrice) {
+
                     $entryPrice = $price;
 
                     $prices = array_column($this->priceHistory, 'price');
@@ -90,6 +95,14 @@ class SimulateFundingTrade implements ShouldQueue, ShouldBeUnique
                     $contractQuantity = $positionSize / $entryPrice;
                     $fundingRate = $this->currency->latestFundingRate->funding_rate;
                     $fundingFee = ($positionSize * abs($fundingRate) / 100);
+
+                    // Открываем реальную позицию
+                    $openPositionResult = $mexc->openPosition(
+                        $this->currency->code,
+                        $contractQuantity,
+                        $fundingRate > 0 ? 'SELL' : 'BUY', // Если funding rate положительный - шортим, если отрицательный - лонгим
+                        $leverage
+                    );
 
                     $simulation->update([
                         'entry_price' => $entryPrice,
@@ -106,21 +119,37 @@ class SimulateFundingTrade implements ShouldQueue, ShouldBeUnique
                 $secondsAfterFunding = $currentTime->diffInSeconds($this->fundingTime);
 
                 if ($entryPrice && !$positionClosed && $secondsAfterFunding < 0) {
-                    $exitPrice = $price;
-                    $positionClosed = true;
+                    try {
+                        // Закрываем реальную позицию
+                        $closePositionResult = $mexc->closePosition(
+                            $this->currency->code,
+                            $simulation->contract_quantity,
+                            $fundingRate > 0 ? 'BUY' : 'SELL', // Закрываем в противоположную сторону
+                            $openPositionResult['positionId'] ?? null // Передаем positionId если он был получен при открытии
+                        );
 
-                    // Расчет PnL
-                    $priceChange = ($exitPrice - $entryPrice) / $entryPrice;
-                    $pnlBeforeFunding = $simulation->position_size * $priceChange;
-                    $totalPnL = $pnlBeforeFunding + $simulation->funding_fee;
-                    $roiPercent = ($totalPnL / $simulation->initial_margin) * 100;
+                        $exitPrice = $price;
+                        $positionClosed = true;
 
-                    $simulation->update([
-                        'exit_price' => $exitPrice,
-                        'pnl_before_funding' => $pnlBeforeFunding,
-                        'total_pnl' => $totalPnL,
-                        'roi_percent' => $roiPercent
-                    ]);
+                        // Расчет PnL
+                        $priceChange = ($exitPrice - $entryPrice) / $entryPrice;
+                        $pnlBeforeFunding = $simulation->position_size * $priceChange;
+                        $totalPnL = $pnlBeforeFunding + $simulation->funding_fee;
+                        $roiPercent = ($totalPnL / $simulation->initial_margin) * 100;
+
+                        $simulation->update([
+                            'exit_price' => $exitPrice,
+                            'pnl_before_funding' => $pnlBeforeFunding,
+                            'total_pnl' => $totalPnL,
+                            'roi_percent' => $roiPercent
+                        ]);
+                    } catch (\Exception $e) {
+                        Log::error('Failed to close position after all attempts', [
+                            'code' => $this->currency->code,
+                            'error' => $e->getMessage()
+                        ]);
+                        throw $e;
+                    }
                 }
 
                 // Продолжаем собирать данные еще 30 секунд после закрытия позиции

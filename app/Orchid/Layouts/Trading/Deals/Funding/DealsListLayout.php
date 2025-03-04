@@ -1,22 +1,22 @@
 <?php
 
 
-namespace App\Orchid\Layouts\Trading\Deals\FundingSimulations;
+namespace App\Orchid\Layouts\Trading\Deals\Funding;
 
 use App\Helpers\MathHelper;
-use App\Models\Funding\FundingSimulation;
+use App\Models\Funding\FundingDeal;
+use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\DropDown;
 use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Layouts\Table;
 use Orchid\Screen\TD;
 
-class ListLayout extends Table
+class DealsListLayout extends Table
 {
     /**
      * @var string
      */
-    public $target = 'trades';
-
+    public $target = 'deals';
 
     /**
      * @return TD[]
@@ -24,29 +24,30 @@ class ListLayout extends Table
     public function columns(): array
     {
         return [
+
             TD::make('id', 'ID')
                 ->width(20)
-                ->render(fn(FundingSimulation $funding) => Link::make((string)$funding->id)
+                ->render(fn(FundingDeal $funding) => Link::make((string)$funding->id)
                     ->rawClick()
-                    ->route('platform.trading.funding_simulation.edit', $funding)
+                    ->route('platform.trading.funding_deal.edit', $funding)
                 ),
 
             TD::make('currency', 'Пара')
-                ->render(function (FundingSimulation $funding) {
+                ->render(function (FundingDeal $funding) {
                     return Link::make($funding->currency->name)
                         ->rawClick()
                         ->icon('share-alt')
-                        ->route('platform.trading.funding_simulation.edit', $funding);
+                        ->route('platform.trading.funding_deal.edit', $funding);
                 }),
 
             TD::make('funding_time', 'Funding time')
-                ->render(function (FundingSimulation $funding) {
+                ->render(function (FundingDeal $funding) {
                     return $funding->funding_time->toDateTimeString();
                 }),
 
             TD::make('created_at', 'Дата создания')
                 ->defaultHidden()
-                ->render(function (FundingSimulation $funding) {
+                ->render(function (FundingDeal $funding) {
                     return $funding->created_at->toDateTimeString();
                 }),
 
@@ -55,7 +56,7 @@ class ListLayout extends Table
             TD::make('exit_price', 'Цена выхода'),
 
             TD::make('diff_percent', '% изменения')
-                ->render(function (FundingSimulation $funding) {
+                ->render(function (FundingDeal $funding) {
                     if (!$funding->entry_price) {
                         return '';
                     }
@@ -70,18 +71,18 @@ class ListLayout extends Table
                     );
                 }),
             TD::make('funding_fee', 'fee')
-                ->render(function (FundingSimulation $funding) {
+                ->render(function (FundingDeal $funding) {
                     return MathHelper::formatNumber($funding->funding_fee);
                 }),
             TD::make('total_pnl', 'pnl')
-                ->render(function (FundingSimulation $funding) {
+                ->render(function (FundingDeal $funding) {
                     return MathHelper::formatNumber($funding->total_pnl);
                 }),
 
             TD::make(__('Actions'))
                 ->align(TD::ALIGN_CENTER)
                 ->width('100px')
-                ->render(fn(FundingSimulation $funding) => DropDown::make()
+                ->render(fn(FundingDeal $funding) => DropDown::make()
                     ->icon('bs.three-dots-vertical')
                     ->list([
                         Link::make('Перейти в валюту')
@@ -97,7 +98,7 @@ class ListLayout extends Table
 
                         Link::make(__('Изменить'))
                             ->rawClick()
-                            ->route('platform.trading.funding_simulation.edit', $funding->id)
+                            ->route('platform.trading.funding_deal.edit', $funding->id)
                             ->icon('bs.pencil'),
 
 //                        Button::make(__('Delete'))
@@ -107,6 +108,9 @@ class ListLayout extends Table
 //                                'id' => $funding->id,
 //                            ]),
                     ])),
+
+
+
         ];
     }
 }

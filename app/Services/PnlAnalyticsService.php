@@ -352,13 +352,15 @@ class PnlAnalyticsService
             $volumesDataBtc[] = ((float)$history->volume_btc / $firstVolumeBtc) * 100;
             $volumesDataEth[] = ((float)$history->volume_eth / $firstVolumeEth) * 100;
 
-            $labels[] = sprintf(
-                "Price: %s | Vol: %s | BTC: %s | ETH: %s",
-                MathHelper::formatNumber($history->price),
-                MathHelper::formatNumber($history->volume),
-                MathHelper::formatNumber($history->volume_btc),
-                MathHelper::formatNumber($history->volume_eth)
-            );
+//            $labels[] = sprintf(
+//                "Price: %s | Vol: %s | BTC: %s | ETH: %s",
+//                MathHelper::formatNumber($history->price),
+//                MathHelper::formatNumber($history->volume),
+//                MathHelper::formatNumber($history->volume_btc),
+//                MathHelper::formatNumber($history->volume_eth)
+//            );
+
+            $labels[] = MathHelper::formatNumber($history->price);
         }
 
         return [

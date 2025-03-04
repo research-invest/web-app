@@ -2,7 +2,7 @@
 
 namespace App\Services\Trading;
 
-use App\Models\FundingSimulation;
+use App\Models\Funding\FundingSimulation;
 use Carbon\Carbon;
 
 class FundingSimulationChartCalculator

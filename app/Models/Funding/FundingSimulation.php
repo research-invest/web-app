@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Funding;
 
+use App\Models\Currency;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Orchid\Attachment\Attachable;
 use Orchid\Filters\Filterable;
 use Orchid\Screen\AsSource;

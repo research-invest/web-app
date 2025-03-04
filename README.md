@@ -7,6 +7,9 @@ GRANT ALL PRIVILEGES ON  crypto_db.* TO 'admin'@'%';
 FLUSH PRIVILEGES;
 
 
+https://github.com/zhouaini528/exchanges-php
+https://github.com/zhouaini528/mxc-php
+https://github.com/zhouaini528/bybit-php
 
 php artisan orchid:admin admin admin@admin.com e433fdSDj2jF3_e
 
@@ -17,6 +20,8 @@ php artisan orchid:admin admin admin@admin.com e433fdSDj2jF3_e
 tmux new -s crypto_analyzer
 tmux attach -t crypto_analyzer
 
+prod
+composer install --no-interaction --no-dev
 
 
 

@@ -4,12 +4,9 @@ declare(strict_types=1);
 
 namespace App\Orchid\Screens\Trading\FundingSimalations;
 
-use App\Models\FundingSimulation;
-use App\Models\Trade;
-use App\Orchid\Filters\Deals\FiltersLayout;
+use App\Models\Funding\FundingSimulation;
 use App\Orchid\Layouts\Trading\Deals\FundingSimulations\ListLayout;
 use Illuminate\Http\Request;
-use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Screen;
 use Orchid\Support\Facades\Toast;
 

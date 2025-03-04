@@ -2,32 +2,32 @@
 
 declare(strict_types=1);
 
-namespace App\Orchid\Layouts\Trading\Deals\FundingSimulations;
+namespace App\Orchid\Layouts\Trading\Deals\Funding;
 
-use App\Models\Funding\FundingSimulation;
+use App\Models\Funding\FundingDeal;
 use Orchid\Screen\Layouts\Legend;
 use Orchid\Screen\Sight;
 
 class InfoBlock extends Legend
 {
-    protected $target = 'trade';
+    protected $target = 'deal';
     protected $title = 'Информация';
 
     protected function columns(): iterable
     {
-        /** @var FundingSimulation $trade */
-        $trade = $this->query->get('trade');
+        /** @var FundingDeal $deal */
+        $trade = $this->query->get('deal');
 
         return [
 
             Sight::make('created_at', 'Дата создания')
-                ->render(fn(FundingSimulation $trade) => $trade->created_at->format('Y-m-d H:i:s')),
+                ->render(fn(FundingDeal $trade) => $trade->created_at->format('Y-m-d H:i:s')),
 
             Sight::make('funding_time', 'Funding time')
-                ->render(fn(FundingSimulation $trade) => $trade->funding_time->toDateTimeString()),
+                ->render(fn(FundingDeal $trade) => $trade->funding_time->toDateTimeString()),
 
             Sight::make('funding_rate', 'Rate')
-                ->render(fn(FundingSimulation $trade) => $trade->funding_rate),
+                ->render(fn(FundingDeal $trade) => $trade->funding_rate),
 
             Sight::make('entry_price', 'Цена входа'),
             Sight::make('exit_price', 'Цена выхода'),

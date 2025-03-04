@@ -171,12 +171,25 @@ class DealEditScreen extends Screen
                             ])
                             ->required(),
 
-                        CheckBox::make('trade.is_fake')
-                            ->placeholder('Фейковая сделка')
-                            ->help('Не учитывается в статистике, можно проверять гипотезы')
-                            ->canSee(!$this->trade->exists)
-                            ->sendTrueOrFalse()
-                            ->value(0),
+                        Group::make([
+                            CheckBox::make('trade.is_fake')
+                                ->placeholder('Фейковая сделка')
+                                ->help('Не учитывается в статистике, можно проверять гипотезы')
+                                ->canSee(!$this->trade->exists)
+                                ->sendTrueOrFalse()
+                                ->value(0),
+
+                            CheckBox::make('trade.is_spot')
+                                ->placeholder('Спотовая cделка')
+                                ->canSee(!$this->trade->exists)
+                                ->sendTrueOrFalse()
+                                ->value(0),
+
+                            CheckBox::make('trade.is_notify')
+                                ->placeholder('Уведомления PNL')
+                                ->sendTrueOrFalse()
+                                ->value(1),
+                        ]),
 
                         Group::make([
                             Input::make('trade.entry_price')

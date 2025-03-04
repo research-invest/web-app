@@ -7,7 +7,8 @@
 namespace App\Console\Commands\Features;
 
 use App\Models\Currency;
-use App\Models\FundingRate;
+use App\Models\Funding\FundingRate;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
@@ -53,8 +54,13 @@ class CollectFundingRates extends Command
                 ]
             );
 
+            $fundingTime = Carbon::createFromTimestamp(
+                $item['nextSettleTime'] / 1000
+            );
+
             $currency->update([
                 'funding_rate' => $item['fundingRate'] * 100,
+                'next_settle_time' => $fundingTime->timestamp,
             ]);
 
             $fundingRate = new FundingRate([

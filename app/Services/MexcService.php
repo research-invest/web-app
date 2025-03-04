@@ -7,60 +7,90 @@ use Illuminate\Support\Facades\Log;
 
 class MexcService
 {
-    private const BASE_URL = 'https://contract.mexc.com/api/v1/contract';
+    private const string BASE_URL = 'https://contract.mexc.com/api';
+    private string $apiKey;
+    private string $apiSecret;
 
-    public function getCurrentPrice(string $symbol): float
+    public function __construct()
     {
+//        $this->apiKey = config('services.mexc.api_key');
+//        $this->apiSecret = config('services.mexc.api_secret');
 
-//        array:3 [
-//        "success" => true
-//  "code" => 0
-//  "data" => array:20 [
-//        "contractId" => 96
-//    "symbol" => "LIT_USDT"
-//    "lastPrice" => 0.7807
-//    "bid1" => 0.7806
-//    "ask1" => 0.7807
-//    "volume24" => 274486787
-//    "amount24" => 18245169.31272
-//    "holdVol" => 28867950
-//    "lower24Price" => 0.5265
-//    "high24Price" => 0.8084
-//    "riseFallRate" => 0.1953
-//    "riseFallValue" => 0.1276
-//    "indexPrice" => 0.8262
-//    "fairPrice" => 0.7813
-//    "fundingRate" => -0.025
-//    "maxBidPrice" => 1.2393
-//    "minAskPrice" => 0.4131
-//    "timestamp" => 1738433189245
-//    "riseFallRates" => array:8 [
-//        "zone" => "UTC+8"
-//      "r" => 0.1953
-//      "v" => 0.1276
-//      "r7" => 0.2861
-//      "r30" => -0.1909
-//      "r90" => 0.4246
-//      "r180" => 0.4377
-//      "r365" => -0.0229
-//    ]
-//    "riseFallRatesOfTimezone" => array:3 [
-//        0 => 0.4406
-//      1 => 0.4655
-//      2 => 0.1953
-//    ]
-//  ]
-//]
-            $response = Http::get(self::BASE_URL . "/ticker", [
-            'symbol' => $symbol
+        $this->apiKey = 'mx0vglCzfKII6c755O';
+        $this->apiSecret = '378514fa14c6470c88196b4908f0410a';
+    }
+
+    private function generateSignature(array $params, string $timestamp): string
+    {
+        $queryString = http_build_query($params);
+        $signString = $timestamp . $this->apiKey . $queryString;
+        return hash_hmac('sha256', $signString, $this->apiSecret);
+    }
+
+    private function makeAuthenticatedRequest(string $method, string $endpoint, array $params = [])
+    {
+        $timestamp = now()->timestamp * 1000; // MEXC требует миллисекунды
+
+        // Для POST запросов тело должно быть в JSON формате
+        $requestBody = $method === 'post' ? json_encode($params) : '';
+
+        // Для GET запросов параметры идут в query string
+        $queryString = $method === 'get' ? '?' . http_build_query($params) : '';
+
+        // Строка для подписи отличается для GET и POST
+        $signString = $timestamp . $this->apiKey . ($method === 'post' ? $requestBody : $queryString);
+        $signature = hash_hmac('sha256', $signString, $this->apiSecret);
+
+        $headers = [
+            'ApiKey' => $this->apiKey,
+            'Request-Time' => $timestamp,
+            'Signature' => $signature,
+            'Content-Type' => 'application/json',
+        ];
+
+        $url = self::BASE_URL . $endpoint . ($method === 'get' ? $queryString : '');
+
+        dd([
+            $url,
+            $params,
+            $headers,
         ]);
-
-        if ($response->successful()) {
-            $data = $response->json();
-            return $data['data']['lastPrice'];
+        if ($method === 'post') {
+            return Http::withHeaders($headers)
+                ->timeout(5)
+                ->post($url, $params);
         }
 
-        throw new \Exception("Failed to get price for {$symbol}");
+        return Http::withHeaders($headers)
+            ->timeout(5)
+            ->get($url);
+    }
+
+    public function getCurrentPrice(string $symbol): array
+    {
+        $startTime = microtime(true);
+
+        try {
+            $response = $this->makeAuthenticatedRequest('get', '/v1/contract/fair_price/' . $symbol);
+
+            if (!$response->successful()) {
+                throw new \Exception("Failed to get current price: " . $response->body());
+            }
+
+            $endTime = microtime(true);
+            $executionTime = ($endTime - $startTime) * 1000; // Конвертируем в миллисекунды
+
+            return [
+                'price' => $response->json()['data']['fairPrice'] ?? null,
+                'execution_time' => round($executionTime, 2),
+            ];
+        } catch (\Exception $e) {
+            Log::error('Failed to get current price', [
+                'symbol' => $symbol,
+                'error' => $e->getMessage()
+            ]);
+            throw $e;
+        }
     }
 
     public function getContractInfo(string $symbol)
@@ -147,9 +177,6 @@ class MexcService
 //]
 
 
-
-
-
         try {
             $response = Http::get(self::BASE_URL . "/detail", [
                 'symbol' => $symbol
@@ -191,7 +218,7 @@ class MexcService
             $maxVolume = $contractInfo['max_volume'];
 
             // Переводим в USD
-            $maxPositionSize = $maxVolume * $currentPrice;
+            $maxPositionSize = $maxVolume * $currentPrice['price'];
 
             return $maxPositionSize;
         } catch (\Exception $e) {
@@ -202,4 +229,90 @@ class MexcService
             throw $e;
         }
     }
+
+    public function openPosition(string $symbol, float $quantity, string $side = 'BUY', int $leverage = 5)
+    {
+        try {
+            $params = [
+                'symbol' => $symbol,
+                'vol' => $quantity,
+                'leverage' => $leverage,
+                'side' => $side === 'BUY' ? 1 : 3, // 1 - open long, 3 - open short
+                'type' => 5, // 5 - market order
+                'openType' => 1, // open type,1:isolated,2:cross
+            ];
+
+            $response = $this->makeAuthenticatedRequest('post', '/v1/private/order/submit', $params);
+
+            if (!$response->successful()) {
+                throw new \Exception("Failed to open position: " . $response->body());
+            }
+
+            return $response->json();
+        } catch (\Exception $e) {
+            Log::error('Failed to open position', [
+                'symbol' => $symbol,
+                'error' => $e->getMessage()
+            ]);
+            throw $e;
+        }
+    }
+
+    public function closePosition(string $symbol, float $quantity, string $side = 'SELL', ?string $positionId = null)
+    {
+        try {
+            $params = [
+                'symbol' => $symbol,
+                'vol' => $quantity,
+                'side' => $side === 'SELL' ? 2 : 4, // 2 - close short, 4 - close long
+                'type' => 5, // 5 - market order
+                'openType' => 2, // 2 - cross margin
+            ];
+
+            // Добавляем positionId если он предоставлен
+            if ($positionId) {
+                $params['positionId'] = $positionId;
+            }
+
+            $response = $this->makeAuthenticatedRequest('post', '/v1/private/order/submit_batch', $params);
+
+            if (!$response->successful()) {
+                throw new \Exception("Failed to close position: " . $response->body());
+            }
+
+            return $response->json();
+        } catch (\Exception $e) {
+            Log::error('Failed to close position', [
+                'symbol' => $symbol,
+                'error' => $e->getMessage()
+            ]);
+            throw $e;
+        }
+    }
+
+
+    public function cancelAll(string $symbol = '')
+    {
+        try {
+            $params = [
+                'symbol' => $symbol,
+            ];
+
+            $response = $this->makeAuthenticatedRequest('post', '/v1/private/order/cancel_all', $params);
+
+            if (!$response->successful()) {
+                throw new \Exception("Failed to cancel all: " . $response->body());
+            }
+
+            return $response->json();
+        } catch (\Exception $e) {
+            Log::error('Failed to cancel all', [
+                'symbol' => $symbol,
+                'error' => $e->getMessage()
+            ]);
+            throw $e;
+        }
+    }
+
+
 }

@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Funding;
 
+use App\Models\Currency;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
@@ -36,6 +37,7 @@ class FundingRate extends Model
     protected $casts = [
 //        'timestamp' => 'datetime'
     ];
+
 
     public function currency()
     {

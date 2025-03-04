@@ -6,7 +6,7 @@ namespace App\Orchid\Screens\Currency;
 
 use App\Models\Currency;
 use App\Models\CurrencyFavorite;
-use App\Models\FundingRate;
+use App\Models\Funding\FundingRate;
 use App\Models\TopPerformingCoinSnapshot;
 use App\Orchid\Filters\Statistics\Normalize\IntervalsFilter;
 use App\Orchid\Layouts\Charts\HighchartsChart;
@@ -14,12 +14,12 @@ use App\Services\Analyze\TechnicalAnalysis;
 use App\Services\Api\Tickers;
 use App\Services\Strategy\SmartMoneyStrategy;
 use App\Services\Trading\TradingStatsService;
+use Illuminate\Http\Request;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Screen;
-use Orchid\Support\Facades\Layout;
 use Orchid\Support\Color;
-use Illuminate\Http\Request;
+use Orchid\Support\Facades\Layout;
 use Orchid\Support\Facades\Toast;
 
 class CurrencyEditScreen extends Screen

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Helpers\MathHelper;
+use App\Models\Funding\FundingRate;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Orchid\Filters\Filterable;
 use Orchid\Filters\Types\Like;
@@ -49,10 +50,15 @@ class Currency extends BaseModel
     public const int TYPE_FEATURE = 2;
     public const string EXCHANGE_BINANCE = 'binance';
     public const string EXCHANGE_MEXC = 'mexc';
+    public const string EXCHANGE_BYBIT = 'bybit';
     const CODE_BTC = 'BTCUSDT';
     const CODE_ETH = 'ETHUSDT';
 
     protected $guarded = [];
+
+    protected $casts = [
+        'next_settle_time' => 'datetime'
+    ];
 
 
     /**
@@ -79,6 +85,7 @@ class Currency extends BaseModel
         'created_at',
         'volume',
         'last_price',
+        'next_settle_time',
         'tradingview_code',
         'start_funding_8h',
         'start_funding_24h',
@@ -147,6 +154,15 @@ class Currency extends BaseModel
         return [
             self::TYPE_SPOT => 'Spot',
             self::TYPE_FEATURE => 'Feature',
+        ];
+    }
+
+    public static function getExchanges(): array
+    {
+        return [
+            self::EXCHANGE_MEXC => 'mexc',
+            self::EXCHANGE_BINANCE => 'binance',
+            self::EXCHANGE_BYBIT => 'bybit',
         ];
     }
 
