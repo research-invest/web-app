@@ -168,6 +168,11 @@ class FundingTrade implements ShouldQueue, ShouldBeUnique
                 ]);
             }
         }
+
+        $this->deal->update([
+            'status' => FundingDeal::STATUS_DONE,
+        ]);
+
     }
 
     public function uniqueId()

@@ -41,6 +41,7 @@ class FundingDeal extends BaseModel
 
     public const int STATUS_NEW = 1;
     public const int STATUS_PROCESS = 2;
+    public const int STATUS_DONE = 3;
 
 
     protected $fillable = [
