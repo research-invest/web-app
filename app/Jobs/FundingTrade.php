@@ -177,7 +177,7 @@ class FundingTrade implements ShouldQueue, ShouldBeUnique
 
     public function retryUntil()
     {
-        return $this->deal->funding_rate->copy()->addMinutes(5);
+        return $this->deal->funding_time->copy()->addMinutes(5);
     }
 
 }
