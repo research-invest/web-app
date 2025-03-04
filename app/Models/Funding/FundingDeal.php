@@ -6,6 +6,7 @@ use App\Models\BaseModel;
 use App\Models\Currency;
 use App\Models\Trade;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Orchid\Screen\AsSource;
 
@@ -13,7 +14,7 @@ use Orchid\Screen\AsSource;
  * @property integer $funding_config_deal_id
  * @property integer $user_id
  * @property integer $currency_id
- * @property integer $funding_time
+ * @property Carbon $funding_time
  * @property float $funding_rate
  * @property float $entry_price
  * @property float $exit_price
