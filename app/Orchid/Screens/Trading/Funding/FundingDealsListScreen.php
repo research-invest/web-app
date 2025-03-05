@@ -33,7 +33,7 @@ class FundingDealsListScreen extends Screen
      */
     public function query(FundingDealConfig $config): iterable
     {
-        $config->load('deals');
+//        $config->load('deals');
 
         return [
             'configs' => FundingDealConfig::filters()
@@ -41,7 +41,7 @@ class FundingDealsListScreen extends Screen
                 ->latest()
                 ->paginate(25),
             'config' => $config,
-            'deals' => $config->deals,
+            'deals' => $config->deals()->paginate(),
         ];
     }
 
