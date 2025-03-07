@@ -49,9 +49,9 @@ class Handler
         $schedule->command(FundingDealsConfig::class)->hourly();
         $schedule->command(FundingDeals::class)->everyMinute();
 
-        $schedule->command(AnalyzeTopPerformingCoinSnapshots::class)
-            ->everyThirtyMinutes()
-            ->withoutOverlapping();
+//        $schedule->command(AnalyzeTopPerformingCoinSnapshots::class)
+//            ->everyThirtyMinutes()
+//            ->withoutOverlapping();
 
         /**
          * 1) ОТ ДО
