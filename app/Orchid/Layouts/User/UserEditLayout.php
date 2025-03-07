@@ -30,6 +30,11 @@ class UserEditLayout extends Rows
                 ->required()
                 ->title(__('Email'))
                 ->placeholder(__('Email')),
+
+            Input::make('user.telegram_chat_id')
+                ->type('text')
+                ->max(255)
+                ->title('Telegram chat'),
         ];
     }
 }

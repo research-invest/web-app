@@ -46,11 +46,21 @@ class Handler
 
         $schedule->command(CollectFundingRates::class)->hourly();
         $schedule->command(HunterFunding::class)->hourly();
-//        $schedule->command(FundingDealsConfig::class)->hourly();
-//        $schedule->command(FundingDeals::class)->everyMinute();
+        $schedule->command(FundingDealsConfig::class)->hourly();
+        $schedule->command(FundingDeals::class)->everyMinute();
 
-//        $schedule->command(AnalyzeTopPerformingCoinSnapshots::class)
-//            ->everyThirtyMinutes()
-//            ->withoutOverlapping();
+        $schedule->command(AnalyzeTopPerformingCoinSnapshots::class)
+            ->everyThirtyMinutes()
+            ->withoutOverlapping();
+
+        /**
+         * 1) ОТ ДО
+         * 2) пофиксить запуск за минуту до
+         * 3) добавить поля ошибка, данные открытия сделки/закрытия, количества сделок, лимит на количество
+         * 4) добавить таблицу таймингов
+         * 5) сделать открыие/закрытие сделки
+         * 6) уведомление в телега бота
+         * 7)
+         */
     }
 }

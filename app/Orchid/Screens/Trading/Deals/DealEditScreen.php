@@ -509,7 +509,7 @@ class DealEditScreen extends Screen
         int    $leverage
     ): float
     {
-        if ($positionType === 'long') {
+        if ($positionType === Trade::POSITION_TYPE_LONG) {
             return ($exitPrice - $entryPrice) * $size * $leverage / $entryPrice;
         }
         return ($entryPrice - $exitPrice) * $size * $leverage / $entryPrice;

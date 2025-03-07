@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Funding\FundingDeal;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Orchid\Filters\Types\Like;
 use Orchid\Filters\Types\Where;
@@ -29,6 +30,7 @@ class User extends Authenticatable
         'email',
         'password',
         'api_token',
+        'telegram_chat_id',
 
         'bybit_secret_key',
         'bybit_api_key',
@@ -93,5 +95,10 @@ class User extends Authenticatable
     public function favorites()
     {
         return $this->hasMany(CurrencyFavorite::class);
+    }
+
+    public function fundingDeals()
+    {
+        return $this->hasMany(FundingDeal::class)->latest();
     }
 }

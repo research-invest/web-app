@@ -42,7 +42,7 @@ class FundingDealsConfig extends Command
 
             foreach ($currencies as $currency) {
 
-                $existDeal = $config->deals()
+                $existDeal = $config->user->fundingDeals()
                     ->new()
                     ->where('currency_id', $currency->id)
                     ->exists();
