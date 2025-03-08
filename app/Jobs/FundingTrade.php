@@ -38,6 +38,9 @@ class FundingTrade implements ShouldQueue, ShouldBeUnique
                 'code' => $this->deal->currency->code,
                 'funding_time' => $this->deal->funding_time
             ]);
+
+            $this->done();
+
             return;
         }
 
@@ -169,10 +172,14 @@ class FundingTrade implements ShouldQueue, ShouldBeUnique
             }
         }
 
+        $this->done();
+    }
+
+    private function done()
+    {
         $this->deal->update([
             'status' => FundingDeal::STATUS_DONE,
         ]);
-
     }
 
     public function uniqueId()

@@ -35,9 +35,8 @@ class FundingDeals extends Command
                 continue;
             }
 
-            FundingTrade::dispatchSync($deal);
-
-//            FundingTrade::dispatch($deal);
+//            FundingTrade::dispatchSync($deal);
+            FundingTrade::dispatch($deal);
         }
 
         return 0;
