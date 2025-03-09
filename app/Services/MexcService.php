@@ -8,55 +8,11 @@ use Lin\Mxc\MxcContract;
 
 class MexcService
 {
-    private const string BASE_URL = 'https://contract.mexc.com/api';
-    private string $apiKey;
-    private string $apiSecret;
+    private MxcContract $mxcContract;
 
     public function __construct(string $apiKey, string $apiSecret)
     {
-        $this->apiKey = $apiKey;
-        $this->apiSecret = $apiSecret;
-    }
-
-    private function generateSignature(array $params, string $timestamp): string
-    {
-        $queryString = http_build_query($params);
-        $signString = $timestamp . $this->apiKey . $queryString;
-        return hash_hmac('sha256', $signString, $this->apiSecret);
-    }
-
-    private function makeAuthenticatedRequest(string $method, string $endpoint, array $params = [])
-    {
-        $timestamp = now()->timestamp * 1000; // MEXC требует миллисекунды
-
-        // Для POST запросов тело должно быть в JSON формате
-        $requestBody = $method === 'post' ? json_encode($params) : '';
-
-        // Для GET запросов параметры идут в query string
-        $queryString = $method === 'get' ? '?' . http_build_query($params) : '';
-
-        // Строка для подписи отличается для GET и POST
-        $signString = $timestamp . $this->apiKey . ($method === 'post' ? $requestBody : $queryString);
-        $signature = hash_hmac('sha256', $signString, $this->apiSecret);
-
-        $headers = [
-            'ApiKey' => $this->apiKey,
-            'Request-Time' => $timestamp,
-            'Signature' => $signature,
-            'Content-Type' => 'application/json',
-        ];
-
-        $url = self::BASE_URL . $endpoint . ($method === 'get' ? $queryString : '');
-
-        if ($method === 'post') {
-            return Http::withHeaders($headers)
-                ->timeout(5)
-                ->post($url, $params);
-        }
-
-        return Http::withHeaders($headers)
-            ->timeout(5)
-            ->get($url);
+        $this->mxcContract = new MxcContract($apiKey, $apiSecret);
     }
 
     public function getCurrentPrice(string $symbol): array
@@ -64,16 +20,12 @@ class MexcService
         $startTime = microtime(true);
 
         try {
-
-            $mexc = new MxcContract($this->apiKey, $this->apiSecret);
-            $result = $mexc->market()->getFairPrice(['symbol' => 'TAO_USDT']);
+            $result = $this->mxcContract->market()->getFairPrice(['symbol' => $symbol]);
             $endTime = microtime(true);
-
-            $executionTime = ($endTime - $startTime) * 1000; // Конвертируем в миллисекунды
 
             return [
                 'price' => $result['data']['fairPrice'] ?? null,
-                'execution_time' => round($executionTime, 2),
+                'execution_time' => $this->calcExecutionTime($startTime, $endTime),
             ];
         } catch (\Exception $e) {
             Log::error('Failed to get current price', [
@@ -84,220 +36,249 @@ class MexcService
         }
     }
 
-    public function getContractInfo(string $symbol)
+    public function getContractInfo(string $symbol): array
     {
-
-//        array:64 [
-//        "symbol" => "HBAR_USDT"
-//  "displayName" => "HBAR_USDT永续"
-//  "displayNameEn" => "HBAR_USDT PERPETUAL"
-//  "positionOpenType" => 3
-//  "baseCoin" => "HBAR"
-//  "quoteCoin" => "USDT"
-//  "baseCoinName" => "HBAR"
-//  "quoteCoinName" => "USDT"
-//  "futureType" => 1
-//  "settleCoin" => "USDT"
-//  "contractSize" => 1
-//  "minLeverage" => 1
-//  "maxLeverage" => 200
-//  "countryConfigContractMaxLeverage" => 0
-//  "priceScale" => 5
-//  "volScale" => 0
-//  "amountScale" => 4
-//  "priceUnit" => 1.0E-5
-//  "volUnit" => 1
-//  "minVol" => 1
-//  "maxVol" => 2700000
-//  "bidLimitPriceRate" => 0.2
-//  "askLimitPriceRate" => 0.2
-//  "takerFeeRate" => 0.0002
-//  "makerFeeRate" => 0
-//  "maintenanceMarginRate" => 0.004
-//  "initialMarginRate" => 0.005
-//  "riskBaseVol" => 2700000
-//  "riskIncrVol" => 2700000
-//  "riskLongShortSwitch" => 0
-//  "riskIncrMmr" => 0.056
-//  "riskIncrImr" => 0.095
-//  "riskLevelLimit" => 1
-//  "priceCoefficientVariation" => 0.2
-//  "indexOrigin" => array:5 [
-//        0 => "BYBIT"
-//    1 => "BINANCE"
-//    2 => "OKX"
-//    3 => "MEXC"
-//    4 => "KUCOIN"
-//  ]
-//  "state" => 0
-//  "isNew" => false
-//  "isHot" => false
-//  "isHidden" => false
-//  "conceptPlate" => []
-//  "conceptPlateId" => []
-//  "riskLimitType" => "BY_VOLUME"
-//  "maxNumOrders" => array:2 [
+//        "data" => array:65 [
+//        "symbol" => "TAO_USDT"
+//    "displayName" => "TAO_USDT永续"
+//    "displayNameEn" => "TAO_USDT PERPETUAL"
+//    "positionOpenType" => 3
+//    "baseCoin" => "TAO"
+//    "quoteCoin" => "USDT"
+//    "baseCoinName" => "TAO"
+//    "quoteCoinName" => "USDT"
+//    "futureType" => 1
+//    "settleCoin" => "USDT"
+//    "contractSize" => 0.01
+//    "minLeverage" => 1
+//    "maxLeverage" => 200
+//    "countryConfigContractMaxLeverage" => 0
+//    "priceScale" => 1
+//    "volScale" => 0
+//    "amountScale" => 4
+//    "priceUnit" => 0.1
+//    "volUnit" => 1
+//    "minVol" => 1
+//    "maxVol" => 300000
+//    "bidLimitPriceRate" => 0.2
+//    "askLimitPriceRate" => 0.2
+//    "takerFeeRate" => 0
+//    "makerFeeRate" => 0
+//    "maintenanceMarginRate" => 0.004
+//    "initialMarginRate" => 0.005
+//    "riskBaseVol" => 300000
+//    "riskIncrVol" => 300000
+//    "riskLongShortSwitch" => 0
+//    "riskIncrMmr" => 0.056
+//    "riskIncrImr" => 0.095
+//    "riskLevelLimit" => 1
+//    "priceCoefficientVariation" => 0.2
+//    "indexOrigin" => array:3 [
+//        0 => "BITGET"
+//      1 => "BINANCE"
+//      2 => "KUCOIN"
+//    ]
+//    "state" => 0
+//    "isNew" => false
+//    "isHot" => false
+//    "isHidden" => false
+//    "conceptPlate" => array:2 [
+//        0 => "mc-trade-zone-0fees"
+//      1 => "mc-trade-zone-ai"
+//    ]
+//    "conceptPlateId" => array:2 [
+//        0 => 45
+//      1 => 23
+//    ]
+//    "riskLimitType" => "BY_VOLUME"
+//    "maxNumOrders" => array:2 [
 //        0 => 200
-//    1 => 50
+//      1 => 50
+//    ]
+//    "marketOrderMaxLevel" => 20
+//    "marketOrderPriceLimitRate1" => 0.2
+//    "marketOrderPriceLimitRate2" => 0.005
+//    "triggerProtect" => 0.1
+//    "appraisal" => 0
+//    "showAppraisalCountdown" => 0
+//    "automaticDelivery" => 0
+//    "apiAllowed" => false
+//    "depthStepList" => array:2 [
+//        0 => "0.1"
+//      1 => "1"
+//    ]
+//    "limitMaxVol" => 300000
+//    "threshold" => 0
+//    "baseCoinIconUrl" => "https://public.mocortech.com/coin/F20240703110927545DFbHsKjteBFTqu.png"
+//    "id" => 531
+//    "vid" => "128f589271cb4951b03e71e6323eb7be"
+//    "baseCoinId" => "c3e65cd2e516470a840a0cd0fcf78ad7"
+//    "createTime" => 1706670696000
+//    "openingTime" => 0
+//    "openingCountdownOption" => 1
+//    "showBeforeOpen" => true
+//    "isMaxLeverage" => false
+//    "isZeroFeeRate" => true
+//    "riskLimitMode" => "INCREASE"
 //  ]
-//  "marketOrderMaxLevel" => 20
-//  "marketOrderPriceLimitRate1" => 0.2
-//  "marketOrderPriceLimitRate2" => 0.005
-//  "triggerProtect" => 0.1
-//  "appraisal" => 0
-//  "showAppraisalCountdown" => 0
-//  "automaticDelivery" => 0
-//  "apiAllowed" => false
-//  "depthStepList" => array:3 [
-//        0 => "0.00001"
-//    1 => "0.0001"
-//    2 => "0.001"
-//  ]
-//  "limitMaxVol" => 2700000
-//  "threshold" => 0
-//  "baseCoinIconUrl" => "https://public.mocortech.com/coin/F20230701191651284uwTj2nQVcafJwU.png"
-//  "id" => 106
-//  "vid" => "128f589271cb4951b03e71e6323eb7be"
-//  "baseCoinId" => "770aa628c79140ffa3ae8d16215dc8cb"
-//  "createTime" => 1617155502000
-//  "openingTime" => 0
-//  "openingCountdownOption" => 1
-//  "showBeforeOpen" => true
-//  "isMaxLeverage" => false
-//  "isZeroFeeRate" => false
+//  "execution_time" => 413.25
 //]
 
+        $startTime = microtime(true);
 
         try {
-            $response = Http::get(self::BASE_URL . "/detail", [
-                'symbol' => $symbol
-            ]);
+            $result = $this->mxcContract->market()->getDetail(['symbol' => $symbol]);
+            $endTime = microtime(true);
 
-            if ($response->successful()) {
-                $data = $response->json()['data'];
-
-                dd($data);
-                return [
-                    'max_leverage' => $data['maxLeverage'], // Максимальное плечо
-                    'min_volume' => $data['minVol'], // Минимальный объем
-                    'max_volume' => $data['maxVol'], // Максимальный объем
-                    'volume_precision' => $data['volPrecision'], // Точность объема
-                    'price_precision' => $data['pricePrec'], // Точность цены
-                    'maintenance_margin_rate' => $data['maintMarginRate'], // Маржа поддержки
-                    'make_fee' => $data['makeFee'], // Комиссия мейкера
-                    'take_fee' => $data['takeFee'], // Комиссия тейкера
-                ];
-            }
-
-            throw new \Exception("Failed to get contract info: " . $response->body());
+            return [
+                'data' => $result['data'] ?? [],
+                'execution_time' => $this->calcExecutionTime($startTime, $endTime),
+            ];
         } catch (\Exception $e) {
-            Log::error('Failed to get contract info', [
+            Log::error('Failed to get get contract info', [
                 'symbol' => $symbol,
                 'error' => $e->getMessage()
             ]);
             throw $e;
         }
+
+//        'max_leverage' => $data['maxLeverage'], // Максимальное плечо
+//                    'min_volume' => $data['minVol'], // Минимальный объем
+//                    'max_volume' => $data['maxVol'], // Максимальный объем
+//                    'volume_precision' => $data['volPrecision'], // Точность объема
+//                    'price_precision' => $data['pricePrec'], // Точность цены
+//                    'maintenance_margin_rate' => $data['maintMarginRate'], // Маржа поддержки
+//                    'make_fee' => $data['makeFee'], // Комиссия мейкера
+//                    'take_fee' => $data['takeFee'], // Комиссия тейкера
     }
 
-    public function calculateMaxPositionSize(string $symbol): float
+    private function calcExecutionTime(float $startTime, float $endTime): float
     {
-        try {
-            $contractInfo = $this->getContractInfo($symbol);
-            $currentPrice = $this->getCurrentPrice($symbol);
-
-            // Максимальный объем в контрактах
-            $maxVolume = $contractInfo['max_volume'];
-
-            // Переводим в USD
-            $maxPositionSize = $maxVolume * $currentPrice['price'];
-
-            return $maxPositionSize;
-        } catch (\Exception $e) {
-            Log::error('Failed to calculate max position size', [
-                'symbol' => $symbol,
-                'error' => $e->getMessage()
-            ]);
-            throw $e;
-        }
+        $executionTime = ($endTime - $startTime) * 1000;
+        return round($executionTime, 2);
     }
 
-    public function openPosition(string $symbol, float $quantity, string $side = 'BUY', int $leverage = 5)
+    public function openPosition(string $symbol, float $quantity, string $side = 'BUY', int $leverage = 5): array
     {
+        $startTime = microtime(true);
+
         try {
+            // Сначала проверим, что API доступен
+//            $r = $this->mxcContract->market()->getDetail(['symbol' => $symbol]);
+
+
+
+            // Установка плеча с повторными попытками
+//            $retries = 3;
+//            while ($retries > 0) {
+//                try {
+//                    $this->mxcContract->position()->setLeverage([
+//                        'symbol' => $symbol,
+//                        'leverage' => $leverage,
+//                        'openType' => 1 // 1 - isolated margin, 2 - cross margin
+//                    ]);
+//                    break;
+//                } catch (\Exception $e) {
+//                    $retries--;
+//                    if ($retries === 0) throw $e;
+//                    sleep(1);
+//                }
+//            }
+
+            // Открытие позиции
             $params = [
                 'symbol' => $symbol,
+                'price' => 0,
                 'vol' => $quantity,
                 'leverage' => $leverage,
-                'side' => $side === 'BUY' ? 1 : 3, // 1 - open long, 3 - open short
-                'type' => 5, // 5 - market order
-                'openType' => 1, // open type,1:isolated,2:cross
+                'side' => $side === 'BUY' ? 1 : 3,
+                'type' => 1,
+                'openType' => 1,
+                'positionMode' => 1, // 1 - one-way mode
+                'timeInForce' => 'IOC', // Immediate or Cancel
             ];
 
-            $response = $this->makeAuthenticatedRequest('post', '/v1/private/order/submit', $params);
+            Log::info('Attempting to open position', $params);
 
-            if (!$response->successful()) {
-                throw new \Exception("Failed to open position: " . $response->body());
-            }
+            $result = $this->mxcContract->order()->postSubmit($params);
 
-            return $response->json();
+            Log::info('Position opened successfully', [
+                'symbol' => $symbol,
+                'response' => $result
+            ]);
+
+            return [
+                'data' => $result['data'] ?? [],
+                'execution_time' => $this->calcExecutionTime($startTime, microtime(true)),
+            ];
         } catch (\Exception $e) {
             Log::error('Failed to open position', [
                 'symbol' => $symbol,
-                'error' => $e->getMessage()
+                'quantity' => $quantity,
+                'side' => $side,
+                'leverage' => $leverage,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
             ]);
             throw $e;
         }
     }
 
-    public function closePosition(string $symbol, float $quantity, string $side = 'SELL', ?string $positionId = null)
+    private function validateResponse($response): void
     {
+        if (empty($response)) {
+            throw new \Exception('Empty response from MEXC API');
+        }
+
+        if (isset($response['code']) && $response['code'] !== 0) {
+            throw new \Exception('MEXC API error: ' . ($response['msg'] ?? 'Unknown error'));
+        }
+    }
+
+    public function closePosition(string $symbol, float $quantity, string $side = 'SELL'): array
+    {
+        $startTime = microtime(true);
+
         try {
-            $params = [
+            $result = $this->mxcContract->order()->postCancel([
                 'symbol' => $symbol,
+                'price' => 0, // 0 для рыночного ордера
                 'vol' => $quantity,
-                'side' => $side === 'SELL' ? 2 : 4, // 2 - close short, 4 - close long
-                'type' => 5, // 5 - market order
+                'side' => $side === 'SELL' ? 2 : 4, // 2 - close long, 4 - close short
+                'type' => 1, // 1 - market order
                 'openType' => 2, // 2 - cross margin
+            ]);
+
+            return [
+                'data' => $result['data'] ?? [],
+                'execution_time' => $this->calcExecutionTime($startTime, microtime(true)),
             ];
-
-            // Добавляем positionId если он предоставлен
-            if ($positionId) {
-                $params['positionId'] = $positionId;
-            }
-
-            $response = $this->makeAuthenticatedRequest('post', '/v1/private/order/submit_batch', $params);
-
-            if (!$response->successful()) {
-                throw new \Exception("Failed to close position: " . $response->body());
-            }
-
-            return $response->json();
         } catch (\Exception $e) {
             Log::error('Failed to close position', [
                 'symbol' => $symbol,
+                'quantity' => $quantity,
+                'side' => $side,
                 'error' => $e->getMessage()
             ]);
             throw $e;
         }
     }
 
-
-    public function cancelAll(string $symbol = '')
+    public function cancelAllOrders(string $symbol): array
     {
+        $startTime = microtime(true);
+
         try {
-            $params = [
-                'symbol' => $symbol,
+            $result = $this->mxcContract->order()->postCancelAll([
+                'symbol' => $symbol
+            ]);
+
+            return [
+                'data' => $result['data'] ?? [],
+                'execution_time' => $this->calcExecutionTime($startTime, microtime(true)),
             ];
-
-            $response = $this->makeAuthenticatedRequest('post', '/v1/private/order/cancel_all', $params);
-
-            if (!$response->successful()) {
-                throw new \Exception("Failed to cancel all: " . $response->body());
-            }
-
-            return $response->json();
         } catch (\Exception $e) {
-            Log::error('Failed to cancel all', [
+            Log::error('Failed to cancel all orders', [
                 'symbol' => $symbol,
                 'error' => $e->getMessage()
             ]);

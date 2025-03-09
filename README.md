@@ -6,6 +6,7 @@ CREATE USER 'admin'@'%' IDENTIFIED BY 'e433fdSDj3jF3_e';
 GRANT ALL PRIVILEGES ON  crypto_db.* TO 'admin'@'%';
 FLUSH PRIVILEGES;
 
+https://mexcdevelop.github.io/apidocs/spot_v3_en/#introduction
 
 https://github.com/zhouaini528/exchanges-php
 https://github.com/zhouaini528/mxc-php

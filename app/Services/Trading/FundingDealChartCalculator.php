@@ -44,16 +44,36 @@ class FundingDealChartCalculator
                 ]
             ],
             'yAxis' => [
-                'title' => [
-                    'text' => 'Цена'
+                [
+                    'title' => [
+                        'text' => 'Цена'
+                    ],
+                    'plotLines' => $this->preparePricePlotLines()
                 ],
-                'plotLines' => $this->preparePricePlotLines()
+                [
+                    'title' => [
+                        'text' => 'Время запроса (мс)',
+                        'style' => [
+                            'color' => '#FF9800'
+                        ]
+                    ],
+                    'opposite' => true,
+                    'gridLineWidth' => 0,
+                ]
             ],
             'series' => [
                 [
                     'name' => 'Цена',
                     'data' => $priceData,
-                    'color' => '#3490dc'
+                    'color' => '#3490dc',
+                    'yAxis' => 0
+                ],
+                [
+                    'name' => 'Время запроса',
+                    'data' => $this->prepareExecutionTimeData(),
+                    'color' => '#FF9800',
+                    'yAxis' => 1,
+                    'type' => 'line'
                 ]
             ]
         ];
@@ -66,6 +86,18 @@ class FundingDealChartCalculator
             $data[] = [
                 Carbon::createFromTimestamp($point['timestamp'])->getPreciseTimestamp(3),
                 (float)$point['price']
+            ];
+        }
+        return $data;
+    }
+
+    private function prepareExecutionTimeData(): array
+    {
+        $data = [];
+        foreach ($this->deal->price_history as $point) {
+            $data[] = [
+                Carbon::createFromTimestamp($point['timestamp'])->getPreciseTimestamp(3),
+                (float)($point['execution_time'] ?? 0)
             ];
         }
         return $data;
