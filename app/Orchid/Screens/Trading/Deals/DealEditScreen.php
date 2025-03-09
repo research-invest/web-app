@@ -31,6 +31,7 @@ use Orchid\Support\Facades\Toast;
 use Orchid\Screen\Fields\Upload;
 use App\Models\CheckListItem;
 use App\Models\TradeCheckListItem;
+use App\Services\TradeRecommendationService;
 
 class DealEditScreen extends Screen
 {
@@ -329,6 +330,12 @@ class DealEditScreen extends Screen
 
                     Layout::view('trading.trade-images', [
                         'trade' => $this->trade
+                    ]),
+                ],
+
+                'Рекомендации' => [
+                    Layout::view('trading.trade-recommendations', [
+                        'recommendations' => (new TradeRecommendationService($this->trade))->analyze()
                     ]),
                 ],
             ])
