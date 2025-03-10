@@ -67,6 +67,35 @@ class UserApiKeysLayout extends Rows
                     ->title('bigx secret key'),
             ]),
 
+            Group::make([
+                Input::make('user.gate_api_key')
+                    ->type('text')
+                    ->max(255)
+                    ->title('gate api key'),
+
+                Input::make('user.gate_secret_key')
+                    ->type('text')
+                    ->max(255)
+                    ->title('gate secret key'),
+            ]),
+
+            Group::make([
+                Input::make('user.kucoin_api_key')
+                    ->type('text')
+                    ->max(255)
+                    ->title('kucoin api key'),
+
+                Input::make('user.kucoin_secret_key')
+                    ->type('text')
+                    ->max(255)
+                    ->title('kucoin secret key'),
+
+                Input::make('user.kucoin_api_passphrase')
+                    ->type('text')
+                    ->max(255)
+                    ->title('kucoin passphrase'),
+            ]),
+
 
         ];
     }

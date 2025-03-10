@@ -43,6 +43,13 @@ class User extends Authenticatable
 
         'bigx_secret_key',
         'bigx_api_key',
+
+        'gate_secret_key',
+        'gate_api_key',
+
+        'kucoin_secret_key',
+        'kucoin_api_key',
+        'kucoin_api_passphrase',
     ];
 
     /**
