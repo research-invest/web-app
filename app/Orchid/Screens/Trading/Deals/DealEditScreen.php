@@ -150,6 +150,39 @@ class DealEditScreen extends Screen
             ])->title('Добавить ордер'),
 
             Layout::tabs([
+
+                'Статистика' => [
+                    Layout::view('trading.trade-stats', ['trade' => $this->trade])
+                ],
+
+                'Ордера' => [
+                    Layout::view('trading.trade-orders', ['trade' => $this->trade])
+                ],
+
+                'P&L' => [
+                    new HighchartsChart(
+                        $this->getRiskManagementChart()
+                    ),
+
+                    new HighchartsChart(
+                        $this->getPnlHistoryChart()
+                    ),
+
+                    new HighchartsChart(
+                        $this->getPnlHistoryVolumeChart()
+                    ),
+
+//                    new HighchartsChart(
+//                        $this->getPnlHistoryFundingRateChart()
+//                    ),
+
+                    Layout::view('trading.trade-potential-pnl', [
+                        'trade' => $this->trade,
+                        'steps' => $this->calculatePnLSteps($this->trade)
+                    ]),
+                ],
+
+
                 'Основная информация' => [
                     Layout::rows([
 //                        Select::make('trade.currency_id')
@@ -185,11 +218,6 @@ class DealEditScreen extends Screen
                                 ->canSee(!$this->trade->exists)
                                 ->sendTrueOrFalse()
                                 ->value(0),
-
-                            CheckBox::make('trade.is_notify')
-                                ->placeholder('Уведомления PNL')
-                                ->sendTrueOrFalse()
-                                ->value(1),
                         ]),
 
                         Group::make([
@@ -252,70 +280,37 @@ class DealEditScreen extends Screen
                             Input::make('trade.commission_open')
                                 ->title('Комиссия за открытие сделки')
                                 ->canSee($this->trade->exists)
+                                ->step('0.001')
                                 ->type('number'),
 
                             Input::make('trade.commission_close')
                                 ->title('Комиссия за закрытие сделки')
                                 ->canSee($this->trade->exists)
+                                ->step('0.001')
                                 ->type('number'),
 
                             Input::make('trade.commission_finance')
                                 ->title('Комиссия за финансирование')
                                 ->canSee($this->trade->exists)
+                                ->step('0.001')
                                 ->type('number'),
                         ]),
 
                         Input::make('trade.realized_pnl')
                             ->title('Реализованный PnL')
+                            ->step('0.001')
+                            ->type('number')
                             ->canSee($this->trade->exists && $this->trade->realized_pnl),
 
                         TextArea::make('trade.notes')
                             ->title('Заметки')
                             ->rows(3),
+
+                        CheckBox::make('trade.is_notify')
+                            ->placeholder('Уведомления PNL')
+                            ->sendTrueOrFalse()
+                            ->value(1),
                     ])
-                ],
-
-                'Чек-лист' => [
-                    Layout::view('trading.header_check_list', [
-                        'title' => 'Проверка перед открытием сделки',
-                        'description' => 'Убедитесь, что все пункты проверены перед открытием позиции'
-                    ]),
-
-                    // Динамически формируем чек-лист
-                    Layout::rows(
-                        $this->getCheckListFields(),
-                    ),
-                ],
-
-                'Ордера' => [
-                    Layout::view('trading.trade-orders', ['trade' => $this->trade])
-                ],
-
-                'Статистика' => [
-                    Layout::view('trading.trade-stats', ['trade' => $this->trade])
-                ],
-
-                'P&L' => [
-                    new HighchartsChart(
-                        $this->getRiskManagementChart()
-                    ),
-
-                    new HighchartsChart(
-                        $this->getPnlHistoryChart()
-                    ),
-
-                    new HighchartsChart(
-                        $this->getPnlHistoryVolumeChart()
-                    ),
-
-//                    new HighchartsChart(
-//                        $this->getPnlHistoryFundingRateChart()
-//                    ),
-
-                    Layout::view('trading.trade-potential-pnl', [
-                        'trade' => $this->trade,
-                        'steps' => $this->calculatePnLSteps($this->trade)
-                    ]),
                 ],
 
                 'Изображения' => [
@@ -331,6 +326,18 @@ class DealEditScreen extends Screen
                     Layout::view('trading.trade-images', [
                         'trade' => $this->trade
                     ]),
+                ],
+
+                'Чек-лист' => [
+                    Layout::view('trading.header_check_list', [
+                        'title' => 'Проверка перед открытием сделки',
+                        'description' => 'Убедитесь, что все пункты проверены перед открытием позиции'
+                    ]),
+
+                    // Динамически формируем чек-лист
+                    Layout::rows(
+                        $this->getCheckListFields(),
+                    ),
                 ],
 
                 'Рекомендации' => [
@@ -401,6 +408,7 @@ class DealEditScreen extends Screen
                 ->fill([
                     'user_id' => UserHelper::getId(),
                     'trade_period_id' => $currentPeriod?->id,
+                    'leverage' => $data['is_spot'] === '1' ? 1 : $data['leverage'],
                     'open_currency_volume' => $currency->volume,
                 ]);
 

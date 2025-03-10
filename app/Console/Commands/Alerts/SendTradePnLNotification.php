@@ -25,7 +25,9 @@ class SendTradePnLNotification extends Command
 
     public function handle()
     {
-        $openTrades = Trade::where('status', 'open')->get();
+        $openTrades = Trade::where('status', 'open')
+            ->where('is_notify', true)
+            ->get();
 
         if ($openTrades->isEmpty()) {
             return;
