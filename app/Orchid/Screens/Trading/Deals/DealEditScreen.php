@@ -14,6 +14,7 @@ use App\Models\TradePeriod;
 use App\Orchid\Layouts\Charts\HighchartsChart;
 use App\Services\PnlAnalyticsService;
 use App\Services\RiskManagement\PositionCalculator;
+use App\Services\Strategy\Deals\ATRStrategy;
 use Illuminate\Http\Request;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\ModalToggle;
@@ -156,7 +157,7 @@ class DealEditScreen extends Screen
                 ],
 
                 'Ордера' => [
-                    Layout::view('trading.trade-orders', ['trade' => $this->trade])
+                    Layout::view('trading.trade-orders', ['trade' => $this->trade]),
                 ],
 
                 'P&L' => [
@@ -345,11 +346,79 @@ class DealEditScreen extends Screen
                         'recommendations' => (new TradeRecommendationService($this->trade))->analyze()
                     ]),
                 ],
+
+                'Стратегии входа и выхода' => [
+                    Layout::tabs([
+                        'ATR' => new HighchartsChart(
+                            $this->getATRStrategyShart()
+                        ),
+//                        'Лестница' => new HighchartsChart(
+//                            $this->getEnterLadderStrategyShart()
+//                        ),
+//                        'Мартингейл' => new HighchartsChart(
+//                            $this->getEnterMartingaleStrategyShart()
+//                        ),
+                    ]),
+                ],
+//                'Стратегии выхода' => [
+//                    Layout::tabs([
+//                        'ATR' => new HighchartsChart(
+//                            $this->getExitATRStrategyShart()
+//                        ),
+////                        'Лестница' => new HighchartsChart(
+////                            $this->getPnlHistoryChart()
+////                        ),
+////                        'Мартингейл' => new HighchartsChart(
+////                            $this->getPnlHistoryVolumeChart()
+////                        ),
+//                    ]),
+//                ],
+
             ])
         ];
     }
 
     private function getRiskManagementChart(): array
+    {
+        if (!$this->trade->exists) {
+            return [];
+        }
+
+        $calculator = new PositionCalculator(
+            trade: $this->trade,
+        );
+
+        return $calculator->getChartConfig();
+    }
+
+    private function getATRStrategyShart(): array
+    {
+        if (!$this->trade->exists) {
+            return [];
+        }
+
+        $strategy = new ATRStrategy(
+            $this->trade->entry_price,
+            $this->trade->position_size,
+        );
+
+        return $strategy->getChartConfig($this->trade);
+    }
+
+    private function getEnterLadderStrategyShart(): array
+    {
+        if (!$this->trade->exists) {
+            return [];
+        }
+
+        $calculator = new PositionCalculator(
+            trade: $this->trade,
+        );
+
+        return $calculator->getChartConfig();
+    }
+
+    private function getEnterMartingaleStrategyShart(): array
     {
         if (!$this->trade->exists) {
             return [];
