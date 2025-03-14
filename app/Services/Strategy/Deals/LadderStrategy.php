@@ -2,6 +2,10 @@
 
 namespace App\Services\Strategy\Deals;
 
+use App\Models\Trade;
+use App\Models\TradePnlHistory;
+use Illuminate\Support\Collection;
+
 /**
  * Лестница + трейлинг — сбалансированный вариант
  */
@@ -45,14 +49,14 @@ class LadderStrategy
         ];
     }
 
-    public function calculateByExistingOrders(array $existingOrders): array
+    public function calculateByExistingOrders(Collection $existingOrders): array
     {
-        $totalInvestment = array_sum(array_column($existingOrders, 'size')); // Общая вложенная сумма
         $nextOrders = [];
+        $totalInvestment = $existingOrders->sum('size');
 
         foreach ($this->buySteps as $step) {
             $buyPrice = round($this->entryPrice * (1 + $step), 2);
-            if (!in_array($buyPrice, array_column($existingOrders, 'price'), true)) {
+            if (!$existingOrders->pluck('price')->contains($buyPrice)) {
                 $size = ($this->initialCapital - $totalInvestment) / count($this->buySteps);
                 $nextOrders[] = ['price' => $buyPrice, 'size' => $size];
             }
@@ -68,6 +72,103 @@ class LadderStrategy
             'sell_target' => $sellTarget,
             'expected_profit' => round($profitTargetValue, 2)
         ];
+    }
+
+
+    public function getChartConfig(Trade $trade): array
+    {
+        $orderData = $this->calculateByExistingOrders($trade->orders);
+
+        $historyPoints = $this->getPriceHistory($trade); // Метод для истории цен
+
+        $existingOrders = $orderData['existing_orders'];
+        $nextOrders = $orderData['next_orders'];
+        $sellTarget = $orderData['sell_target'];
+
+        $buyPoints = [];
+        $averagePoints = [];
+        $sellPoints = [['x' => count($historyPoints) + count($nextOrders), 'y' => $sellTarget]];
+
+        foreach ($existingOrders as $order) {
+            $buyPoints[] = ['x' => count($buyPoints), 'y' => (float)$order['price']];
+        }
+
+        foreach ($nextOrders as $order) {
+            $averagePoints[] = ['x' => count($buyPoints) + count($averagePoints), 'y' => $order['price']];
+        }
+
+        return [
+            'chart' => [
+                'type' => 'line',
+                'height' => 400
+            ],
+            'title' => [
+                'text' => "Ценовые уровни: ATR-стратегия",
+                'align' => 'left'
+            ],
+            'xAxis' => [
+                'visible' => false,
+                'min' => 0,
+                'max' => count($historyPoints) + count($nextOrders) + 1
+            ],
+            'yAxis' => [
+                'title' => [
+                    'text' => 'Цена'
+                ],
+                'labels' => [
+                    'format' => '{value:.2f}'
+                ]
+            ],
+            'series' => [
+                [
+                    'name' => 'История и текущая цена',
+                    'data' => $historyPoints,
+                    'color' => '#666666',
+                    'lineWidth' => 2
+                ],
+                [
+                    'name' => 'Точки входа',
+                    'data' => $buyPoints,
+                    'color' => '#007bff',
+                    'type' => 'scatter',
+                    'marker' => [
+                        'symbol' => 'circle',
+                        'radius' => 6
+                    ]
+                ],
+                [
+                    'name' => 'Точки усреднения',
+                    'data' => $averagePoints,
+                    'color' => '#f0ad4e',
+                    'type' => 'scatter',
+                    'marker' => [
+                        'symbol' => 'diamond',
+                        'radius' => 6
+                    ]
+                ],
+                [
+                    'name' => 'Точка выхода',
+                    'data' => $sellPoints,
+                    'color' => '#22bb33',
+                    'type' => 'scatter',
+                    'marker' => [
+                        'symbol' => 'triangle',
+                        'radius' => 8
+                    ]
+                ]
+            ],
+            'credits' => [
+                'enabled' => false
+            ],
+            'accessibility' => [
+                'enabled' => false
+            ]
+        ];
+    }
+
+    private function getPriceHistory(Trade $trade): array
+    {
+        return $trade->pnlHistory->map(fn(TradePnlHistory $point, $index) => [$index, (float)$point->price])->toArray();
     }
 
 }

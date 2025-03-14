@@ -15,6 +15,8 @@ use App\Orchid\Layouts\Charts\HighchartsChart;
 use App\Services\PnlAnalyticsService;
 use App\Services\RiskManagement\PositionCalculator;
 use App\Services\Strategy\Deals\ATRStrategy;
+use App\Services\Strategy\Deals\LadderStrategy;
+use App\Services\Strategy\Deals\MartingaleStrategy;
 use Illuminate\Http\Request;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\ModalToggle;
@@ -352,12 +354,12 @@ class DealEditScreen extends Screen
                         'ATR' => new HighchartsChart(
                             $this->getATRStrategyShart()
                         ),
-//                        'Лестница' => new HighchartsChart(
-//                            $this->getEnterLadderStrategyShart()
-//                        ),
-//                        'Мартингейл' => new HighchartsChart(
-//                            $this->getEnterMartingaleStrategyShart()
-//                        ),
+                        'Лестница' => new HighchartsChart(
+                            $this->getLadderStrategyShart()
+                        ),
+                        'Мартингейл' => new HighchartsChart(
+                            $this->getMartingaleStrategyShart()
+                        ),
                     ]),
                 ],
 //                'Стратегии выхода' => [
@@ -405,30 +407,32 @@ class DealEditScreen extends Screen
         return $strategy->getChartConfig($this->trade);
     }
 
-    private function getEnterLadderStrategyShart(): array
+    private function getLadderStrategyShart(): array
     {
         if (!$this->trade->exists) {
             return [];
         }
 
-        $calculator = new PositionCalculator(
-            trade: $this->trade,
+        $strategy = new LadderStrategy(
+            $this->trade->entry_price,
+            $this->trade->position_size,
         );
 
-        return $calculator->getChartConfig();
+        return $strategy->getChartConfig($this->trade);
     }
 
-    private function getEnterMartingaleStrategyShart(): array
+    private function getMartingaleStrategyShart(): array
     {
         if (!$this->trade->exists) {
             return [];
         }
 
-        $calculator = new PositionCalculator(
-            trade: $this->trade,
+        $strategy = new MartingaleStrategy(
+            $this->trade->entry_price,
+            $this->trade->position_size,
         );
 
-        return $calculator->getChartConfig();
+        return $strategy->getChartConfig($this->trade);
     }
 
     private function getPnlHistoryChart(): array
