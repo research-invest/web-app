@@ -79,15 +79,17 @@ class LadderStrategy
     {
         $orderData = $this->calculateByExistingOrders($trade->orders);
 
-        $historyPoints = $this->getPriceHistory($trade); // Метод для истории цен
-
         $existingOrders = $orderData['existing_orders'];
         $nextOrders = $orderData['next_orders'];
         $sellTarget = $orderData['sell_target'];
 
         $buyPoints = [];
         $averagePoints = [];
-        $sellPoints = [['x' => count($historyPoints) + count($nextOrders), 'y' => $sellTarget]];
+        $sellPoints = [['x' => count($existingOrders) + count($nextOrders), 'y' => $sellTarget]];
+
+        // Получаем текущую цену (последняя цена в списке ордеров)
+        $currentPrice = $trade->currency->last_price;
+        $currentPricePoint = [['x' => 0, 'y' => $currentPrice]];
 
         foreach ($existingOrders as $order) {
             $buyPoints[] = ['x' => count($buyPoints), 'y' => (float)$order['price']];
@@ -109,7 +111,7 @@ class LadderStrategy
             'xAxis' => [
                 'visible' => false,
                 'min' => 0,
-                'max' => count($historyPoints) + count($nextOrders) + 1
+                'max' => count($existingOrders) + count($nextOrders) + 1
             ],
             'yAxis' => [
                 'title' => [
@@ -121,10 +123,14 @@ class LadderStrategy
             ],
             'series' => [
                 [
-                    'name' => 'История и текущая цена',
-                    'data' => $historyPoints,
+                    'name' => 'Текущая цена',
+                    'data' => $currentPricePoint,
                     'color' => '#666666',
-                    'lineWidth' => 2
+                    'type' => 'scatter',
+                    'marker' => [
+                        'symbol' => 'circle',
+                        'radius' => 6
+                    ]
                 ],
                 [
                     'name' => 'Точки входа',
@@ -164,11 +170,6 @@ class LadderStrategy
                 'enabled' => false
             ]
         ];
-    }
-
-    private function getPriceHistory(Trade $trade): array
-    {
-        return $trade->pnlHistory->map(fn(TradePnlHistory $point, $index) => [$index, (float)$point->price])->toArray();
     }
 
 }

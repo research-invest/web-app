@@ -14,7 +14,7 @@ class ATRStrategy
         protected $initialCapital,
         protected $atr = 5,
         protected $multiplier = 1.5,
-        protected $levels = 5,
+        protected $levels = 10,
         protected $profitTarget = 0.1,
     )
     {
@@ -72,15 +72,16 @@ class ATRStrategy
     {
         $orderData = $this->calculateByExistingOrders($trade->orders);
 
-        $historyPoints = $this->getPriceHistory($trade); // Метод для истории цен
-
         $existingOrders = $orderData['existing_orders'];
         $nextOrders = $orderData['next_orders'];
         $sellTarget = $orderData['sell_target'];
 
         $buyPoints = [];
         $averagePoints = [];
-        $sellPoints = [['x' => count($historyPoints) + count($nextOrders), 'y' => $sellTarget]];
+        $sellPoints = [['x' => count($existingOrders) + count($nextOrders), 'y' => $sellTarget]];
+
+        $currentPrice = $trade->currency->last_price;
+        $currentPricePoint = [['x' => 0, 'y' => $currentPrice]];
 
         foreach ($existingOrders as $order) {
             $buyPoints[] = ['x' => count($buyPoints), 'y' => (float)$order['price']];
@@ -102,7 +103,7 @@ class ATRStrategy
             'xAxis' => [
                 'visible' => false,
                 'min' => 0,
-                'max' => count($historyPoints) + count($nextOrders) + 1
+                'max' => count($existingOrders) + count($nextOrders) + 1
             ],
             'yAxis' => [
                 'title' => [
@@ -114,10 +115,14 @@ class ATRStrategy
             ],
             'series' => [
                 [
-                    'name' => 'История и текущая цена',
-                    'data' => $historyPoints,
+                    'name' => 'Текущая цена',
+                    'data' => $currentPricePoint,
                     'color' => '#666666',
-                    'lineWidth' => 2
+                    'type' => 'scatter',
+                    'marker' => [
+                        'symbol' => 'circle',
+                        'radius' => 6
+                    ]
                 ],
                 [
                     'name' => 'Точки входа',
@@ -158,11 +163,5 @@ class ATRStrategy
             ]
         ];
     }
-
-    private function getPriceHistory(Trade $trade): array
-    {
-        return $trade->pnlHistory->map(fn(TradePnlHistory $point, $index) => [$index, (float)$point->price])->toArray();
-    }
-
 
 }
