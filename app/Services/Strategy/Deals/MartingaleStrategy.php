@@ -95,7 +95,7 @@ class MartingaleStrategy
                 'height' => 400
             ],
             'title' => [
-                'text' => "Ценовые уровни: ATR-стратегия",
+                'text' => "Ценовые уровни: Martingale-стратегия",
                 'align' => 'left'
             ],
             'xAxis' => [

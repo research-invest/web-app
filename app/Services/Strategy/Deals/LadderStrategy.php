@@ -103,7 +103,7 @@ class LadderStrategy
                 'height' => 400
             ],
             'title' => [
-                'text' => "Ценовые уровни: ATR-стратегия",
+                'text' => "Ценовые уровни: Ladder-стратегия",
                 'align' => 'left'
             ],
             'xAxis' => [

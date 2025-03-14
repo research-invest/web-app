@@ -46,8 +46,6 @@ class ATRStrategy
 
     public function calculateByExistingOrders(Collection $existingOrders): array
     {
-//        $totalInvestment = array_sum(array_column($existingOrders, 'size')); // Общая вложенная сумма
-
         $totalInvestment = $existingOrders->sum('size');
 
         $nextOrders = [];

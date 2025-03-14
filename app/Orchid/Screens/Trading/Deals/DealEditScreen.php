@@ -362,20 +362,6 @@ class DealEditScreen extends Screen
                         ),
                     ]),
                 ],
-//                'Стратегии выхода' => [
-//                    Layout::tabs([
-//                        'ATR' => new HighchartsChart(
-//                            $this->getExitATRStrategyShart()
-//                        ),
-////                        'Лестница' => new HighchartsChart(
-////                            $this->getPnlHistoryChart()
-////                        ),
-////                        'Мартингейл' => new HighchartsChart(
-////                            $this->getPnlHistoryVolumeChart()
-////                        ),
-//                    ]),
-//                ],
-
             ])
         ];
     }
