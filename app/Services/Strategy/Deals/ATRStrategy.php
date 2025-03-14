@@ -3,6 +3,7 @@
 namespace App\Services\Strategy\Deals;
 
 use App\Models\Trade;
+use App\Models\TradePnlHistory;
 use Illuminate\Support\Collection;
 
 class ATRStrategy
@@ -54,7 +55,7 @@ class ATRStrategy
         for ($i = count($existingOrders) + 1; $i <= $this->levels; $i++) {
             $buyPrice = round($this->entryPrice - ($this->atr * $this->multiplier * $i), 2);
             $size = ($this->initialCapital - $totalInvestment) / ($this->levels - count($existingOrders));
-            $nextOrders[] = ['price' => $buyPrice, 'size' => $size];
+            $nextOrders[] = ['price' => (float)$buyPrice, 'size' => (float)$size];
         }
 
         // Рассчитываем целевой уровень выхода
@@ -64,7 +65,7 @@ class ATRStrategy
         return [
             'existing_orders' => $existingOrders,
             'next_orders' => $nextOrders,
-            'sell_target' => $sellTarget,
+            'sell_target' => (float)$sellTarget,
             'expected_profit' => round($profitTargetValue, 2)
         ];
     }
@@ -74,6 +75,7 @@ class ATRStrategy
         $orderData = $this->calculateByExistingOrders($trade->orders);
 
         $historyPoints = $this->getPriceHistory($trade); // Метод для истории цен
+
         $existingOrders = $orderData['existing_orders'];
         $nextOrders = $orderData['next_orders'];
         $sellTarget = $orderData['sell_target'];
@@ -83,7 +85,7 @@ class ATRStrategy
         $sellPoints = [['x' => count($historyPoints) + count($nextOrders), 'y' => $sellTarget]];
 
         foreach ($existingOrders as $order) {
-            $buyPoints[] = ['x' => count($buyPoints), 'y' => $order['price']];
+            $buyPoints[] = ['x' => count($buyPoints), 'y' => (float)$order['price']];
         }
 
         foreach ($nextOrders as $order) {
@@ -161,7 +163,7 @@ class ATRStrategy
 
     private function getPriceHistory(Trade $trade): array
     {
-        return $trade->pnlHistory->map(fn($point, $index) => [$index, $point->price])->toArray();
+        return $trade->pnlHistory->map(fn(TradePnlHistory $point, $index) => [$index, (float)$point->price])->toArray();
     }
 
 
