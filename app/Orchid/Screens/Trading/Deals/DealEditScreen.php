@@ -29,6 +29,7 @@ use Orchid\Screen\Fields\Relation;
 use Orchid\Screen\Fields\Select;
 use Orchid\Screen\Fields\TextArea;
 use Orchid\Screen\Screen;
+use Orchid\Screen\TD;
 use Orchid\Support\Facades\Layout;
 use Orchid\Support\Facades\Toast;
 use Orchid\Screen\Fields\Upload;
@@ -69,9 +70,36 @@ class DealEditScreen extends Screen
             }
         }
 
+        $atrStrategy = new ATRStrategy($trade->entry_price, $trade->position_size);
+        $atrData = $atrStrategy->calculate();
+
+        $ladderStrategy = new LadderStrategy($trade->entry_price, $trade->position_size);
+        $ladderData = $ladderStrategy->calculate();
+
+        $martingaleStrategy = new MartingaleStrategy($trade->entry_price, $trade->position_size);
+        $martingaleData = $martingaleStrategy->calculate();
+
         return [
             'trade' => $trade,
             'checklist' => $checklist,
+            'atrStrategy' => collect($atrData['buy_levels'])->map(function ($level) {
+                return [
+                    'price' => number_format($level['price'], 2) . ' USDT',
+                    'size' => number_format($level['size'], 2) . ' USDT',
+                ];
+            }),
+            'ladderStrategy' => collect($ladderData['buy_levels'])->map(function ($level) {
+                return [
+                    'price' => number_format($level['price'], 2) . ' USDT',
+                    'size' => number_format($level['size'], 2) . ' USDT',
+                ];
+            }),
+            'martingaleStrategy' => collect($martingaleData['buy_levels'])->map(function ($level) {
+                return [
+                    'price' => number_format($level['price'], 2) . ' USDT',
+                    'size' => number_format($level['size'], 2) . ' USDT',
+                ];
+            }),
         ];
     }
 
@@ -153,38 +181,6 @@ class DealEditScreen extends Screen
             ])->title('Добавить ордер'),
 
             Layout::tabs([
-
-                'Статистика' => [
-                    Layout::view('trading.trade-stats', ['trade' => $this->trade])
-                ],
-
-                'Ордера' => [
-                    Layout::view('trading.trade-orders', ['trade' => $this->trade]),
-                ],
-
-                'P&L' => [
-                    new HighchartsChart(
-                        $this->getRiskManagementChart()
-                    ),
-
-                    new HighchartsChart(
-                        $this->getPnlHistoryChart()
-                    ),
-
-                    new HighchartsChart(
-                        $this->getPnlHistoryVolumeChart()
-                    ),
-
-//                    new HighchartsChart(
-//                        $this->getPnlHistoryFundingRateChart()
-//                    ),
-
-                    Layout::view('trading.trade-potential-pnl', [
-                        'trade' => $this->trade,
-                        'steps' => $this->calculatePnLSteps($this->trade)
-                    ]),
-                ],
-
 
                 'Основная информация' => [
                     Layout::rows([
@@ -316,6 +312,37 @@ class DealEditScreen extends Screen
                     ])
                 ],
 
+                'Статистика' => [
+                    Layout::view('trading.trade-stats', ['trade' => $this->trade])
+                ],
+
+                'Ордера' => [
+                    Layout::view('trading.trade-orders', ['trade' => $this->trade]),
+                ],
+
+                'P&L' => [
+                    new HighchartsChart(
+                        $this->getRiskManagementChart()
+                    ),
+
+                    new HighchartsChart(
+                        $this->getPnlHistoryChart()
+                    ),
+
+                    new HighchartsChart(
+                        $this->getPnlHistoryVolumeChart()
+                    ),
+
+//                    new HighchartsChart(
+//                        $this->getPnlHistoryFundingRateChart()
+//                    ),
+
+                    Layout::view('trading.trade-potential-pnl', [
+                        'trade' => $this->trade,
+                        'steps' => $this->calculatePnLSteps($this->trade)
+                    ]),
+                ],
+
                 'Изображения' => [
                     Layout::rows([
                         Upload::make('trade.attachment')
@@ -351,15 +378,45 @@ class DealEditScreen extends Screen
 
                 'Стратегии входа и выхода' => [
                     Layout::tabs([
-                        'ATR' => new HighchartsChart(
-                            $this->getATRStrategyShart()
-                        ),
-                        'Лестница' => new HighchartsChart(
-                            $this->getLadderStrategyShart()
-                        ),
-                        'Мартингейл' => new HighchartsChart(
-                            $this->getMartingaleStrategyShart()
-                        ),
+                        'ATR' => Layout::columns([
+                            new HighchartsChart(
+                                $this->getATRStrategyShart()
+                            ),
+                            Layout::table('atrStrategy', [
+                                TD::make('price', 'Уровень входа')
+                                    ->align(TD::ALIGN_RIGHT)
+                                    ->render(fn ($row) => $row['price']),
+                                TD::make('size', 'Размер позиции')
+                                    ->align(TD::ALIGN_RIGHT)
+                                    ->render(fn ($row) => $row['size']),
+                            ])->title('Уровни входа ATR'),
+                        ]),
+                        'Лестница' => Layout::columns([
+                            new HighchartsChart(
+                                $this->getLadderStrategyShart()
+                            ),
+                            Layout::table('ladderStrategy', [
+                                TD::make('price', 'Уровень входа')
+                                    ->align(TD::ALIGN_RIGHT)
+                                    ->render(fn ($row) => $row['price']),
+                                TD::make('size', 'Размер позиции')
+                                    ->align(TD::ALIGN_RIGHT)
+                                    ->render(fn ($row) => $row['size']),
+                            ])->title('Уровни входа Лестница'),
+                        ]),
+                        'Мартингейл' => Layout::columns([
+                            new HighchartsChart(
+                                $this->getMartingaleStrategyShart()
+                            ),
+                            Layout::table('martingaleStrategy', [
+                                TD::make('price', 'Уровень входа')
+                                    ->align(TD::ALIGN_RIGHT)
+                                    ->render(fn ($row) => $row['price']),
+                                TD::make('size', 'Размер позиции')
+                                    ->align(TD::ALIGN_RIGHT)
+                                    ->render(fn ($row) => $row['size']),
+                            ])->title('Уровни входа Мартингейл'),
+                        ]),
                     ]),
                 ],
             ])
