@@ -299,8 +299,21 @@ class PnlAnalyticsService
 
         return [
             'chart' => [
-                'type' => 'line'
+                'type' => 'line',
+//                'type' => 'column',
             ],
+            'title' => [
+                'text' => 'История P&L'
+            ],
+            'xAxis' => [
+                'categories' => $labels
+            ],
+            'yAxis' => [
+                'title' => [
+                    'text' => ''
+                ]
+            ],
+
             'rangeSelector' => [
                 'enabled' => true,
                 'buttons' => [
@@ -325,18 +338,6 @@ class PnlAnalyticsService
                     ]
                 ]
             ],
-            'title' => [
-                'text' => 'История P&L'
-            ],
-            'xAxis' => [
-                'categories' => $labels
-            ],
-            'yAxis' => [
-                'title' => [
-                    'text' => ''
-                ]
-            ],
-
             'navigator' => [
                 'enabled' => true,
             ],
