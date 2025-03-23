@@ -11,6 +11,8 @@ https://mexcdevelop.github.io/apidocs/spot_v3_en/#introduction
 https://github.com/zhouaini528/exchanges-php
 https://github.com/zhouaini528/mxc-php
 https://github.com/zhouaini528/bybit-php
+https://github.com/zhouaini528/kucoin-php
+
 
 php artisan orchid:admin admin admin@admin.com e433fdSDj2jF3_e
 

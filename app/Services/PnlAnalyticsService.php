@@ -301,6 +301,30 @@ class PnlAnalyticsService
             'chart' => [
                 'type' => 'line'
             ],
+            'rangeSelector' => [
+                'enabled' => true,
+                'buttons' => [
+                    [
+                        'type' => 'hour',
+                        'count' => 1,
+                        'text' => '1ч'
+                    ],
+                    [
+                        'type' => 'hour',
+                        'count' => 4,
+                        'text' => '4ч'
+                    ],
+                    [
+                        'type' => 'day',
+                        'count' => 1,
+                        'text' => '1д'
+                    ],
+                    [
+                        'type' => 'all',
+                        'text' => 'Все'
+                    ]
+                ]
+            ],
             'title' => [
                 'text' => 'История P&L'
             ],
