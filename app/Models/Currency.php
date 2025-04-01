@@ -214,6 +214,11 @@ class Currency extends BaseModel
         return $this->exchange === self::EXCHANGE_MEXC;
     }
 
+    public function isExchangeGate(): bool
+    {
+        return $this->exchange === self::EXCHANGE_GATE;
+    }
+
     public function isTypeFeature(): bool
     {
         return $this->type === self::TYPE_FEATURE;
@@ -231,6 +236,10 @@ class Currency extends BaseModel
         }
         if ($this->isExchangeBinance() && $this->isTypeFeature()) {
             return sprintf('https://www.binance.com/ru/trade/%s?type=cross', $this->code);
+        }
+
+        if ($this->isExchangeGate() && $this->isTypeFeature()) {
+            return sprintf('https://www.gate.io/ru/futures/USDT/%s', $this->code);
         }
 
         return sprintf('https://www.binance.com/ru/trade/%s', $this->code);
