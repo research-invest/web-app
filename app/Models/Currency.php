@@ -108,6 +108,12 @@ class Currency extends BaseModel
         return $query->where('type', self::TYPE_SPOT);
     }
 
+
+    public function scopeExchangeGate($query)
+    {
+        return $query->where('exchange', self::EXCHANGE_GATE);
+    }
+
     public function isFavorite()
     {
         if (!auth()->check()) {

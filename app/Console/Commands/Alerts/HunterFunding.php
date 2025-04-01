@@ -32,11 +32,13 @@ class HunterFunding extends Command
         $currencies = Currency::query()
 //            ->with('latestFundingRate')
             ->where('currencies.funding_rate', '<=', Setting::getHunterFundingLessValue())
+            ->exchangeGate()
             ->get();
-
 
         if ($currencies->isNotEmpty()) {
             $this->sendAlertIfNeeded($currencies);
+        } else {
+            $this->info('Нет валют с таким фандингом');
         }
     }
 
