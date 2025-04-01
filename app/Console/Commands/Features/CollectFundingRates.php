@@ -12,6 +12,8 @@ use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Lin\Gate\GateFuture;
+use Lin\Gate\GateMargin;
 use Lin\Ku\Kucoin;
 use Lin\Ku\KucoinFuture;
 
@@ -32,8 +34,126 @@ class CollectFundingRates extends Command
 
     private function collect(): void
     {
-        $this->kukoin();
+        $this->gait();
     }
+
+    private function gait(): void
+    {
+        $host = 'https://api.gateio.ws';
+        $prefix = '/api/v4';
+        $endpoint = '/futures/usdt/contracts';
+
+        $timestamp = time();
+        $key = config('services.gateio.key');
+        $secret = config('services.gateio.secret');
+
+        // Формируем подпись для запроса
+        $sign_str = "GET\n{$prefix}{$endpoint}\n\n{$timestamp}";
+        $signature = hash_hmac('sha512', $sign_str, $secret);
+
+        $response = Http::withHeaders([
+            'KEY' => $key,
+            'Timestamp' => $timestamp,
+            'SIGN' => $signature,
+        ])->get($host . $prefix . $endpoint);
+
+        if (!$response->successful()) {
+            $this->error('Failed to fetch funding rates: ' . $response->body());
+            return;
+        }
+
+        $fundingRates = $response->json();
+
+        foreach ($fundingRates as $rate) {
+
+//            array:45 [
+//                "funding_rate_indicative" => "0.000013"
+//  "mark_price_round" => "0.0001"
+//  "funding_offset" => 0
+//  "in_delisting" => false
+//  "risk_limit_base" => "1000"
+//  "interest_rate" => "0.0003"
+//  "index_price" => "0.54097"
+//  "order_price_round" => "0.0001"
+//  "order_size_min" => 1
+//  "ref_rebate_rate" => "0.2"
+//  "name" => "SOSO_USDT"
+//  "ref_discount_rate" => "0"
+//  "order_price_deviate" => "0.2"
+//  "maintenance_rate" => "0.035"
+//  "mark_type" => "index"
+//  "funding_interval" => 14400
+//  "type" => "direct"
+//  "risk_limit_step" => "99000"
+//  "enable_bonus" => true
+//  "enable_credit" => true
+//  "leverage_min" => "1"
+//  "funding_rate" => "0.000013"
+//  "last_price" => "0.5404"
+//  "mark_price" => "0.5404"
+//  "order_size_max" => 1000000
+//  "funding_next_apply" => 1743537600
+//  "short_users" => 76
+//  "config_change_time" => 1741771164
+//  "create_time" => 1737714774
+//  "trade_size" => 7196936
+//  "position_size" => 18807
+//  "long_users" => 74
+//  "quanto_multiplier" => "10"
+//  "funding_impact_value" => "5000"
+//  "leverage_max" => "20"
+//  "cross_leverage_default" => "10"
+//  "risk_limit_max" => "100000"
+//  "maker_fee_rate" => "-0.0001"
+//  "taker_fee_rate" => "0.00075"
+//  "orders_limit" => 100
+//  "trade_id" => 551441
+//  "orderbook_id" => 221521197
+//  "funding_cap_ratio" => "2"
+//  "voucher_leverage" => "0"
+//  "is_pre_market" => false
+//]
+
+
+            /**
+             * @var Currency $currency
+             */
+            $currency = Currency::firstOrCreate(
+                [
+                    'code' => $rate['name'],
+                    'name' => $rate['name'],
+                    'exchange' => Currency::EXCHANGE_GATE,
+                    'type' => Currency::TYPE_FEATURE
+                ]
+            );
+
+//            $fundingTime = Carbon::createFromTimestamp(
+//                $rate['funding_next_apply']
+//            );
+
+            $currency->update([
+                'funding_rate' => $rate['funding_rate'] * 100,
+//                'next_settle_time' => $fundingTime->timestamp,
+                'next_settle_time' => $rate['funding_next_apply'],
+            ]);
+
+            $fundingRate = new FundingRate([
+                'funding_rate' => $currency->funding_rate,
+                'max_funding_rate' => 0,
+                'min_funding_rate' => 0,
+                'collect_cycle' => 0,
+                'next_settle_time' => $rate['funding_next_apply'],
+                'timestamp' => now()->timestamp,
+            ]);
+
+//            $this->calculateDiffs($currency, $fundingRate);
+
+            $currency->fundingRates()->save($fundingRate);
+        }
+
+        return;
+    }
+
 
     private function kukoin(): void
     {

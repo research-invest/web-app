@@ -30,7 +30,7 @@ class HunterFunding extends Command
     public function handle()
     {
         $currencies = Currency::query()
-            ->with('latestFundingRate')
+//            ->with('latestFundingRate')
             ->where('currencies.funding_rate', '<=', Setting::getHunterFundingLessValue())
             ->get();
 
@@ -51,9 +51,10 @@ class HunterFunding extends Command
          */
 
         foreach ($currencies as $currency) {
-            $fundingTime = Carbon::createFromTimestamp(
-                $currency->latestFundingRate->next_settle_time / 1000
-            );
+//            $fundingTime = Carbon::createFromTimestamp(
+//                $currency->latestFundingRate->next_settle_time / 1000
+//            );
+            $fundingTime = $currency->next_settle_time;
 
 //            $fundingTime = now()->addMinutes(1);
 
@@ -90,7 +91,8 @@ class HunterFunding extends Command
          * @var Currency $currency
          */
         foreach ($currencies as $currency) {
-            $nextSettleTime = Carbon::createFromTimestamp($currency->latestFundingRate->next_settle_time / 1000);
+//            $nextSettleTime = Carbon::createFromTimestamp($currency->latestFundingRate->next_settle_time / 1000);
+            $nextSettleTime = $currency->next_settle_time;
             $remaining = now()->diff($nextSettleTime);
 
             // Определяем цвет для оставшегося времени
@@ -103,7 +105,8 @@ class HunterFunding extends Command
             }
 
             $message .= "💰 <b>{$currency->code}</b>\n";
-            $message .= "• Фандинг: {$currency->latestFundingRate->funding_rate}\n";
+//            $message .= "• Фандинг: {$currency->latestFundingRate->funding_rate}\n";
+            $message .= "• Фандинг: {$currency->funding_rate}\n";
             $message .= sprintf(
                 "• Следующее изменение:\n  %s UTC\n  %s MSK\n",
                 $nextSettleTime->timezone('UTC')->format('Y-m-d H:i:s'),

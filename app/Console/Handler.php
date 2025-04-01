@@ -44,8 +44,8 @@ class Handler
             ->everyTenMinutes()
             ->withoutOverlapping();
 
-//        $schedule->command(CollectFundingRates::class)->hourly();
-//        $schedule->command(HunterFunding::class)->hourly();
+        $schedule->command(CollectFundingRates::class)->hourly();
+        $schedule->command(HunterFunding::class)->hourly();
 //        $schedule->command(FundingDealsConfig::class)->hourly();
 //        $schedule->command(FundingDeals::class)->everyMinute();
 

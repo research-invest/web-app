@@ -51,6 +51,7 @@ class Currency extends BaseModel
     public const int TYPE_FEATURE = 2;
     public const string EXCHANGE_BINANCE = 'binance';
     public const string EXCHANGE_MEXC = 'mexc';
+    public const string EXCHANGE_GATE = 'gate.io';
     public const string EXCHANGE_KUKOIN = 'kukoin';
     public const string EXCHANGE_BYBIT = 'bybit';
     const CODE_BTC = 'BTCUSDT';
@@ -163,6 +164,7 @@ class Currency extends BaseModel
     {
         return [
             self::EXCHANGE_MEXC => 'mexc',
+            self::EXCHANGE_GATE => 'gate.io',
             self::EXCHANGE_BINANCE => 'binance',
             self::EXCHANGE_BYBIT => 'bybit',
             self::EXCHANGE_KUKOIN => 'kukoin',

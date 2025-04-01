@@ -65,8 +65,9 @@ class CurrenciesFundingListLayout extends Table
 
             TD::make('next_settle_time', 'Следующее изменение')
                 ->render(function(Currency $currency) {
-                    $timestamp = $currency->latestFundingRate->next_settle_time / 1000;
-                    $nextSettleTime = Carbon::createFromTimestamp($timestamp);
+//                    $timestamp = $currency->latestFundingRate->next_settle_time / 1000;
+                    $timestamp = $currency->next_settle_time ? : $currency->latestFundingRate->next_settle_time / 1000;
+                    $nextSettleTime = is_object($currency->next_settle_time) ? $currency->next_settle_time : Carbon::createFromTimestamp($timestamp);
 
                     // Расчет оставшегося времени
                     $remainingTime = now()->diff($nextSettleTime);
