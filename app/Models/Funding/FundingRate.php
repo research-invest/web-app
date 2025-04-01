@@ -50,6 +50,7 @@ class FundingRate extends Model
     public function getNextSettleTimeUtcAttribute(): string
     {
         $timestamp = $this->next_settle_time / 1000;
+        $timestamp = $this->next_settle_time;
         $nextSettleTime = Carbon::createFromTimestamp($timestamp);
 
         return $nextSettleTime->timezone('UTC')
@@ -62,6 +63,7 @@ class FundingRate extends Model
     public function getNextSettleTimeMskAttribute(): string
     {
         $timestamp = $this->next_settle_time / 1000;
+        $timestamp = $this->next_settle_time;
         $nextSettleTime = Carbon::createFromTimestamp($timestamp);
 
         return $nextSettleTime->timezone('Europe/Moscow')
@@ -74,6 +76,7 @@ class FundingRate extends Model
     public function getRemainingAttribute(): string
     {
         $timestamp = $this->next_settle_time / 1000;
+        $timestamp = $this->next_settle_time;
         $nextSettleTime = Carbon::createFromTimestamp($timestamp);
 
         $remainingTime = now()->diff($nextSettleTime);

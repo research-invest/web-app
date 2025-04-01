@@ -25,6 +25,7 @@ class FundingRatesListScreen extends Screen
                 ->with(['latestFundingRate'])
                 ->isActive()
                 ->features()
+                ->exchangeGate()
                 ->select('currencies.*')
                 ->paginate(30),
         ];
