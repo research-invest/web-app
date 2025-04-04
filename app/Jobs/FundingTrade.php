@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Helpers\MathHelper;
 use App\Models\Funding\FundingDeal;
+use App\Services\GateIoService;
 use App\Services\MexcService;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
@@ -48,7 +49,7 @@ class FundingTrade implements ShouldQueue, ShouldBeUnique
             'status' => FundingDeal::STATUS_PROCESS,
         ]);
 
-        $mexc = new MexcService(
+        $gate = new GateIoService(
             $this->deal->user->mexc_api_key,
             $this->deal->user->mexc_secret_key,
         );
@@ -62,7 +63,7 @@ class FundingTrade implements ShouldQueue, ShouldBeUnique
             try {
 
                 $currentTime = now();
-                $priceData = $mexc->getCurrentPrice($this->deal->currency->code);
+                $priceData = $gate->getCurrentPrice($this->deal->currency->code);
                 $price = $priceData['price'];
 
                 $this->priceHistory[] = [

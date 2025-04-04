@@ -7,11 +7,14 @@ GRANT ALL PRIVILEGES ON  crypto_db.* TO 'admin'@'%';
 FLUSH PRIVILEGES;
 
 https://mexcdevelop.github.io/apidocs/spot_v3_en/#introduction
+https://www.gate.io/docs/developers/apiv4/#funding-account-list
+
 
 https://github.com/zhouaini528/exchanges-php
 https://github.com/zhouaini528/mxc-php
 https://github.com/zhouaini528/bybit-php
 https://github.com/zhouaini528/kucoin-php
+https://github.com/zhouaini528/gate-php
 
 
 php artisan orchid:admin admin admin@admin.com e433fdSDj2jF3_e
