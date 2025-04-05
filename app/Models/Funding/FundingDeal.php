@@ -29,7 +29,7 @@ use Orchid\Screen\AsSource;
  * @property int $leverage
  * @property int $status
  * @property array $price_history
- * @property int $run_time
+ * @property Carbon $run_time
  *
  * @property User $user
  * @property Currency $currency
@@ -69,6 +69,7 @@ class FundingDeal extends BaseModel
     protected $casts = [
         'price_history' => 'array',
         'funding_time' => 'datetime',
+        'run_time' => 'datetime',
     ];
 
     public function scopeNew($query)

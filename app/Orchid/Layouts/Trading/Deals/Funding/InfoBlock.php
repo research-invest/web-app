@@ -26,6 +26,9 @@ class InfoBlock extends Legend
             Sight::make('funding_time', 'Funding time')
                 ->render(fn(FundingDeal $trade) => $trade->funding_time->toDateTimeString()),
 
+            Sight::make('run_time', 'Run time')
+                ->render(fn(FundingDeal $trade) => $trade->run_time->toDateTimeString()),
+
             Sight::make('funding_rate', 'Rate')
                 ->render(fn(FundingDeal $trade) => $trade->funding_rate),
 

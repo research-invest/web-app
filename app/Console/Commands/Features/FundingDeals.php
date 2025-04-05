@@ -48,7 +48,7 @@ class FundingDeals extends Command
     private function getDeals(): Collection
     {
         return FundingDeal::query()
-            ->whereDate('run_time', '<=', now())
+            ->where('run_time', '<=', now())
             ->new()
             ->get();
     }
