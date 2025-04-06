@@ -37,7 +37,9 @@ class FundingTrade implements ShouldQueue, ShouldBeUnique
         if (now()->isAfter($this->deal->funding_time)) {
             Log::info('уже прошло время фандинга', [
                 'code' => $this->deal->currency->code,
-                'funding_time' => $this->deal->funding_time
+                'funding_time' => $this->deal->funding_time,
+                'now' => now(),
+                'id' => $this->deal->id,
             ]);
 
             $this->done();
