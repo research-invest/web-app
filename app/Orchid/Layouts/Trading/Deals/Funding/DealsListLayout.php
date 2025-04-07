@@ -45,6 +45,11 @@ class DealsListLayout extends Table
                     return $funding->funding_time->toDateTimeString();
                 }),
 
+            TD::make('status', 'Статус')
+                ->render(function (FundingDeal $funding) {
+                    return $funding->statusName;
+                }),
+
             TD::make('created_at', 'Дата создания')
                 ->defaultHidden()
                 ->render(function (FundingDeal $funding) {
