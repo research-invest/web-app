@@ -61,6 +61,10 @@ class FundingTrade implements ShouldQueue, ShouldBeUnique
         $entryPrice = null;
         $positionClosed = false;
 
+        $initialAmount = $this->deal->dealConfig->position_size;
+        $leverage = $this->deal->dealConfig->leverage;
+        $fundingRate = $this->deal->currency->funding_rate;
+
         while (now() <= $endTime) {
             try {
 
@@ -73,9 +77,6 @@ class FundingTrade implements ShouldQueue, ShouldBeUnique
                     'price' => $price,
                     'execution_time' => $priceData['execution_time']
                 ];
-
-                $initialAmount = $this->deal->dealConfig->position_size;
-                $leverage = $this->deal->dealConfig->leverage;
 
                 $positionSize = $initialAmount * $leverage;
                 $this->deal->update([
@@ -98,7 +99,6 @@ class FundingTrade implements ShouldQueue, ShouldBeUnique
                     // Параметры сделки
 
                     $contractQuantity = $positionSize / $entryPrice;
-                    $fundingRate = $this->deal->currency->funding_rate;
                     $fundingFee = ($positionSize * abs($fundingRate) / 100);
 
                     // Открываем реальную позицию
