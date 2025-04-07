@@ -34,6 +34,7 @@ use Orchid\Screen\AsSource;
  * @property User $user
  * @property Currency $currency
  * @property FundingDealConfig $dealConfig
+ * @property string $statusName
  */
 class FundingDeal extends BaseModel
 {
@@ -90,5 +91,20 @@ class FundingDeal extends BaseModel
     public function dealConfig()
     {
         return $this->belongsTo(FundingDealConfig::class);
+    }
+
+
+
+    public static function getStatuses(): array
+    {
+        return [
+            self::STATUS_NEW => 'new',
+            self::STATUS_PROCESS => 'process',
+            self::STATUS_DONE => 'done',
+        ];
+    }
+    public function getStatusNameAttribute(): string
+    {
+        return self::getStatuses()[$this->status] ?? '-';
     }
 }
