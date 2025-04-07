@@ -75,10 +75,13 @@ class FundingTrade implements ShouldQueue, ShouldBeUnique
                 ];
 
                 $initialAmount = $this->deal->dealConfig->position_size;
+                $leverage = $this->deal->dealConfig->leverage;
 
+                $positionSize = $initialAmount * $leverage;
                 $this->deal->update([
                     'price_history' => $this->priceHistory,
                     'initial_margin' => $initialAmount,
+                    'position_size' => $positionSize,
                 ]);
 
                 // Если время фандинга - 1 секунда (с погрешностью), открываем позицию
@@ -93,9 +96,7 @@ class FundingTrade implements ShouldQueue, ShouldBeUnique
                     $volatilityIndex = MathHelper::calculateVolatilityIndex($prices);
 
                     // Параметры сделки
-                    $leverage = $this->deal->dealConfig->leverage;
 
-                    $positionSize = $initialAmount * $leverage;
                     $contractQuantity = $positionSize / $entryPrice;
                     $fundingRate = $this->deal->currency->funding_rate;
                     $fundingFee = ($positionSize * abs($fundingRate) / 100);
@@ -110,7 +111,6 @@ class FundingTrade implements ShouldQueue, ShouldBeUnique
 
                     $this->deal->update([
                         'entry_price' => $entryPrice,
-                        'position_size' => $positionSize,
                         'contract_quantity' => $contractQuantity,
                         'leverage' => $leverage,
                         'funding_fee' => $fundingFee,
