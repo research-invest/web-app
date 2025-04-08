@@ -44,7 +44,7 @@ class FundingTrade implements ShouldQueue, ShouldBeUnique
 
             $this->done();
 
-            return;
+            return false;
         }
 
         $this->deal->update([
@@ -177,6 +177,8 @@ class FundingTrade implements ShouldQueue, ShouldBeUnique
         }
 
         $this->done();
+
+        return true;
     }
 
     private function done()
@@ -191,9 +193,9 @@ class FundingTrade implements ShouldQueue, ShouldBeUnique
         return 'trade_deal_' . $this->deal->id;
     }
 
-    public function retryUntil()
-    {
-        return $this->deal->funding_time->copy()->addMinutes(5);
-    }
+//    public function retryUntil()
+//    {
+//        return $this->deal->funding_time->copy()->addMinutes(5);
+//    }
 
 }
