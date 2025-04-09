@@ -193,9 +193,9 @@ class FundingTrade implements ShouldQueue, ShouldBeUnique
         return 'trade_deal_' . $this->deal->id;
     }
 
-//    public function retryUntil()
-//    {
-//        return $this->deal->funding_time->copy()->addMinutes(5);
-//    }
+    public function retryUntil()
+    {
+        return $this->deal->funding_time->copy()->addMinutes(5);
+    }
 
 }
