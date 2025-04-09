@@ -15,6 +15,14 @@ use Orchid\Platform\Models\User as Authenticatable;
  * @property string $telegram_chat_id
  * @property string $mexc_api_key
  * @property string $mexc_secret_key
+ * @property string $gate_api_key
+ * @property string $gate_secret_key
+ * @property string $gate_testnet_api_key
+ * @property string $gate_testnet_secret_key
+ * @property string $bybit_testnet_api_key
+ * @property string $bybit_testnet_secret_key
+ * @property string $binance_testnet_api_key
+ * @property string $binance_testnet_secret_key
  */
 class User extends Authenticatable
 {
@@ -50,6 +58,12 @@ class User extends Authenticatable
         'kucoin_secret_key',
         'kucoin_api_key',
         'kucoin_api_passphrase',
+        'gate_testnet_secret_key',
+        'gate_testnet_api_key',
+        'bybit_testnet_secret_key',
+        'bybit_testnet_api_key',
+        'binance_testnet_secret_key',
+        'binance_testnet_api_key',
     ];
 
     /**

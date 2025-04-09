@@ -47,6 +47,8 @@ class InfoBlock extends Legend
             Sight::make('total_pnl', 'pnl'),
             Sight::make('roi_percent', 'roi'),
             Sight::make('pre_funding_volatility', 'Индекс волатильности'),
+            Sight::make('error', 'Ошибка'),
+            Sight::make('comment', 'Комментарий'),
         ];
     }
 

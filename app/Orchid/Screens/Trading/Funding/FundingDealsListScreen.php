@@ -14,6 +14,7 @@ use App\Orchid\Layouts\Trading\Deals\Funding\ConfigListLayout;
 use App\Orchid\Layouts\Trading\Deals\Funding\DealsListLayout;
 use Illuminate\Http\Request;
 use Orchid\Screen\Actions\ModalToggle;
+use Orchid\Screen\Fields\CheckBox;
 use Orchid\Screen\Fields\Input;
 use Orchid\Screen\Fields\Select;
 use Orchid\Screen\Fields\TextArea;
@@ -119,6 +120,11 @@ class FundingDealsListScreen extends Screen
                         ->type('number')
                         ->required(),
 
+                    CheckBox::make('config.is_testnet')
+                        ->sendTrueOrFalse()
+                        ->value(0)
+                        ->placeholder('is testnet'),
+
                     TextArea::make('config.notes')
                         ->title('Комментарий')
                         ->rows(3),
@@ -130,7 +136,7 @@ class FundingDealsListScreen extends Screen
             $layout[] = Layout::split([
                 ConfigListLayout::class,
                 DealsListLayout::class,
-            ])->ratio('40/60');
+            ])->ratio('20/80');
         } else {
             $layout[] = ConfigListLayout::class;
         }

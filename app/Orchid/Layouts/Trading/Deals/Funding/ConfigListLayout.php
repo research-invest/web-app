@@ -37,6 +37,12 @@ class ConfigListLayout extends Table
                     ->rawClick()
                     ->route('platform.trading.funding_deals', $funding)
                 ),
+
+            TD::make('is_testnet', 'testnet')
+                ->render(fn(FundingDealConfig $funding) => $funding->is_testnet
+                    ? '<i class="text-success">●</i> ' : '<i class="text-danger">●</i> '
+                ),
+
             TD::make('exchange', 'exchange')
                 ->defaultHidden(),
 

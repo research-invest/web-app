@@ -19,6 +19,7 @@ use Orchid\Screen\AsSource;
  * @property int $is_active
  * @property array $currencies
  * @property array $ignore_currencies
+ * @property int $is_testnet
  *
  * @property User $user
  * @property FundingDeal[] $deals
@@ -40,6 +41,7 @@ class FundingDealConfig extends BaseModel
         'currencies',
         'ignore_currencies',
         'is_active',
+        'is_testnet',
     ];
 
     protected $casts = [

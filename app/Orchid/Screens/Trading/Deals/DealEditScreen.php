@@ -164,6 +164,7 @@ class DealEditScreen extends Screen
                     Input::make('size')
                         ->title('Размер (USDT)')
                         ->type('number')
+                        ->step('0.00000001')
                         ->required(),
 
                     Select::make('type')

@@ -41,6 +41,16 @@ class UserApiKeysLayout extends Rows
                     ->type('text')
                     ->max(255)
                     ->title('bybit secret key'),
+
+                Input::make('user.bybit_testnet_api_key')
+                    ->type('text')
+                    ->max(255)
+                    ->title('bybit testnet api key'),
+
+                Input::make('user.bybit_testnet_secret_key')
+                    ->type('text')
+                    ->max(255)
+                    ->title('bybit testnet secret key'),
             ]),
 
             Group::make([
@@ -53,6 +63,17 @@ class UserApiKeysLayout extends Rows
                     ->type('text')
                     ->max(255)
                     ->title('binance secret key'),
+
+
+                Input::make('user.binance_testnet_api_key')
+                    ->type('text')
+                    ->max(255)
+                    ->title('binance testnet api key'),
+
+                Input::make('user.binance_testnet_secret_key')
+                    ->type('text')
+                    ->max(255)
+                    ->title('binance testnet secret key'),
             ]),
 
             Group::make([
@@ -77,6 +98,16 @@ class UserApiKeysLayout extends Rows
                     ->type('text')
                     ->max(255)
                     ->title('gate secret key'),
+
+                Input::make('user.gate_testnet_api_key')
+                    ->type('text')
+                    ->max(255)
+                    ->title('gate testnet api key'),
+
+                Input::make('user.gate_testnet_secret_key')
+                    ->type('text')
+                    ->max(255)
+                    ->title('gate testnet secret key'),
             ]),
 
             Group::make([

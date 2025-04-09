@@ -21,6 +21,7 @@ use \App\Helpers\MathHelper;
                 <th>Цена</th>
                 <th>Размер</th>
                 <th>Влияние на позицию</th>
+                <th>Комментарий</th>
                 <th>Действия</th>
             </tr>
         </thead>
@@ -50,6 +51,7 @@ use \App\Helpers\MathHelper;
                             <span class="text-danger">-{{ MathHelper::formatNumber($order->size, 2) }}</span>
                         @endif
                     </td>
+                    <td>{{ $order->notes }}</td>
                     <td>
                         @if(!$order->isTypeEntry())
                             <button class="btn btn-sm btn-danger delete-order-btn"

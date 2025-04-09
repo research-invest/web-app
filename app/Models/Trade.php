@@ -36,6 +36,7 @@ use Orchid\Screen\Concerns\ModelStateRetrievable;
  * @property  boolean $is_fake
  * @property  boolean $is_spot
  * @property  boolean $is_notify
+ * @property  string $exchange
  *
  * @property  Carbon $closed_at
  * @property  Carbon $created_at
@@ -89,6 +90,7 @@ class Trade extends BaseModel
         'is_fake',
         'is_spot',
         'is_notify',
+        'exchange',
     ];
 
     protected $casts = [

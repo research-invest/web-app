@@ -6,13 +6,24 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Lin\Gate\GateFuture;
 
+/**
+ * @doc https://www.gate.io/docs/developers/apiv4/#funding-account-list
+ * @doc https://github.com/zhouaini528/gate-php
+ * @site test https://www.gate.io/ru/testnet/futures_trade/USDT/BTC_USDT
+ */
 class GateIoService
 {
     private GateFuture $future;
 
-    public function __construct(string $apiKey, string $apiSecret)
+    public function __construct(string $apiKey, string $apiSecret, bool $isTestnet = true)
     {
-        $this->future = new GateFuture($apiKey, $apiSecret);
+        $host = $isTestnet ? 'https://fx-api-testnet.gateio.ws' : 'https://api.gateio.ws';
+
+//        Live trading: https://api.gateio.ws/api/v4
+//Futures TestNet trading: https://fx-api-testnet.gateio.ws/api/v4
+//Futures live trading alternative (futures only): https://fx-api.gateio.ws/api/v4
+
+        $this->future = new GateFuture($apiKey, $apiSecret, $host);
     }
 
     public function getCurrentPrice(string $symbol): array
@@ -67,8 +78,6 @@ class GateIoService
 //] // app/Services/GateIoService.php:27
 
 
-
-
         try {
             $result = $this->future->contract()->get(['settle' => 'usdt', 'contract' => $symbol]);
             $endTime = microtime(true);
@@ -86,121 +95,6 @@ class GateIoService
         }
     }
 
-    public function getContractInfo(string $symbol): array
-    {
-//        "data" => array:65 [
-//        "symbol" => "TAO_USDT"
-//    "displayName" => "TAO_USDT永续"
-//    "displayNameEn" => "TAO_USDT PERPETUAL"
-//    "positionOpenType" => 3
-//    "baseCoin" => "TAO"
-//    "quoteCoin" => "USDT"
-//    "baseCoinName" => "TAO"
-//    "quoteCoinName" => "USDT"
-//    "futureType" => 1
-//    "settleCoin" => "USDT"
-//    "contractSize" => 0.01
-//    "minLeverage" => 1
-//    "maxLeverage" => 200
-//    "countryConfigContractMaxLeverage" => 0
-//    "priceScale" => 1
-//    "volScale" => 0
-//    "amountScale" => 4
-//    "priceUnit" => 0.1
-//    "volUnit" => 1
-//    "minVol" => 1
-//    "maxVol" => 300000
-//    "bidLimitPriceRate" => 0.2
-//    "askLimitPriceRate" => 0.2
-//    "takerFeeRate" => 0
-//    "makerFeeRate" => 0
-//    "maintenanceMarginRate" => 0.004
-//    "initialMarginRate" => 0.005
-//    "riskBaseVol" => 300000
-//    "riskIncrVol" => 300000
-//    "riskLongShortSwitch" => 0
-//    "riskIncrMmr" => 0.056
-//    "riskIncrImr" => 0.095
-//    "riskLevelLimit" => 1
-//    "priceCoefficientVariation" => 0.2
-//    "indexOrigin" => array:3 [
-//        0 => "BITGET"
-//      1 => "BINANCE"
-//      2 => "KUCOIN"
-//    ]
-//    "state" => 0
-//    "isNew" => false
-//    "isHot" => false
-//    "isHidden" => false
-//    "conceptPlate" => array:2 [
-//        0 => "mc-trade-zone-0fees"
-//      1 => "mc-trade-zone-ai"
-//    ]
-//    "conceptPlateId" => array:2 [
-//        0 => 45
-//      1 => 23
-//    ]
-//    "riskLimitType" => "BY_VOLUME"
-//    "maxNumOrders" => array:2 [
-//        0 => 200
-//      1 => 50
-//    ]
-//    "marketOrderMaxLevel" => 20
-//    "marketOrderPriceLimitRate1" => 0.2
-//    "marketOrderPriceLimitRate2" => 0.005
-//    "triggerProtect" => 0.1
-//    "appraisal" => 0
-//    "showAppraisalCountdown" => 0
-//    "automaticDelivery" => 0
-//    "apiAllowed" => false
-//    "depthStepList" => array:2 [
-//        0 => "0.1"
-//      1 => "1"
-//    ]
-//    "limitMaxVol" => 300000
-//    "threshold" => 0
-//    "baseCoinIconUrl" => "https://public.mocortech.com/coin/F20240703110927545DFbHsKjteBFTqu.png"
-//    "id" => 531
-//    "vid" => "128f589271cb4951b03e71e6323eb7be"
-//    "baseCoinId" => "c3e65cd2e516470a840a0cd0fcf78ad7"
-//    "createTime" => 1706670696000
-//    "openingTime" => 0
-//    "openingCountdownOption" => 1
-//    "showBeforeOpen" => true
-//    "isMaxLeverage" => false
-//    "isZeroFeeRate" => true
-//    "riskLimitMode" => "INCREASE"
-//  ]
-//  "execution_time" => 413.25
-//]
-
-        $startTime = microtime(true);
-
-        try {
-            $result = $this->mxcContract->market()->getDetail(['symbol' => $symbol]);
-            $endTime = microtime(true);
-
-            return [
-                'data' => $result['data'] ?? [],
-                'execution_time' => $this->calcExecutionTime($startTime, $endTime),
-            ];
-        } catch (\Exception $e) {
-            Log::error('Failed to get get contract info', [
-                'symbol' => $symbol,
-                'error' => $e->getMessage()
-            ]);
-            throw $e;
-        }
-
-//        'max_leverage' => $data['maxLeverage'], // Максимальное плечо
-//                    'min_volume' => $data['minVol'], // Минимальный объем
-//                    'max_volume' => $data['maxVol'], // Максимальный объем
-//                    'volume_precision' => $data['volPrecision'], // Точность объема
-//                    'price_precision' => $data['pricePrec'], // Точность цены
-//                    'maintenance_margin_rate' => $data['maintMarginRate'], // Маржа поддержки
-//                    'make_fee' => $data['makeFee'], // Комиссия мейкера
-//                    'take_fee' => $data['takeFee'], // Комиссия тейкера
-    }
 
     private function calcExecutionTime(float $startTime, float $endTime): float
     {
@@ -208,131 +102,265 @@ class GateIoService
         return round($executionTime, 2);
     }
 
-    public function openPosition(string $symbol, float $quantity, string $side = 'BUY', int $leverage = 5): array
+
+    /**
+     * Открыть позицию
+     */
+    public function openPosition($contract, $side, $type = 'limit', $size = 1, $price = null, $takeProfit = null, $stopLoss = null)
     {
-        $startTime = microtime(true);
+
+//        $contracts = $this->future->contract()->get([
+//            'settle' => 'usdt',
+//            'contract' => $contract,
+//        ]);
+//
+//        dd($contracts);
 
         try {
-            // Сначала проверим, что API доступен
-//            $r = $this->mxcContract->market()->getDetail(['symbol' => $symbol]);
-
-
-
-            // Установка плеча с повторными попытками
-//            $retries = 3;
-//            while ($retries > 0) {
-//                try {
-//                    $this->mxcContract->position()->setLeverage([
-//                        'symbol' => $symbol,
-//                        'leverage' => $leverage,
-//                        'openType' => 1 // 1 - isolated margin, 2 - cross margin
-//                    ]);
-//                    break;
-//                } catch (\Exception $e) {
-//                    $retries--;
-//                    if ($retries === 0) throw $e;
-//                    sleep(1);
-//                }
-//            }
-
-            // Открытие позиции
             $params = [
-                'symbol' => $symbol,
-                'price' => 0,
-                'vol' => $quantity,
-                'leverage' => $leverage,
-                'side' => $side === 'BUY' ? 1 : 3,
-                'type' => 1,
-                'openType' => 1,
-                'positionMode' => 1, // 1 - one-way mode
-                'timeInForce' => 'IOC', // Immediate or Cancel
+                'contract' => $contract,
+                'side' => $side,
+                'size' => $size,
+                'type' => $type,
+                'tif' => 'gtc',
             ];
 
-            Log::info('Attempting to open position', $params);
+            if ($type === 'limit' && $price !== null) {
+                $params['price'] = $price;
+            }
 
-            $result = $this->mxcContract->order()->postSubmit($params);
+            // Добавим Take Profit / Stop Loss
+            $closeOrders = [];
 
-            Log::info('Position opened successfully', [
-                'symbol' => $symbol,
-                'response' => $result
+            if ($takeProfit !== null) {
+                $closeOrders[] = [
+                    'price' => (string)$takeProfit,
+                    'size' => $size,
+                    'close' => true
+                ];
+            }
+
+            if ($stopLoss !== null) {
+                $closeOrders[] = [
+                    'price' => (string)$stopLoss,
+                    'size' => $size,
+                    'close' => true
+                ];
+            }
+
+            if (!empty($closeOrders)) {
+                $params['close_orders'] = $closeOrders;
+            }
+
+            $result = $this->future->order()->post($params);
+            echo "🟢 Ордер с TP/SL отправлен: " . json_encode($result, JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT) . PHP_EOL;
+            return $result;
+        } catch (\Exception $e) {
+            echo "❌ Ошибка при открытии позиции: " . $e->getMessage() . PHP_EOL;
+            return null;
+        }
+    }
+
+    /**
+     * Закрыть позицию маркет-ордом (противоположным)
+     */
+    public function closePosition($contract)
+    {
+        try {
+            // Узнаем текущую позицию
+            $position = $this->future->position()->get(['contract' => $contract]);
+            if (empty($position) || $position['size'] == 0) {
+                echo "ℹ️ Нет открытых позиций по $contract" . PHP_EOL;
+                return null;
+            }
+
+            $side = $position['size'] > 0 ? 'sell' : 'buy';
+
+            $result = $this->future->order()->post([
+                'contract' => $contract,
+                'side' => $side,
+                'size' => abs($position['size']),
+                'type' => 'market',
             ]);
 
-            return [
-                'data' => $result['data'] ?? [],
-                'execution_time' => $this->calcExecutionTime($startTime, microtime(true)),
-            ];
+            echo "🔴 Позиция закрыта: " . json_encode($result, JSON_PRETTY_PRINT) . PHP_EOL;
+            return $result;
         } catch (\Exception $e) {
-            Log::error('Failed to open position', [
-                'symbol' => $symbol,
-                'quantity' => $quantity,
-                'side' => $side,
-                'leverage' => $leverage,
+            echo "❌ Ошибка при закрытии позиции: " . $e->getMessage() . PHP_EOL;
+            return null;
+        }
+    }
+
+    /**
+     * Проверка баланса
+     */
+    public function checkBalance($currency = 'USDT')
+    {
+        try {
+            $balances = $this->future->account()->get([
+                'settle' => $currency
+            ]);
+
+            dd($balances);
+            foreach ($balances as $balance) {
+                if ($balance['currency'] === strtoupper($currency)) {
+                    echo "💰 Баланс {$currency}: " . $balance['available'] . PHP_EOL;
+                    return $balance;
+                }
+            }
+
+            echo "❌ Валюта $currency не найдена" . PHP_EOL;
+            return null;
+        } catch (\Exception $e) {
+            echo "❌ Ошибка при получении баланса: " . $e->getMessage() . PHP_EOL;
+            return null;
+        }
+    }
+
+
+    /**
+     * Открыть позицию
+     *
+     * @param string $symbol Торговая пара (например, 'BTC_USDT')
+     * @param float $quantity Размер позиции
+     * @param string $side Сторона (BUY или SELL)
+     * @param int $leverage Плечо
+     * @return array
+     */
+    public function openPosition1(string $symbol, float $quantity, string $side = 'BUY', int $leverage = 5): array
+    {
+
+        $response = $this->future->position()->postLeverage([
+            'settle' => 'usdt',
+            'contract' => $symbol,
+            'size' => $quantity,
+            'price' => 0, // 0 для рыночного ордера
+            'tif' => 'ioc', // immediate-or-cancel для рыночного ордера
+            'side' => $side,
+        ]);
+
+        return [
+            'success' => true,
+            'data' => $response,
+        ];
+
+
+        try {
+//            $this->future->privates()->postPositionLeverage([
+//                'settle' => 'usdt',
+//                'contract' => $symbol,
+//                'leverage' => $leverage,
+//            ]);
+
+            // Открываем позицию
+
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
-            throw $e;
-        }
-    }
-
-    private function validateResponse($response): void
-    {
-        if (empty($response)) {
-            throw new \Exception('Empty response from MEXC API');
-        }
-
-        if (isset($response['code']) && $response['code'] !== 0) {
-            throw new \Exception('MEXC API error: ' . ($response['msg'] ?? 'Unknown error'));
-        }
-    }
-
-    public function closePosition(string $symbol, float $quantity, string $side = 'SELL'): array
-    {
-        $startTime = microtime(true);
-
-        try {
-            $result = $this->mxcContract->order()->postCancel([
-                'symbol' => $symbol,
-                'price' => 0, // 0 для рыночного ордера
-                'vol' => $quantity,
-                'side' => $side === 'SELL' ? 2 : 4, // 2 - close long, 4 - close short
-                'type' => 1, // 1 - market order
-                'openType' => 2, // 2 - cross margin
-            ]);
-
-            return [
-                'data' => $result['data'] ?? [],
-                'execution_time' => $this->calcExecutionTime($startTime, microtime(true)),
             ];
-        } catch (\Exception $e) {
-            Log::error('Failed to close position', [
-                'symbol' => $symbol,
-                'quantity' => $quantity,
+        }
+    }
+
+    /**
+     * Закрыть конкретную позицию
+     *
+     * @param string $symbol Торговая пара
+     * @param float $quantity Размер позиции
+     * @param string $side Сторона (противоположная открытию)
+     * @return array
+     */
+    public function closePositio2n2(string $symbol, float $quantity, string $side): array
+    {
+        try {
+            $response = $this->future->privates()->postOrder([
+                'settle' => 'usdt',
+                'contract' => $symbol,
+                'size' => $quantity,
+                'price' => 0, // рыночный ордер
+                'tif' => 'ioc',
                 'side' => $side,
-                'error' => $e->getMessage()
-            ]);
-            throw $e;
-        }
-    }
-
-    public function cancelAllOrders(string $symbol): array
-    {
-        $startTime = microtime(true);
-
-        try {
-            $result = $this->mxcContract->order()->postCancelAll([
-                'symbol' => $symbol
+                'close' => true, // указываем что это закрытие позиции
             ]);
 
             return [
-                'data' => $result['data'] ?? [],
-                'execution_time' => $this->calcExecutionTime($startTime, microtime(true)),
+                'success' => true,
+                'data' => $response,
             ];
         } catch (\Exception $e) {
-            Log::error('Failed to cancel all orders', [
-                'symbol' => $symbol,
-                'error' => $e->getMessage()
+            return [
+                'success' => false,
+                'error' => $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * Закрыть все открытые позиции
+     *
+     * @return array
+     */
+    public function closeAllPositions3(): array
+    {
+        try {
+            // Получаем все открытые позиции
+            $positions = $this->future->privates()->getPositions([
+                'settle' => 'usdt',
             ]);
-            throw $e;
+
+            $results = [];
+
+            foreach ($positions as $position) {
+                if ($position['size'] == 0) continue; // Пропускаем уже закрытые позиции
+
+                // Определяем сторону для закрытия (противоположную текущей позиции)
+                $closeSide = $position['size'] > 0 ? 'SELL' : 'BUY';
+
+                // Закрываем каждую позицию
+                $result = $this->closePosition(
+                    $position['contract'],
+                    abs($position['size']),
+                    $closeSide
+                );
+
+                $results[$position['contract']] = $result;
+            }
+
+            return [
+                'success' => true,
+                'data' => $results,
+            ];
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'error' => $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * Получить информацию о позиции
+     *
+     * @param string $symbol Торговая пара
+     * @return array
+     */
+    public function getPosition3(string $symbol): array
+    {
+        try {
+            $response = $this->future->privates()->getPosition([
+                'settle' => 'usdt',
+                'contract' => $symbol,
+            ]);
+
+            return [
+                'success' => true,
+                'data' => $response,
+            ];
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'error' => $e->getMessage(),
+            ];
         }
     }
 

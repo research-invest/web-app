@@ -30,6 +30,8 @@ use Orchid\Screen\AsSource;
  * @property int $status
  * @property array $price_history
  * @property Carbon $run_time
+ * @property string $comment
+ * @property string $error
  *
  * @property User $user
  * @property Currency $currency
@@ -65,6 +67,8 @@ class FundingDeal extends BaseModel
         'price_history',
         'status',
         'run_time',
+        'comment',
+        'error',
     ];
 
     protected $casts = [

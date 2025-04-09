@@ -51,9 +51,13 @@ class FundingTrade implements ShouldQueue, ShouldBeUnique
             'status' => FundingDeal::STATUS_PROCESS,
         ]);
 
+        $isTestNet = $this->deal->dealConfig->is_testnet;
+
+        //выбор биржы
         $gate = new GateIoService(
-            $this->deal->user->mexc_api_key,
-            $this->deal->user->mexc_secret_key,
+            $isTestNet ? $this->deal->user->gate_testnet_api_key : $this->deal->user->gate_api_key,
+            $isTestNet ? $this->deal->user->gate_testnet_secret_key : $this->deal->user->gate_secret_key,
+            $isTestNet,
         );
 
         $endTime = $this->deal->funding_time->copy()->addSeconds(30); // +90 секунд (1 минута после + 30 секунд дополнительно)
