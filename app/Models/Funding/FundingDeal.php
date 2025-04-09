@@ -90,7 +90,7 @@ class FundingDeal extends BaseModel
 
     public function dealConfig()
     {
-        return $this->belongsTo(FundingDealConfig::class);
+        return $this->belongsTo(FundingDealConfig::class, 'funding_deal_config_id');
     }
 
 
