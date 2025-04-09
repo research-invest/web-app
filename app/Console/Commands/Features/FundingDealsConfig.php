@@ -6,6 +6,7 @@
 
 namespace App\Console\Commands\Features;
 
+use App\Jobs\FundingTrade;
 use App\Models\Currency;
 use App\Models\Funding\FundingDeal;
 use App\Models\Funding\FundingDealConfig;
@@ -51,7 +52,7 @@ class FundingDealsConfig extends Command
                     continue;
                 }
 
-                $config->deals()->create([
+                $deal = $config->deals()->create([
                     'user_id' => $config->user->id,
                     'currency_id' => $currency->id,
                     'funding_time' => $currency->next_settle_time->timestamp,
@@ -62,6 +63,9 @@ class FundingDealsConfig extends Command
                     'position_size' => $config->position_size,
                     'price_history' => [],
                 ]);
+
+                FundingTrade::dispatch($deal)
+                    ->delay($currency->next_settle_time->copy()->subMinutes(1));
             }
         }
 

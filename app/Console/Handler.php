@@ -28,9 +28,9 @@ class Handler
             ->runInBackground()
             ->hourly();
 
-        $schedule->command(FundingDeals::class)
-            ->runInBackground()
-            ->everyThirtySeconds();
+//        $schedule->command(FundingDeals::class)
+//            ->runInBackground()
+//            ->everyThirtySeconds();
 
         $schedule->command(UpdateCurrencies::class)
             ->runInBackground()
