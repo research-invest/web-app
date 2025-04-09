@@ -32,7 +32,6 @@ class Handler
             ->runInBackground()
             ->everyThirtySeconds();
 
-
         $schedule->command(UpdateCurrencies::class)
             ->runInBackground()
             ->withoutOverlapping()

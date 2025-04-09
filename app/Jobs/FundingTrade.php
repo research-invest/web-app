@@ -21,7 +21,7 @@ class FundingTrade implements ShouldQueue, ShouldBeUnique
 
     public $tries = 1;
 
-    public $timeout = 180;
+//    public $timeout = 180;
 
     private FundingDeal $deal;
     private array $priceHistory = [];
