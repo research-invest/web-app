@@ -40,12 +40,8 @@ class DealsListLayout extends Table
                         ->route('platform.trading.funding_deal.edit', $funding);
                 }),
 
-
             TD::make('error', 'error')
-                ->render(fn(FundingDeal $funding) => $funding->error
-                    ? '<i class="text-success">●</i> ' : '<i class="text-danger">●</i> '
-                ),
-
+                ->render(fn(FundingDeal $funding) => $funding->error ? '<i class="text-danger">●</i> ' : ''),
 
             TD::make('funding_time', 'Funding time')
                 ->render(function (FundingDeal $funding) {
