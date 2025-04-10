@@ -153,6 +153,7 @@ class FundingTrade implements ShouldQueue, ShouldBeUnique
                         ]);
                     } catch (\Exception $e) {
                         Log::error('Failed to close position after all attempts', [
+                            'id' => $this->deal->id,
                             'code' => $this->deal->currency->code,
                             'error' => $e->getMessage()
                         ]);
@@ -177,6 +178,7 @@ class FundingTrade implements ShouldQueue, ShouldBeUnique
 
             } catch (\Exception $e) {
                 Log::error('Funding deal failed', [
+                    'id' => $this->deal->id,
                     'code' => $this->deal->currency->code,
                     'error' => $e->getMessage(),
                     'trace' => $e->getTraceAsString()
