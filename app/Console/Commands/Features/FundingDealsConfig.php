@@ -52,11 +52,14 @@ class FundingDealsConfig extends Command
                     continue;
                 }
 
+                /**
+                 * @var FundingDeal $deal
+                 */
                 $deal = $config->deals()->create([
                     'user_id' => $config->user->id,
                     'currency_id' => $currency->id,
                     'funding_time' => $currency->next_settle_time->timestamp,
-                    'run_time' => $currency->next_settle_time->copy()->subMinutes(2),
+                    'run_time' => $currency->next_settle_time->copy()->subMinutes(1),
                     'funding_rate' => $currency->funding_rate,
                     'status' => FundingDeal::STATUS_NEW,
                     'leverage' => $config->leverage,
@@ -65,7 +68,7 @@ class FundingDealsConfig extends Command
                 ]);
 
                 FundingTrade::dispatch($deal)
-                    ->delay($currency->next_settle_time->copy()->subMinutes(1));
+                    ->delay($deal->run_time);
             }
         }
 

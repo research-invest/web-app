@@ -21,7 +21,7 @@ class FundingTrade implements ShouldQueue, ShouldBeUnique
 
     public $tries = 1;
 
-//    public $timeout = 180;
+    public $timeout = 180;
 
     private FundingDeal $deal;
     private array $priceHistory = [];
@@ -36,13 +36,14 @@ class FundingTrade implements ShouldQueue, ShouldBeUnique
         // Проверяем, не прошло ли уже время фандинга
         if (now()->isAfter($this->deal->funding_time)) {
             Log::info('уже прошло время фандинга', [
+                'id' => $this->deal->id,
                 'code' => $this->deal->currency->code,
                 'funding_time' => $this->deal->funding_time,
+                'run_time' => $this->deal->run_time,
                 'now' => now(),
-                'id' => $this->deal->id,
             ]);
 
-            $this->done();
+            $this->error('уже прошло время фандинга');
 
             return false;
         }
@@ -155,6 +156,9 @@ class FundingTrade implements ShouldQueue, ShouldBeUnique
                             'code' => $this->deal->currency->code,
                             'error' => $e->getMessage()
                         ]);
+
+                        $this->error('Failed to close position ' . $e->getMessage());
+
                         throw $e;
                     }
                 }
@@ -177,6 +181,7 @@ class FundingTrade implements ShouldQueue, ShouldBeUnique
                     'error' => $e->getMessage(),
                     'trace' => $e->getTraceAsString()
                 ]);
+                $this->error('Funding deal failed ' . $e->getMessage());
             }
         }
 
@@ -189,6 +194,14 @@ class FundingTrade implements ShouldQueue, ShouldBeUnique
     {
         $this->deal->update([
             'status' => FundingDeal::STATUS_DONE,
+        ]);
+    }
+
+    private function error(string $error)
+    {
+        $this->deal->update([
+            'error' => $error,
+            'status' => FundingDeal::STATUS_ERROR,
         ]);
     }
 

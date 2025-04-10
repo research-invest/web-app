@@ -45,6 +45,7 @@ class FundingDeal extends BaseModel
     public const int STATUS_NEW = 1;
     public const int STATUS_PROCESS = 2;
     public const int STATUS_DONE = 3;
+    public const int STATUS_ERROR = 4;
 
 
     protected $fillable = [
@@ -105,6 +106,7 @@ class FundingDeal extends BaseModel
             self::STATUS_NEW => 'new',
             self::STATUS_PROCESS => 'process',
             self::STATUS_DONE => 'done',
+            self::STATUS_ERROR => 'error',
         ];
     }
     public function getStatusNameAttribute(): string
