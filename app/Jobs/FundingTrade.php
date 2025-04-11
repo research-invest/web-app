@@ -92,6 +92,19 @@ class FundingTrade implements ShouldQueue, ShouldBeUnique
 
                 // Если время фандинга - 1 секунда (с погрешностью), открываем позицию
                 $secondsUntilFunding = $currentTime->diffInSeconds($this->deal->funding_time);
+
+
+                Log::info('дебаг секунд входа', [
+                    'id' => $this->deal->id,
+                    '$secondsUntilFunding' => $secondsUntilFunding,
+                    'funding_time' => $this->deal->funding_time,
+                    'run_time' => $this->deal->run_time,
+                    'now' => now(),
+                    'entryPrice' => $entryPrice,
+                ]);
+
+
+
                 if ($secondsUntilFunding <= 1 && $secondsUntilFunding > 0 && !$entryPrice) {
 
                     $entryPrice = $price;
@@ -125,6 +138,21 @@ class FundingTrade implements ShouldQueue, ShouldBeUnique
 
                 // Если время фандинга + 1 секунда (с погрешностью), закрываем позицию
                 $secondsAfterFunding = $currentTime->diffInSeconds($this->deal->funding_time);
+
+
+
+                Log::info('дебаг секунд выхода', [
+                    'id' => $this->deal->id,
+                    '$secondsUntilFunding' => $secondsUntilFunding,
+                    '$secondsAfterFunding' => $secondsAfterFunding,
+                    'funding_time' => $this->deal->funding_time,
+                    'run_time' => $this->deal->run_time,
+                    'now' => now(),
+                    'entryPrice' => $entryPrice,
+                    '$positionClosed' => $positionClosed,
+                ]);
+
+
 
                 if ($entryPrice && !$positionClosed && $secondsAfterFunding < 0) {
                     try {
