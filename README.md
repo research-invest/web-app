@@ -29,9 +29,7 @@ tmux attach -t crypto_analyzer
 prod
 composer install --no-interaction --no-dev
 
-sudo /usr/local/bin/cleanup_clickhouse_partitions.sh 202502
-
-
+sh ch_clean.sh 202502
 
 sudo apt install supervisor
 cd /etc/supervisor/conf.d/

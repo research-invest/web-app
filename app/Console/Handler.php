@@ -23,8 +23,8 @@ class Handler
 {
     public function __invoke(Schedule $schedule): void
     {
-
         $schedule->command(FundingDealsConfig::class)
+            ->withoutOverlapping()
             ->runInBackground()
             ->hourly();
 
@@ -38,23 +38,43 @@ class Handler
             ->everyMinute();
 
         $schedule->command(UpdateTradesPnL::class)
+            ->runInBackground()
             ->withoutOverlapping()
-            ->everyThreeMinutes();
+            ->everyTwoMinutes();
 
 //        $schedule->command(CheckTradeLevels::class)->everyTwoMinutes();
-        $schedule->command(SendTradePnLNotification::class)->everyTenMinutes();
-        $schedule->command(CheckLiquidationWarnings::class)->everyFiveMinutes();
-        $schedule->command(FreeSpaceAlert::class)->hourly();
-        $schedule->command(SendSmartMoneyAlert::class)->everyThirtyMinutes();
-        $schedule->command(SendIndexChart::class)->everyThirtyMinutes();
+        $schedule->command(SendTradePnLNotification::class)
+            ->withoutOverlapping()
+            ->runInBackground()
+            ->everyTenMinutes();
+        $schedule->command(CheckLiquidationWarnings::class)
+            ->withoutOverlapping()
+            ->runInBackground()
+            ->everyFiveMinutes();
+        $schedule->command(FreeSpaceAlert::class)
+            ->withoutOverlapping()
+            ->runInBackground()
+            ->hourly();
+        $schedule->command(SendSmartMoneyAlert::class)
+            ->withoutOverlapping()
+            ->runInBackground()
+            ->everyThirtyMinutes();
+//        $schedule->command(SendIndexChart::class)->everyThirtyMinutes();
 //        $schedule->command(CheckFavoritePairs::class)->everyThirtyMinutes();
 
         $schedule->command(CollectTopPerformingCoinSnapshots::class)
             ->everyTenMinutes()
             ->withoutOverlapping();
 
-        $schedule->command(CollectFundingRates::class)->hourly();
-        $schedule->command(HunterFunding::class)->hourly();
+        $schedule->command(CollectFundingRates::class)
+            ->runInBackground()
+            ->withoutOverlapping()
+            ->hourly();
+
+        $schedule->command(HunterFunding::class)
+            ->runInBackground()
+            ->withoutOverlapping()
+            ->hourly();
 
 //        $schedule->command(AnalyzeTopPerformingCoinSnapshots::class)
 //            ->everyThirtyMinutes()
@@ -64,7 +84,6 @@ class Handler
          * 1) ОТ ДО
          * 2) пофиксить запуск за минуту до
          * 3) добавить поля ошибка, данные открытия сделки/закрытия, количества сделок, лимит на количество
-         * 4) добавить таблицу таймингов
          * 5) сделать открыие/закрытие сделки
          * 6) уведомление в телега бота
          * 7)
