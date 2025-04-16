@@ -45,5 +45,8 @@ return [
         'hunter_funding_chat_id' => env('HUNTER_FUNDING_TELEGRAM_CHAT_ID'),
     ],
 
+    'blockonomics' => [
+        'api_key' => env('BLOCKONOMICS_API_KEY'),
+    ],
 
 ];
