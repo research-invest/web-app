@@ -9,11 +9,11 @@ use Illuminate\Support\Facades\Cache;
 class BlockonomicsService
 {
     private string $apiUrl = 'https://www.blockonomics.co/api';
-    private string $apiKey;
+    private string $apiKey = '';
 
     public function __construct()
     {
-        $this->apiKey = config('services.blockonomics.api_key');
+        $this->apiKey = config('services.blockonomics.api_key', '');
     }
 
     /**
