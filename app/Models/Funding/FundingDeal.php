@@ -99,7 +99,6 @@ class FundingDeal extends BaseModel
     }
 
 
-
     public static function getStatuses(): array
     {
         return [
@@ -109,8 +108,14 @@ class FundingDeal extends BaseModel
             self::STATUS_ERROR => 'error',
         ];
     }
+
     public function getStatusNameAttribute(): string
     {
         return self::getStatuses()[$this->status] ?? '-';
+    }
+
+    public function isStatusDone(): bool
+    {
+        return $this->status === self::STATUS_DONE;
     }
 }

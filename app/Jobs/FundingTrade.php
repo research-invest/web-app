@@ -33,6 +33,10 @@ class FundingTrade implements ShouldQueue, ShouldBeUnique
 
     public function handle()
     {
+        if ($this->deal->isStatusDone()) {
+            return true;
+        }
+
         // Проверяем, не прошло ли уже время фандинга
         if (now()->isAfter($this->deal->funding_time)) {
             Log::info('уже прошло время фандинга', [
