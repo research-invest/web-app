@@ -27,7 +27,7 @@ class WalletsListLayout extends Table
                 ->sort()
                 ->cantHide()
                 ->filter(Input::make())
-                ->render(fn (Wallet $wallet) =>  Link::make((string)$wallet->id)
+                ->render(fn(Wallet $wallet) => Link::make((string)$wallet->id)
                     ->route('platform.statistics.btc-wallets.show', $wallet->id)
                     ->rawClick()
                     ->icon('bs.pencil')),
@@ -35,11 +35,12 @@ class WalletsListLayout extends Table
             TD::make('address', 'Адрес')
                 ->cantHide()
                 ->filter(Input::make())
-                ->render(fn (Wallet $wallet) => Link::make($wallet->address)
+                ->render(fn(Wallet $wallet) => Link::make($wallet->address)
                     ->route('platform.statistics.btc-wallets.show', $wallet->id)
                     ->rawClick()),
 
-            TD::make('balance', 'Баланс'),
+            TD::make('balance', 'Баланс')
+                ->sort(),
 
             TD::make('created_at', __('Created'))
                 ->usingComponent(DateTimeSplit::class)
@@ -56,7 +57,7 @@ class WalletsListLayout extends Table
             TD::make(__('Actions'))
                 ->align(TD::ALIGN_CENTER)
                 ->width('100px')
-                ->render(fn (Wallet $wallet) => DropDown::make()
+                ->render(fn(Wallet $wallet) => DropDown::make()
                     ->icon('bs.three-dots-vertical')
                     ->list([
                         Link::make(__('Edit'))
