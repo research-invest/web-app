@@ -17,6 +17,7 @@ use App\Console\Commands\Features\FundingDeals;
 use App\Console\Commands\SendIndexChart;
 use App\Console\Commands\UpdateCurrencies;
 use App\Console\Commands\UpdateTradesPnL;
+use App\Console\Commands\UpdateWalletBalances;
 use Illuminate\Console\Scheduling\Schedule;
 
 class Handler
@@ -75,6 +76,11 @@ class Handler
             ->runInBackground()
             ->withoutOverlapping()
             ->hourly();
+
+        $schedule->command(UpdateWalletBalances::class)
+            ->runInBackground()
+            ->withoutOverlapping()
+            ->everySixHours();
 
 //        $schedule->command(AnalyzeTopPerformingCoinSnapshots::class)
 //            ->everyThirtyMinutes()

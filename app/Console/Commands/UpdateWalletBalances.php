@@ -5,8 +5,8 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Wallet;
-use App\Models\WalletBalance;
+use App\Models\BtcWallets\Wallet;
+use App\Models\BtcWallets\WalletBalance;
 use App\Services\BlockonomicsService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;

@@ -2,9 +2,11 @@
 
 namespace App\Services;
 
+use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class BlockonomicsService
 {
@@ -34,16 +36,13 @@ class BlockonomicsService
             $addressString = implode(' ', $chunk);
 
             try {
-                $response = Http::withHeaders([
-                    'Authorization' => "Bearer {$this->apiKey}"
-                ])->get("{$this->apiUrl}/balance", [
-                    'addr' => $addressString
-                ]);
 
-                if ($response->successful()) {
+                $response = $this->getDataUrlWithRetry($addressString, 10,  3);
+
+                if ($response) {
                     $result = array_merge($result, $this->processResponse($response));
                 } else {
-                    throw new \Exception("API вернул ошибку: " . $response->body());
+                    throw new \Exception("API вернул ошибку");
                 }
             } catch (\Exception $e) {
                 throw new \Exception("Ошибка при запросе к API: " . $e->getMessage());
@@ -53,14 +52,39 @@ class BlockonomicsService
         return $result;
     }
 
+    private  function getDataUrlWithRetry($addressString, int $maxRetries = 5, int $retryInterval = 1)
+    {
+        $retryCount = 0;
+
+        while ($retryCount < $maxRetries) {
+            try {
+                $response = Http::withHeaders([
+                    'Authorization' => "Bearer {$this->apiKey}"
+                ])->get("{$this->apiUrl}/balance", [
+                    'addr' => $addressString
+                ]);
+
+                if ($response->successful()) {
+                    return $response->json();
+                }
+            } catch (RequestException $e) {
+                Log::error('Request failed: ' . $e->getMessage());
+            }
+
+            sleep($retryInterval);
+
+            $retryCount++;
+        }
+
+        return null;
+    }
+
     /**
      * Обработка ответа от API
      */
-    private function processResponse(Response $response): array
+    private function processResponse(array $data): array
     {
-        $data = $response->json();
         $result = [];
-
         foreach ($data['response'] as $item) {
 //            $result[$item['addr']] = [
 //                'balance' => $item['confirmed'] / 100000000, // Конвертация сатоши в BTC

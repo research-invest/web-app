@@ -77,17 +77,21 @@ class PlatformProvider extends OrchidServiceProvider
                         ->route('platform.composite-index')
                         ->divider(),
 
-                    Menu::make('Doge/Tao/One/')
+                    Menu::make('BTC киты')
                         ->icon('bs.book')
-                        ->target('_blank')
-                        ->rawClick()
-                        ->href('http://p635704.for-test-only.ru/'),
+                        ->route('platform.statistics.btc-wallets'),
 
-                    Menu::make('Neo/Link/')
-                        ->icon('bs.book')
-                        ->target('_blank')
-                        ->rawClick()
-                        ->href('http://a8kg.fvds.ru/'),
+//                    Menu::make('Doge/Tao/One/')
+//                        ->icon('bs.book')
+//                        ->target('_blank')
+//                        ->rawClick()
+//                        ->href('http://p635704.for-test-only.ru/'),
+//
+//                    Menu::make('Neo/Link/')
+//                        ->icon('bs.book')
+//                        ->target('_blank')
+//                        ->rawClick()
+//                        ->href('http://a8kg.fvds.ru/'),
                 ]),
             Menu::make('Торговля')
                 ->icon('money')
