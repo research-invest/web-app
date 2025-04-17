@@ -42,6 +42,17 @@ class WalletsListLayout extends Table
             TD::make('balance', 'Баланс')
                 ->sort(),
 
+            TD::make('diff_percent', 'Diff percent')
+                ->sort()
+                ->render(function(Wallet $wallet) {
+                    $color = $wallet->diff_percent > 0 ? 'green' : ($wallet->diff_percent < 0 ? 'red' : 'inherit');
+                    return sprintf(
+                        ' <small style="color: %s">%+.1f%%</small>',
+                        $color,
+                        $wallet->diff_percent,
+                    );
+                }),
+
             TD::make('created_at', __('Created'))
                 ->usingComponent(DateTimeSplit::class)
                 ->align(TD::ALIGN_RIGHT)

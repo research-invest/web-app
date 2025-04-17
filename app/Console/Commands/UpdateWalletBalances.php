@@ -5,6 +5,7 @@
 
 namespace App\Console\Commands;
 
+use App\Helpers\MathHelper;
 use App\Models\BtcWallets\Wallet;
 use App\Models\BtcWallets\WalletBalance;
 use App\Services\BlockonomicsService;
@@ -50,13 +51,16 @@ class UpdateWalletBalances extends Command
 
                     foreach ($wallets as $wallet) {
                         if (isset($balances[$wallet->address])) {
+                            $balance = $balances[$wallet->address] ?? 0;
+
                             WalletBalance::create([
                                 'wallet_id' => $wallet->id,
-                                'balance' => $balances[$wallet->address] ?? 0
+                                'balance' => $balance
                             ]);
 
                             $wallet->update([
-                                'balance' => $balances[$wallet->address] ?? 0
+                                'balance' => $balance,
+                                'diff_percent' => MathHelper::getPercentOfNumber($wallet->balance, $balance),
                             ]);
                         }
                     }
