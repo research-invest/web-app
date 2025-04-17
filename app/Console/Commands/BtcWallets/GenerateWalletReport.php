@@ -51,8 +51,8 @@ class GenerateWalletReport extends Command
             ->count();
 
         // Топ gainers и losers
-        $topGainers = $wallets->filter(fn($w) => $w->diff_percent > 0)->take(3);
-        $topLosers = $wallets->filter(fn($w) => $w->diff_percent < 0)->take(3);
+        $topGainers = $wallets->filter(fn($w) => $w->diff_percent > 0)->take(5);
+        $topLosers = $wallets->filter(fn($w) => $w->diff_percent < 0)->take(5);
 
         $now = Carbon::now()->format('d.m.Y H:i');
 
@@ -63,14 +63,14 @@ class GenerateWalletReport extends Command
         $message .= "📉 Падение: *{$dropped}* кошельков\n";
         $message .= "➖ Без изменений: *{$unchanged}*\n\n";
 
-        $message .= "🟢 *Топ-3 роста:*\n";
+        $message .= "🟢 *Топ-5 роста:*\n";
         foreach ($topGainers as $w) {
-            $message .= "• +" . number_format($w->diff_percent, 2) . "% — `" . $w->address . "...`\n";
+            $message .= "• +" . number_format($w->diff_percent, 2) . "% — `" . $w->address . "`\n";
         }
 
-        $message .= "\n🔴 *Топ-3 падений:*\n";
+        $message .= "\n🔴 *Топ-5 падений:*\n";
         foreach ($topLosers as $w) {
-            $message .= "• " . number_format($w->diff_percent, 2) . "% — `" . $w->address . "...`\n";
+            $message .= "• " . number_format($w->diff_percent, 2) . "% — `" . $w->address . "`\n";
         }
 
         $this->sendToTelegram($message);
