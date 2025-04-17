@@ -2,6 +2,7 @@
 
 namespace App\Orchid\Layouts\BtcWallets;
 
+use App\Helpers\MathHelper;
 use App\Models\BtcWallets\Wallet;
 use Orchid\Screen\Actions\DropDown;
 use Orchid\Screen\Actions\Link;
@@ -40,6 +41,9 @@ class WalletsListLayout extends Table
                     ->rawClick()),
 
             TD::make('balance', 'Баланс')
+                ->render(function(Wallet $wallet) {
+                    return MathHelper::formatNumber($wallet->balance);
+                })
                 ->sort(),
 
             TD::make('diff_percent', 'Diff percent')
