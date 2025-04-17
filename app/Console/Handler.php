@@ -2,22 +2,18 @@
 
 namespace App\Console;
 
-use App\Console\Commands\Alerts\CheckFavoritePairs;
 use App\Console\Commands\Alerts\CheckLiquidationWarnings;
-use App\Console\Commands\Alerts\CheckTradeLevels;
 use App\Console\Commands\Alerts\FreeSpaceAlert;
 use App\Console\Commands\Alerts\HunterFunding;
 use App\Console\Commands\Alerts\SendSmartMoneyAlert;
 use App\Console\Commands\Alerts\SendTradePnLNotification;
-use App\Console\Commands\AnalyzeTopPerformingCoinSnapshots;
+use App\Console\Commands\BtcWallets\GenerateWalletReport;
+use App\Console\Commands\BtcWallets\UpdateWalletBalances;
 use App\Console\Commands\CollectTopPerformingCoinSnapshots;
 use App\Console\Commands\Features\CollectFundingRates;
 use App\Console\Commands\Features\FundingDealsConfig;
-use App\Console\Commands\Features\FundingDeals;
-use App\Console\Commands\SendIndexChart;
 use App\Console\Commands\UpdateCurrencies;
 use App\Console\Commands\UpdateTradesPnL;
-use App\Console\Commands\UpdateWalletBalances;
 use Illuminate\Console\Scheduling\Schedule;
 
 class Handler
@@ -80,7 +76,11 @@ class Handler
         $schedule->command(UpdateWalletBalances::class)
             ->runInBackground()
             ->withoutOverlapping()
-            ->everySixHours();
+            ->everySixHours()
+            ->onSuccess(function () use ($schedule) {
+                $schedule->command(GenerateWalletReport::class)->runInBackground();
+            });
+
 
 //        $schedule->command(AnalyzeTopPerformingCoinSnapshots::class)
 //            ->everyThirtyMinutes()

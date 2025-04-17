@@ -3,7 +3,7 @@
  * php artisan wallets:update-balances
  */
 
-namespace App\Console\Commands;
+namespace App\Console\Commands\BtcWallets;
 
 use App\Helpers\MathHelper;
 use App\Models\BtcWallets\Wallet;

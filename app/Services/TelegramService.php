@@ -17,13 +17,13 @@ class TelegramService
         $this->chatId = config('services.telegram.chat_id');
     }
 
-    public function sendMessage(string $message, $chatId = null): bool
+    public function sendMessage(string $message, $chatId = null, string $parseMode = 'HTML'): bool
     {
         try {
             $response = Http::post($this->apiUrl . $this->token . '/sendMessage', [
                 'chat_id' => $chatId ?: $this->chatId,
                 'text' => $message,
-                'parse_mode' => 'HTML'
+                'parse_mode' => $parseMode,
             ]);
 
             return $response->successful();
