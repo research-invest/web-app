@@ -76,9 +76,7 @@ class Handler
         $schedule->command(UpdateWalletBalances::class)
             ->runInBackground()
             ->withoutOverlapping()
-            ->hourly()
-//            ->everySixHours()
-        ;
+            ->everySixHours();
 
 
 //        $schedule->command(AnalyzeTopPerformingCoinSnapshots::class)
