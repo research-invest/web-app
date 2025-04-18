@@ -37,7 +37,7 @@ class BlockonomicsService
 
             try {
 
-                $response = $this->getDataUrlWithRetry($addressString, 10,  3);
+                $response = $this->getDataUrlWithRetry($addressString, 10,  5);
 
                 if ($response) {
                     $result = array_merge($result, $this->processResponse($response));

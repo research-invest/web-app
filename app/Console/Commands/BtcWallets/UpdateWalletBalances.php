@@ -10,6 +10,7 @@ use App\Models\BtcWallets\Wallet;
 use App\Models\BtcWallets\WalletBalance;
 use App\Services\BlockonomicsService;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
 
 class UpdateWalletBalances extends Command
@@ -30,6 +31,8 @@ class UpdateWalletBalances extends Command
         $timeStart = microtime(true);
 
         $this->process();
+
+        Artisan::call(GenerateWalletReport::class);
 
         $this->info('Использовано памяти: ' . (memory_get_peak_usage() / 1024 / 1024) . " MB");
         $this->info('Время выполнения в секундах: ' . ((microtime(true) - $timeStart)));
