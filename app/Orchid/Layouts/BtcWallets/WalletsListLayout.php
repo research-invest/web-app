@@ -41,14 +41,14 @@ class WalletsListLayout extends Table
                     ->rawClick()),
 
             TD::make('balance', 'Баланс')
-                ->render(function(Wallet $wallet) {
+                ->render(function (Wallet $wallet) {
                     return MathHelper::formatNumber($wallet->balance);
                 })
                 ->sort(),
 
             TD::make('diff_percent', 'Diff percent')
                 ->sort()
-                ->render(function(Wallet $wallet) {
+                ->render(function (Wallet $wallet) {
                     $color = $wallet->diff_percent > 0 ? 'green' : ($wallet->diff_percent < 0 ? 'red' : 'inherit');
                     return sprintf(
                         ' <small style="color: %s">%+.1f%%</small>',
@@ -58,11 +58,72 @@ class WalletsListLayout extends Table
                 }),
 
             TD::make('last_price', 'Цена')
-                ->render(function(Wallet $wallet) {
+                ->render(function (Wallet $wallet) {
                     return MathHelper::formatNumber($wallet->last_price);
                 }),
 
-            TD::make('label', 'label'),
+            TD::make('label', 'label')
+                ->defaultHidden(),
+
+            TD::make('volatility', 'Динамика')
+                ->defaultHidden()
+                ->render(function (Wallet $wallet) {
+                    $data = (array)$wallet->diff_percent_history;
+                    return '<span style="font-family: monospace;">' . MathHelper::renderSparkline($data) . '</span>';
+                }),
+
+            TD::make('volatility_index', 'Волатильность')
+                ->defaultHidden()
+                ->render(function (Wallet $wallet) {
+                    $data = (array)$wallet->diff_percent_history;
+                    $volatility = MathHelper::calculateVolatility($data);
+                    $color = $volatility > 5 ? 'red' : ($volatility > 2 ? 'orange' : 'green');
+                    return "<span style='color: $color;'>$volatility%</span>";
+                }),
+
+            TD::make('trend', 'Тренд')
+                ->defaultHidden()
+                ->render(function (Wallet $wallet) {
+                    $data = (array)$wallet->diff_percent_history;
+
+                    $last = end($data);
+                    $prev = prev($data);
+
+                    if ($last && $prev) {
+                        if ($last > $prev) {
+                            return '📈 <span style="color:green;">Рост</span>';
+                        }
+
+                        if ($last < $prev) {
+                            return '📉 <span style="color:red;">Падение</span>';
+                        }
+                    }
+
+                    return '➖';
+                }),
+
+            TD::make('summary', 'Аналитика')
+                ->defaultHidden()
+                ->render(function (Wallet $wallet) {
+                    $data = (array)$wallet->diff_percent_history;
+                    if (count($data) < 2) {
+                        return '–';
+                    }
+
+                    $sparkline = MathHelper::renderSparkline($data);
+                    $volatility = MathHelper::calculateVolatility($data);
+                    $last = end($data);
+                    $prev = prev($data);
+
+                    $trend = $last > $prev ? '📈' : ($last < $prev ? '📉' : '➖');
+
+                    return <<<HTML
+<div style="font-family: monospace;">
+    <div>$sparkline</div>
+    <div>Волат: <b>{$volatility}%</b> $trend</div>
+</div>
+HTML;
+                }),
 
             TD::make('created_at', __('Created'))
                 ->usingComponent(DateTimeSplit::class)

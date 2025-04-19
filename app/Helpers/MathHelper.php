@@ -245,4 +245,42 @@ class MathHelper
 
         return round($volatilityIndex, 4);
     }
+
+    /**
+     * @param array $data
+     * @return float
+     */
+    public static function calculateVolatility(array $data): float
+    {
+        if(empty($data)){
+            return 0;
+        }
+
+        $mean = array_sum($data) / count($data);
+        $squaredDiffs = array_map(fn($v) => ($v - $mean) ** 2, $data);
+        return round(sqrt(array_sum($squaredDiffs) / count($data)), 2);
+    }
+
+    /**
+     * @param array $data
+     * @return string
+     */
+    public static function renderSparkline(array $data): string
+    {
+        if(empty($data)){
+            return '';
+        }
+
+        $blocks = ['▁', '▂', '▃', '▄', '▅', '▆', '▇', '█'];
+        $min = min($data);
+        $max = max($data);
+        $range = $max - $min ?: 1;
+
+        return collect($data)
+            ->map(function ($value) use ($min, $range, $blocks) {
+                $index = (int)(($value - $min) / $range * (count($blocks) - 1));
+                return $blocks[$index];
+            })
+            ->implode('');
+    }
 }
