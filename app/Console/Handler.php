@@ -76,8 +76,8 @@ class Handler
         $schedule->command(UpdateWalletBalances::class)
             ->runInBackground()
             ->withoutOverlapping()
-            ->hourly()
-//            ->everySixHours()
+//            ->hourly()
+            ->everySixHours()
         ;
 
 
