@@ -86,7 +86,35 @@ class BtcWalletShowScreen extends Screen
                     ])
                 ],
                 'Метрики' => [
-                    Layout::rows([])
+                    Layout::tabs([
+                        'Whale Score' => [
+                            new HighchartsChart(
+                                $this->getMetricChart('whale_score', 'Whale Score', 'Оценка влияния кошелька в сети')
+                            ),
+                        ],
+                        'Momentum' => [
+                            new HighchartsChart(
+                                $this->getMetricChart('momentum', 'Momentum', 'Показатель импульса/динамики активности')
+                            ),
+                        ],
+                        'Correlation' => [
+                            new HighchartsChart(
+                                $this->getMetricChart('correlation', 'Correlation', 'Корреляция с рынком')
+                            ),
+                        ],
+                        'Smart Index' => [
+                            new HighchartsChart(
+                                $this->getMetricChart('smart_index', 'Smart Index', 'Индекс "умности" кошелька')
+                            ),
+                        ],
+                        'Stability' => [
+                            new HighchartsChart(
+                                $this->getMetricChart('stability', 'Stability', 'Показатель стабильности кошелька')
+                            ),
+                        ],
+                    ]),
+
+                    Layout::view('statistics.btc-wallets.metric-description'),
                 ],
             ]),
         ];
@@ -100,6 +128,77 @@ class BtcWalletShowScreen extends Screen
         $wallet->save();
 
         Toast::success('Кошелек успешно обновлен');
+    }
+
+    private function getMetricChart(string $metricName, string $title, string $description): array
+    {
+        $data = [];
+        $metrics = $this->wallet->metrics()->orderBy('created_at')->get();
+
+        foreach ($metrics as $metric) {
+            if ($metric->{$metricName} !== null) {
+                $timestamp = $metric->created_at->timestamp * 1000;
+                $data[] = [
+                    $timestamp,
+                    (float)$metric->{$metricName},
+                ];
+            }
+        }
+
+        return [
+            'chart' => [
+                'height' => 400,
+                'type' => 'line'
+            ],
+            'title' => [
+                'text' => $title
+            ],
+            'subtitle' => [
+                'text' => $description
+            ],
+            'rangeSelector' => [
+                'enabled' => false,
+            ],
+            'navigator' => [
+                'enabled' => true,
+            ],
+            'scrollbar' => [
+                'enabled' => true
+            ],
+            'xAxis' => [
+                'type' => 'datetime',
+                'labels' => [
+                    'format' => '{value:%Y-%m-%d %H:%M}'
+                ]
+            ],
+            'yAxis' => [
+                'title' => [
+                    'text' => $title
+                ],
+                'labels' => [
+                    'format' => '{value}'
+                ]
+            ],
+            'series' => [
+                [
+                    'name' => $title,
+                    'data' => $data,
+                    'color' => '#7cb5ec',
+                    'tooltip' => [
+                        'valueSuffix' => '',
+                        'valueDecimals' => 2
+                    ]
+                ],
+            ],
+            'plotOptions' => [
+                'series' => [
+                    'marker' => [
+                        'enabled' => true,
+                        'radius' => 3
+                    ]
+                ]
+            ]
+        ];
     }
 
     private function getBalancesChart(): array

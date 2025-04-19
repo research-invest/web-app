@@ -101,6 +101,11 @@ class Wallet extends Model
         return $this->hasMany(WalletBalance::class);
     }
 
+    public function metrics(): HasMany
+    {
+        return $this->hasMany(WalletMetric::class);
+    }
+
     public function getExplorerLink(): string
     {
         return 'https://www.blockchain.com/explorer/addresses/btc/' . $this->address;
