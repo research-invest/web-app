@@ -20,6 +20,7 @@ class FiltersLayout extends Selection
     public function filters(): array
     {
         return [
+            TypesFilter::class,
             AddressFilter::class,
         ];
     }
