@@ -8,6 +8,7 @@ namespace App\Console\Commands\BtcWallets;
 use App\Helpers\MathHelper;
 use App\Models\BtcWallets\Wallet;
 use App\Models\BtcWallets\WalletBalance;
+use App\Models\Currency;
 use App\Services\BlockonomicsService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
@@ -42,9 +43,11 @@ class UpdateWalletBalances extends Command
     {
         $this->info('Начинаем обновление балансов...');
 
+        $btc = Currency::getBtc();
+
         try {
             // Получаем все кошельки
-            Wallet::chunk(50, function ($wallets) {
+            Wallet::chunk(50, function ($wallets) use ($btc) {
                 $addresses = $wallets->pluck('address')->toArray();
 
                 $this->info('Обработка ' . count($addresses) . ' адресов...');
@@ -52,18 +55,32 @@ class UpdateWalletBalances extends Command
                 try {
                     $balances = $this->blockonomicsService->getBalances($addresses);
 
+                    /**
+                     * @var Wallet $wallet
+                     */
                     foreach ($wallets as $wallet) {
                         if (isset($balances[$wallet->address])) {
                             $balance = $balances[$wallet->address] ?? 0;
+                            $percent = round(MathHelper::getPercentOfNumber($wallet->balance, $balance), 3);
+
+                            if ($percent < 1) {
+                                continue;
+                            }
 
                             WalletBalance::create([
                                 'wallet_id' => $wallet->id,
-                                'balance' => $balance
+                                'balance' => $balance,
+                                'price' => $btc->last_price,
+                                'volume' => $btc->volume,
                             ]);
+
 
                             $wallet->update([
                                 'balance' => $balance,
-                                'diff_percent' => MathHelper::getPercentOfNumber($wallet->balance, $balance),
+                                'diff_percent' => $percent,
+                                'last_price' => $btc->last_price,
+                                'last_volume' => $btc->volume,
+                                'diff_percent_history' => [...(array)$wallet->diff_percent_history, $percent],
                             ]);
                         }
                     }

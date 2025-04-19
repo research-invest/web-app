@@ -3,7 +3,7 @@
 namespace App\Orchid\Screens\Statistics\BtcWallets;
 
 use App\Models\BtcWallets\Wallet;
-use App\Orchid\Filters\Currency\FiltersLayout;
+use App\Orchid\Filters\Statistics\BtcWallets\FiltersLayout;
 use App\Orchid\Layouts\BtcWallets\WalletsListLayout;
 use App\Models\User;
 use Orchid\Screen\Screen;
@@ -65,7 +65,7 @@ class BtcWalletsListScreen extends Screen
     public function layout(): iterable
     {
         return [
-//            FiltersLayout::class,
+            FiltersLayout::class,
             WalletsListLayout::class,
         ];
     }

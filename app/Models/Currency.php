@@ -249,4 +249,9 @@ class Currency extends BaseModel
     {
         return route('platform.currencies.edit', $this);
     }
+
+    public static function getBtc():self
+    {
+        return self::query()->where('code', self::CODE_BTC)->first();
+    }
 }

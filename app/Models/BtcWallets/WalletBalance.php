@@ -6,14 +6,23 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+
+
 /**
  * @property float $balance
+ * @property float $price
+ * @property float $volume
  * @property Carbon $created_at
  * @property Carbon $updated_at
  */
 class WalletBalance extends Model
 {
-    protected $fillable = ['wallet_id', 'balance'];
+    protected $fillable = [
+        'wallet_id',
+        'balance',
+        'price',
+        'volume',
+    ];
 
     public function wallet(): BelongsTo
     {

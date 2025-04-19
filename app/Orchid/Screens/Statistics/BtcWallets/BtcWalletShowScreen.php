@@ -4,6 +4,7 @@ namespace App\Orchid\Screens\Statistics\BtcWallets;
 
 use App\Models\BtcWallets\Wallet;
 use App\Orchid\Layouts\Charts\HighchartsChart;
+use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Screen;
 use Orchid\Support\Facades\Layout;
 
@@ -31,7 +32,13 @@ class BtcWalletShowScreen extends Screen
 
     public function commandBar(): iterable
     {
-        return [];
+        return [
+            Link::make('Обозреватель')
+                ->icon('grid')
+                ->target('_blank')
+                ->rawClick()
+                ->href($this->wallet->getExplorerLink()),
+        ];
     }
 
     public function layout(): iterable

@@ -57,6 +57,11 @@ class WalletsListLayout extends Table
                     );
                 }),
 
+            TD::make('last_price', 'Цена')
+                ->render(function(Wallet $wallet) {
+                    return MathHelper::formatNumber($wallet->last_price);
+                }),
+
             TD::make('created_at', __('Created'))
                 ->usingComponent(DateTimeSplit::class)
                 ->align(TD::ALIGN_RIGHT)
