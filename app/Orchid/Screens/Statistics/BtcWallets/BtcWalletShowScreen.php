@@ -4,9 +4,14 @@ namespace App\Orchid\Screens\Statistics\BtcWallets;
 
 use App\Models\BtcWallets\Wallet;
 use App\Orchid\Layouts\Charts\HighchartsChart;
+use Illuminate\Http\Request;
+use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\Link;
+use Orchid\Screen\Fields\Select;
+use Orchid\Screen\Fields\TextArea;
 use Orchid\Screen\Screen;
 use Orchid\Support\Facades\Layout;
+use Orchid\Support\Facades\Toast;
 
 class BtcWalletShowScreen extends Screen
 {
@@ -50,8 +55,48 @@ class BtcWalletShowScreen extends Screen
                         $this->getBalancesChart()
                     ),
                 ],
+                'Основная информация' => [
+                    Layout::rows([
+                        Select::make('wallet.visible_type')
+                            ->empty('Выберите')
+                            ->title('Тип позиции')
+                            ->value($this->wallet->visible_type)
+                            ->options(Wallet::getVisibleTypes()),
+
+                        Select::make('wallet.label_type')
+                            ->empty('Выберите')
+                            ->title('Тип метки')
+                            ->value($this->wallet->label_type)
+                            ->options(Wallet::getLabelTypes()),
+
+                        TextArea::make('wallet.label')
+                            ->title('Заметки')
+                            ->value($this->wallet->label)
+                            ->rows(3),
+
+//                        CheckBox::make('wallet.is_notify')
+//                            ->placeholder('Уведомления')
+//                            ->sendTrueOrFalse()
+//                            ->value(1),
+
+                        Button::make('Сохранить')
+                            ->icon('save')
+                            ->method('save')
+                            ->class('btn btn-default'),
+                    ])
+                ],
             ]),
         ];
+    }
+
+    public function save(Wallet $wallet, Request $request)
+    {
+        $data = $request->get('wallet');
+
+        $wallet->fill($data);
+        $wallet->save();
+
+        Toast::success('Кошелек успешно обновлен');
     }
 
     private function getBalancesChart(): array

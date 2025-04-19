@@ -62,6 +62,8 @@ class WalletsListLayout extends Table
                     return MathHelper::formatNumber($wallet->last_price);
                 }),
 
+            TD::make('label', 'label'),
+
             TD::make('created_at', __('Created'))
                 ->usingComponent(DateTimeSplit::class)
                 ->align(TD::ALIGN_RIGHT)
@@ -80,10 +82,16 @@ class WalletsListLayout extends Table
                 ->render(fn(Wallet $wallet) => DropDown::make()
                     ->icon('bs.three-dots-vertical')
                     ->list([
-                        Link::make(__('Edit'))
+                        Link::make('Открыть')
                             ->route('platform.statistics.btc-wallets.show', $wallet->id)
                             ->rawClick()
                             ->icon('bs.pencil'),
+
+                        Link::make('Обозреватель')
+                            ->icon('grid')
+                            ->target('_blank')
+                            ->rawClick()
+                            ->href($wallet->getExplorerLink()),
 
                     ])),
         ];
