@@ -34,6 +34,7 @@ class UpdateWalletBalances extends Command
         $this->process();
 
         Artisan::call(GenerateWalletReport::class);
+        Artisan::call(RecalculateWalletIndexes::class);
 
         $this->info('Использовано памяти: ' . (memory_get_peak_usage() / 1024 / 1024) . " MB");
         $this->info('Время выполнения в секундах: ' . ((microtime(true) - $timeStart)));
@@ -73,7 +74,6 @@ class UpdateWalletBalances extends Command
                                 'price' => $btc->last_price,
                                 'volume' => $btc->volume,
                             ]);
-
 
                             $wallet->update([
                                 'balance' => $balance,

@@ -59,7 +59,7 @@ class BtcWalletShowScreen extends Screen
                     Layout::rows([
                         Select::make('wallet.visible_type')
                             ->empty('Выберите')
-                            ->title('Тип позиции')
+                            ->title('Тип наблюдения')
                             ->value($this->wallet->visible_type)
                             ->options(Wallet::getVisibleTypes()),
 
@@ -84,6 +84,9 @@ class BtcWalletShowScreen extends Screen
                             ->method('save')
                             ->class('btn btn-default'),
                     ])
+                ],
+                'Метрики' => [
+                    Layout::rows([])
                 ],
             ]),
         ];
