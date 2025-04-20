@@ -79,7 +79,14 @@ class PlatformProvider extends OrchidServiceProvider
 
                     Menu::make('BTC киты')
                         ->icon('bs.book')
-                        ->route('platform.statistics.btc-wallets'),
+                        ->route('platform.statistics.btc-wallets')
+                        ->list([
+                            Menu::make('Анализ трендов BTC')
+                                ->icon('chart')
+                                ->route('platform.statistics.btc-wallets.trends')
+                                ->permission('platform.systems.users')
+                        ]),
+
 
 //                    Menu::make('Doge/Tao/One/')
 //                        ->icon('bs.book')

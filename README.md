@@ -16,6 +16,10 @@ https://github.com/zhouaini528/bybit-php
 https://github.com/zhouaini528/kucoin-php
 https://github.com/zhouaini528/gate-php
 
+бтс кошельки
+https://blockchair.com/bitcoin/addresses?s=balance(desc)
+https://api.blockchair.com/bitcoin/addresses?s=balance%28desc%29&limit=100&offset=0&page=1
+https://api.blockchair.com/bitcoin/addresses?s=balance(desc)&limit=100&offset=0&page=1
 
 php artisan orchid:admin admin admin@admin.com e433fdSDj2jF3_e
 

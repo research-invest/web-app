@@ -37,6 +37,7 @@ use \App\Orchid\Screens\Trading\Funding\FundingDealsListScreen;
 use \App\Orchid\Screens\Trading\Funding\FundingDealEditScreen;
 use \App\Orchid\Screens\Statistics\BtcWallets\BtcWalletsListScreen;
 use \App\Orchid\Screens\Statistics\BtcWallets\BtcWalletShowScreen;
+use App\Orchid\Screens\Statistics\BtcWallets\WalletTrendsScreen;
 
 
 /*
@@ -74,6 +75,9 @@ Route::screen('/statistics/btc-wallets/{wallet}/show', BtcWalletShowScreen::clas
 
 Route::screen('/statistics/btc-wallets', BtcWalletsListScreen::class)
     ->name('platform.statistics.btc-wallets');
+
+Route::screen('/statistics/btc-wallets/trends', WalletTrendsScreen::class)
+    ->name('platform.statistics.btc-wallets.trends');
 
 Route::screen('/statistics/composite-index', CompositeIndex::class)
     ->name('platform.composite-index');

@@ -6,6 +6,8 @@
 namespace App\Console\Commands\BtcWallets;
 
 use App\Helpers\Development;
+use App\Models\BtcWallets\WalletReport;
+use App\Models\Currency;
 use App\Services\TelegramService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
@@ -54,9 +56,24 @@ class GenerateWalletReport extends Command
         $topGainers = $wallets->filter(fn($w) => $w->diff_percent > 0)->take(5);
         $topLosers = $wallets->filter(fn($w) => $w->diff_percent < 0)->take(5);
 
-        $now = Carbon::now()->format('d.m.Y H:i');
+        $now = Carbon::now();
+        $formattedDate = $now->format('d.m.Y H:i');
 
-        $message = "📊 *Китовый отчёт* за *{$now}*\n";
+        $btc = Currency::getBtc();
+
+        WalletReport::create([
+            'report_date' => $now,
+            'total_balance' => $totalBalance,
+            'grown_wallets_count' => $grown,
+            'dropped_wallets_count' => $dropped,
+            'unchanged_wallets_count' => $unchanged,
+            'top_gainers' => $topGainers->toArray(),
+            'top_losers' => $topLosers->toArray(),
+            'market_price' => $btc->last_price,
+            'market_volume' => $btc->volume,
+        ]);
+
+        $message = "📊 *Китовый отчёт* за *{$formattedDate}*\n";
         $message .= "Общий баланс: ₿ *" . number_format($totalBalance, 2, '.', ' ') . "*\n\n";
 
         $message .= "📈 Рост: *{$grown}* кошельков\n";
@@ -74,7 +91,7 @@ class GenerateWalletReport extends Command
         }
 
         $this->sendToTelegram($message);
-        $this->info('Отчёт отправлен в Telegram!');
+        $this->info('Отчёт отправлен в Telegram и сохранен в базе данных!');
     }
 
     protected function sendToTelegram(string $text): void
@@ -87,4 +104,3 @@ class GenerateWalletReport extends Command
         $this->telegram->sendMessage($text, '-1002321524146', 'Markdown'); // prod
     }
 }
-
