@@ -8,6 +8,7 @@ use App\Models\Trade;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Orchid\Filters\Filterable;
 use Orchid\Screen\AsSource;
 
 /**
@@ -41,7 +42,7 @@ use Orchid\Screen\AsSource;
  */
 class FundingDeal extends BaseModel
 {
-    use AsSource, SoftDeletes;
+    use AsSource, SoftDeletes, Filterable;
 
     public const int STATUS_NEW = 1;
     public const int STATUS_PROCESS = 2;
@@ -72,6 +73,11 @@ class FundingDeal extends BaseModel
         'run_time',
         'comment',
         'error',
+    ];
+
+    protected $allowedSorts = [
+        'funding_fee',
+        'total_pnl',
     ];
 
     protected $casts = [

@@ -42,7 +42,10 @@ class FundingDealsListScreen extends Screen
                 ->latest()
                 ->paginate(25),
             'config' => $config,
-            'deals' => $config->deals()->paginate(),
+            'deals' => $config->deals()
+                ->filters()
+                ->defaultSort('created_at', 'desc')
+                ->paginate(),
         ];
     }
 

@@ -79,10 +79,12 @@ class DealsListLayout extends Table
                     );
                 }),
             TD::make('funding_fee', 'fee')
+                ->sort()
                 ->render(function (FundingDeal $funding) {
                     return MathHelper::formatNumber($funding->funding_fee);
                 }),
             TD::make('total_pnl', 'pnl')
+                ->sort()
                 ->render(function (FundingDeal $funding) {
                     return MathHelper::formatNumber($funding->total_pnl);
                 }),

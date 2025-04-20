@@ -56,6 +56,6 @@ class FundingDealConfig extends BaseModel
 
     public function deals()
     {
-        return $this->hasMany(FundingDeal::class)->latest();
+        return $this->hasMany(FundingDeal::class);
     }
 }
