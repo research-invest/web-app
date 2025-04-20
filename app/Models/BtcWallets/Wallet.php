@@ -62,13 +62,13 @@ class Wallet extends Model
     public static function getVisibleTypes(): array
     {
         return [
-            WalletVisibleType::SUSPICIOUS->value => 'Подозрительный',
+            WalletVisibleType::INTERESTING->value => 'Интересный',
+            WalletVisibleType::IGNORED->value => 'Не интересный',
             WalletVisibleType::MONITORING->value => 'Под наблюдением',
+            WalletVisibleType::SUSPICIOUS->value => 'Подозрительный',
             WalletVisibleType::IDLE->value => 'Неактивный',
             WalletVisibleType::ACCUMULATING->value => 'Накапливает',
             WalletVisibleType::DISTRIBUTING->value => 'Распределяет',
-            WalletVisibleType::INTERESTING->value => 'Интересный',
-            WalletVisibleType::IGNORED->value => 'Не интересный',
             WalletVisibleType::WATCHED->value => 'В списке наблюдения',
             WalletVisibleType::NEW->value=> 'Новый',
         ];
