@@ -77,6 +77,7 @@ class Handler
             ->runInBackground()
             ->withoutOverlapping()
             ->hourly()
+            ->everyTwoHours()
 //            ->everySixHours()
         ;
 
