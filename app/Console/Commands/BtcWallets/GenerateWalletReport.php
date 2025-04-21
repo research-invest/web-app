@@ -73,6 +73,8 @@ class GenerateWalletReport extends Command
             'market_volume' => $btc->volume,
         ]);
 
+        return;
+
         $message = "📊 *Китовый отчёт* за *{$formattedDate}*\n";
         $message .= "Общий баланс: ₿ *" . number_format($totalBalance, 2, '.', ' ') . "*\n\n";
 
