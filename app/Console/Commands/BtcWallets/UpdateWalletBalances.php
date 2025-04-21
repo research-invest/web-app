@@ -64,7 +64,11 @@ class UpdateWalletBalances extends Command
                             $balance = $balances[$wallet->address] ?? 0;
                             $percent = round(MathHelper::getPercentOfNumber($wallet->balance, $balance), 3);
 
-                            if ($percent < 1) {
+                            $lastUpdateOlderThanDay = $wallet->updated_at->diffInHours(now()) >= 24;
+
+                            // Если процент изменения меньше 1% И прошло меньше суток с последнего обновления,
+                            // то пропускаем обновление
+                            if ($percent < 1 && !$lastUpdateOlderThanDay) {
                                 continue;
                             }
 
