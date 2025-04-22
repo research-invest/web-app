@@ -68,6 +68,7 @@ class PlatformProvider extends OrchidServiceProvider
                         ->route('platform.statistics.top-performing-coins-table'),
 
                     Menu::make('Объем по диапазону')
+                        ->rawClick()
                         ->icon('bs.book')
                         ->route('platform.statistics.volume-by-range'),
 
@@ -79,10 +80,12 @@ class PlatformProvider extends OrchidServiceProvider
 
                     Menu::make('BTC киты')
                         ->icon('bs.book')
+                        ->rawClick()
                         ->route('platform.statistics.btc-wallets')
                         ->list([
                             Menu::make('Анализ трендов BTC')
                                 ->icon('chart')
+                                ->rawClick()
                                 ->route('platform.statistics.btc-wallets.trends')
                                 ->permission('platform.systems.users')
                         ]),
