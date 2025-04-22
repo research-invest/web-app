@@ -29,6 +29,7 @@ class WalletsListLayout extends Table
                 ->cantHide()
                 ->filter(Input::make())
                 ->render(fn(Wallet $wallet) => Link::make((string)$wallet->id)
+                    ->target('_blank')
                     ->route('platform.statistics.btc-wallets.show', $wallet->id)
                     ->rawClick()
                     ->icon('bs.pencil')),
@@ -37,6 +38,7 @@ class WalletsListLayout extends Table
                 ->cantHide()
                 ->filter(Input::make())
                 ->render(fn(Wallet $wallet) => Link::make($wallet->address)
+                    ->target('_blank')
                     ->route('platform.statistics.btc-wallets.show', $wallet->id)
                     ->rawClick()),
 
@@ -159,6 +161,14 @@ HTML;
     }
 
     protected function striped(): bool
+    {
+        return true;
+    }
+    protected function bordered(): bool
+    {
+        return true;
+    }
+    protected function hoverable(): bool
     {
         return true;
     }
