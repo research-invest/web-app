@@ -84,6 +84,7 @@ class WalletTrendsScreen extends Screen
 
                 Button::make('Применить')
                     ->icon('filter')
+                    ->rawClick()
                     ->method('refresh'),
             ]),
 
