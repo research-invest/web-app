@@ -17,7 +17,7 @@ class WalletTrendsScreen extends Screen
     /**
      * @var WalletReport[] Данные отчетов
      */
-    public  $reports;
+    public $reports;
 
     /**
      * @var array Параметры периода
@@ -69,6 +69,7 @@ class WalletTrendsScreen extends Screen
         return [
             Button::make('Обновить')
                 ->icon('reload')
+                ->rawClick()
                 ->method('refresh'),
         ];
     }
