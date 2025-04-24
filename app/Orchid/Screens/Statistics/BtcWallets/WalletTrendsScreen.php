@@ -3,12 +3,15 @@
 
 namespace App\Orchid\Screens\Statistics\BtcWallets;
 
+use App\Models\BtcWallets\Wallet;
 use App\Models\BtcWallets\WalletReport;
 use App\Orchid\Layouts\Charts\HighchartsChart;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Fields\DateRange;
+use Orchid\Screen\Fields\Group;
+use Orchid\Screen\Fields\Select;
 use Orchid\Screen\Screen;
 use Orchid\Support\Facades\Layout;
 
@@ -23,6 +26,8 @@ class WalletTrendsScreen extends Screen
      * @var array Параметры периода
      */
     public $period;
+    public $visible_type;
+    public $label_type;
 
     public function query(Request $request): iterable
     {
@@ -39,6 +44,12 @@ class WalletTrendsScreen extends Screen
 
         // Получаем отчеты за указанный период
         $reports = WalletReport::whereBetween('report_date', [$startDate, $endDate])
+            ->when($this->visible_type, function ($query) {
+                $query->where('visible_type', '=', $this->visible_type);
+            })
+            ->when($this->label_type, function ($query) {
+                $query->where('label_type', '=', $this->label_type);
+            })
             ->orderBy('report_date')
             ->get();
 
@@ -82,6 +93,21 @@ class WalletTrendsScreen extends Screen
                     ->title('Выберите период')
                     ->value($this->period),
 
+                Group::make([
+                    Select::make('visible_type')
+                        ->options(Wallet::getVisibleTypes())
+                        ->title('Тип наблюдения')
+                        ->value($this->visible_type)
+                        ->empty('Все типы'),
+
+                    Select::make('label_type')
+                        ->options(Wallet::getLabelTypes())
+                        ->title('Тип метки')
+                        ->value($this->label_type)
+                        ->empty('Все типы'),
+                ]),
+
+
                 Button::make('Применить')
                     ->icon('filter')
                     ->rawClick()
@@ -112,7 +138,11 @@ class WalletTrendsScreen extends Screen
      */
     public function refresh(Request $request)
     {
-        return redirect()->route('platform.statistics.btc-wallets.trends', ['period' => $request->get('period')]);
+        return redirect()->route('platform.statistics.btc-wallets.trends', [
+            'period' => $request->get('period'),
+            'visible_type' => $request->get('visible_type'),
+            'label_type' => $request->get('label_type'),
+        ]);
     }
 
     /**
