@@ -19,7 +19,7 @@ class GenerateWalletReport extends Command
     protected $description = 'Генерация телеграм-отчета по китовым кошелькам';
 
     // Минимальный процент изменения для учета в отчете
-    private const float MIN_CHANGE_PERCENT = 5;
+    private const float MIN_CHANGE_PERCENT = 2;
 
     private TelegramService $telegram;
 
