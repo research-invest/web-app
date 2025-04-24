@@ -26,8 +26,6 @@ class WalletTrendsScreen extends Screen
      * @var array Параметры периода
      */
     public $period;
-    public $visible_type;
-    public $label_type;
 
     public function query(Request $request): iterable
     {
@@ -44,12 +42,6 @@ class WalletTrendsScreen extends Screen
 
         // Получаем отчеты за указанный период
         $reports = WalletReport::whereBetween('report_date', [$startDate, $endDate])
-            ->when($this->visible_type, function ($query) {
-                $query->where('visible_type', '=', $this->visible_type);
-            })
-            ->when($this->label_type, function ($query) {
-                $query->where('label_type', '=', $this->label_type);
-            })
             ->orderBy('report_date')
             ->get();
 
@@ -92,22 +84,6 @@ class WalletTrendsScreen extends Screen
                 DateRange::make('period')
                     ->title('Выберите период')
                     ->value($this->period),
-
-                Group::make([
-                    Select::make('visible_type')
-                        ->options(Wallet::getVisibleTypes())
-                        ->title('Тип наблюдения')
-                        ->value($this->visible_type)
-                        ->empty('Все типы'),
-
-                    Select::make('label_type')
-                        ->options(Wallet::getLabelTypes())
-                        ->title('Тип метки')
-                        ->value($this->label_type)
-                        ->empty('Все типы'),
-                ]),
-
-
                 Button::make('Применить')
                     ->icon('filter')
                     ->rawClick()
