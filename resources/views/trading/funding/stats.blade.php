@@ -24,12 +24,14 @@
                 <ul class="list-group list-group-flush">
                     @forelse($topDeals as $deal)
                         <li class="list-group-item d-flex justify-content-between align-items-center">
-        <span>
-            Name: <a data-turbo="false" href="{{ route('platform.trading.funding_deal.edit', $deal->id) }}"><b>{{ $deal->currency->name }}</b></a>
-        </span>
+                            <span>
+                                <a data-turbo="false" href="{{ route('platform.trading.funding_deal.edit', $deal->id) }}">
+                                    <b>{{ $deal->currency->name }}</b>
+                                </a>
+                            </span>
                             <span class="{{ $deal->total_pnl >= 0 ? 'text-success' : 'text-danger' }}">
-            {{ $deal->total_pnl >= 0 ? '+' : '' }}{{ $deal->total_pnl }}
-        </span>
+                                {{ $deal->total_pnl >= 0 ? '+' : '' }}{{ $deal->total_pnl }}
+                            </span>
                         </li>
                     @empty
                         <li class="list-group-item text-muted">Нет данных</li>
@@ -45,12 +47,14 @@
                 <ul class="list-group list-group-flush">
                     @forelse($worstDeals as $deal)
                         <li class="list-group-item d-flex justify-content-between align-items-center">
-        <span>
-            Name: <a data-turbo="false" href="{{ route('platform.trading.funding_deal.edit', $deal->id) }}"><b>{{ $deal->currency->name }}</b></a>
-        </span>
+                            <span>
+                                <a data-turbo="false" href="{{ route('platform.trading.funding_deal.edit', $deal->id) }}">
+                                    <b>{{ $deal->currency->name }}</b>
+                                </a>
+                            </span>
                             <span class="{{ $deal->total_pnl >= 0 ? 'text-success' : 'text-danger' }}">
-            {{ $deal->total_pnl >= 0 ? '+' : '' }} {{ $deal->total_pnl }}
-        </span>
+                                {{ $deal->total_pnl >= 0 ? '+' : '' }} {{ $deal->total_pnl }}
+                            </span>
                         </li>
                     @empty
                         <li class="list-group-item text-muted">Нет данных</li>
