@@ -13,6 +13,7 @@ use App\Models\TradeOrder;
 use App\Orchid\Layouts\Trading\Deals\Funding\ConfigListLayout;
 use App\Orchid\Layouts\Trading\Deals\Funding\DealsListLayout;
 use Illuminate\Http\Request;
+use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Actions\ModalToggle;
 use Orchid\Screen\Fields\CheckBox;
 use Orchid\Screen\Fields\Input;
@@ -78,13 +79,23 @@ class FundingDealsListScreen extends Screen
      */
     public function commandBar(): iterable
     {
-        return [
+        $bar = [];
+
+        if ($this->config->exists) {
+            $bar[] = Link::make('Отчет')
+                ->icon('bs.bar-chart')
+                ->canSee($this->config->exists)
+                ->route('platform.trading.funding_deal.stats', $this->config);
+        }
+
+        $bar[] =
             ModalToggle::make('Добавить сделку')
                 ->modal('addConfigModal')
                 ->method('create')
                 ->icon('plus')
-                ->class('btn btn-primary'),
-        ];
+                ->class('btn btn-primary');
+
+        return $bar;
     }
 
     /**
