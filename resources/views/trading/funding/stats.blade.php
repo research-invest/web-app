@@ -3,7 +3,7 @@
     <div class="card shadow-sm mb-4">
         <div class="card-body">
             <h3 class="card-title mb-3">Статистика по конфигу: <span class="text-primary">
-                    <a target="_blank" href="{{ route('platform.trading.funding_deals', $config->id) }}">{{ $config->name }}</a>
+                    <a data-turbo="false" target="_blank" href="{{ route('platform.trading.funding_deals', $config->id) }}">{{ $config->name }}</a>
                 </span></h3>
             <ul class="list-group list-group-flush mb-3">
                 <li class="list-group-item">Всего сделок: <b>{{ $totalDeals }}</b></li>
@@ -25,7 +25,7 @@
                     @forelse($topDeals as $deal)
                         <li class="list-group-item d-flex justify-content-between align-items-center">
         <span>
-            Name: <a href="{{ route('platform.trading.funding_deal.edit', $deal->id) }}"><b>{{ $deal->currency->name }}</b></a>
+            Name: <a data-turbo="false" href="{{ route('platform.trading.funding_deal.edit', $deal->id) }}"><b>{{ $deal->currency->name }}</b></a>
         </span>
                             <span class="{{ $deal->total_pnl >= 0 ? 'text-success' : 'text-danger' }}">
             {{ $deal->total_pnl >= 0 ? '+' : '' }}{{ $deal->total_pnl }}
@@ -46,7 +46,7 @@
                     @forelse($worstDeals as $deal)
                         <li class="list-group-item d-flex justify-content-between align-items-center">
         <span>
-            Name: <a href="{{ route('platform.trading.funding_deal.edit', $deal->id) }}"><b>{{ $deal->currency->name }}</b></a>
+            Name: <a data-turbo="false" href="{{ route('platform.trading.funding_deal.edit', $deal->id) }}"><b>{{ $deal->currency->name }}</b></a>
         </span>
                             <span class="{{ $deal->total_pnl >= 0 ? 'text-success' : 'text-danger' }}">
             {{ $deal->total_pnl >= 0 ? '+' : '' }} {{ $deal->total_pnl }}
