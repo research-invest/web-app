@@ -19,11 +19,11 @@ class FundingDealConfigStatsScreen extends Screen
         $deals = $config->deals()->get();
 
         $totalDeals = $deals->count();
-        $totalProfit = $deals->sum('profit');
+        $totalProfit = $deals->sum('total_pnl');
         $averageProfit = $totalDeals > 0 ? $totalProfit / $totalDeals : 0;
 
-        $topDeals = $deals->sortByDesc('profit')->take(5);
-        $worstDeals = $deals->sortBy('profit')->take(5);
+        $topDeals = $deals->sortByDesc('total_pnl')->take(5);
+        $worstDeals = $deals->sortBy('total_pnl')->take(5);
 
         $byCurrency = $deals->groupBy('currency_id');
         $coinStats = $byCurrency->map(function ($deals, $currencyId) {
@@ -31,7 +31,7 @@ class FundingDealConfigStatsScreen extends Screen
             return [
                 'currency_id' => $currencyId,
                 'coin' => $currency ? $currency->symbol : 'N/A',
-                'total_profit' => $deals->sum('profit'),
+                'total_profit' => $deals->sum('total_pnl'),
                 'count' => $deals->count(),
             ];
         });

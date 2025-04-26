@@ -14,7 +14,8 @@
             <h3 class="card-title mb-3">Статистика по конфигу: <span class="text-primary">#{{ $config->id }}</span></h3>
             <ul class="list-group list-group-flush mb-3">
                 <li class="list-group-item">Всего сделок: <b>{{ $totalDeals }}</b></li>
-                <li class="list-group-item">Суммарная прибыль: <b class="{{ $totalProfit >= 0 ? 'text-success' : 'text-danger' }}">{{ $totalProfit }}</b></li>
+                <li class="list-group-item">Суммарная прибыль: <b
+                        class="{{ $totalProfit >= 0 ? 'text-success' : 'text-danger' }}">{{ $totalProfit }}</b></li>
                 <li class="list-group-item">Средняя прибыль: <b>{{ $averageProfit }}</b></li>
             </ul>
         </div>
@@ -29,8 +30,12 @@
                 <ul class="list-group list-group-flush">
                     @forelse($topDeals as $deal)
                         <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <span>ID: <b>{{ $deal->id }}</b></span>
-                            <span class="text-success">+{{ $deal->profit }}</span>
+        <span>
+            Name: <a href="{{ route('platform.trading.funding_deal.edit', $deal->id) }}"><b>{{ $deal->currency->name }}</b></a>
+        </span>
+                            <span class="{{ $deal->total_pnl >= 0 ? 'text-success' : 'text-danger' }}">
+            {{ $deal->total_pnl >= 0 ? '+' : '' }}{{ $deal->total_pnl }}
+        </span>
                         </li>
                     @empty
                         <li class="list-group-item text-muted">Нет данных</li>
@@ -46,8 +51,12 @@
                 <ul class="list-group list-group-flush">
                     @forelse($worstDeals as $deal)
                         <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <span>ID: <b>{{ $deal->id }}</b></span>
-                            <span class="text-danger">{{ $deal->profit }}</span>
+        <span>
+            Name: <a href="{{ route('platform.trading.funding_deal.edit', $deal->id) }}"><b>{{ $deal->currency->name }}</b></a>
+        </span>
+                            <span class="{{ $deal->total_pnl >= 0 ? 'text-success' : 'text-danger' }}">
+            {{ $deal->total_pnl >= 0 ? '+' : '' }}{{ $deal->total_pnl }}
+        </span>
                         </li>
                     @empty
                         <li class="list-group-item text-muted">Нет данных</li>
@@ -66,8 +75,12 @@
                 <ul class="list-group list-group-flush">
                     @forelse($topCoins as $coin)
                         <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <span>{{ $coin['coin'] }} ({{ $coin['count'] }} сделок)</span>
-                            <span class="text-success">+{{ $coin['total_profit'] }}</span>
+                        <span>
+                            {{ $coin['coin'] }} ({{ $coin['count'] }} сделок)
+                        </span>
+                            <span class="{{ $coin['total_profit'] >= 0 ? 'text-success' : 'text-danger' }}">
+            {{ $coin['total_profit'] >= 0 ? '+' : '' }}{{ $coin['total_profit'] }}
+        </span>
                         </li>
                     @empty
                         <li class="list-group-item text-muted">Нет данных</li>
