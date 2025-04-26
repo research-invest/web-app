@@ -1,21 +1,20 @@
 <div class="container py-4">
-    <div class="mb-4">
-        <h1 class="display-5 fw-bold">Статистика по конфигу сделки</h1>
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="#">Журнал сделок</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Сделка #{{ $config->id }}</li>
-            </ol>
-        </nav>
-    </div>
 
     <div class="card shadow-sm mb-4">
         <div class="card-body">
             <h3 class="card-title mb-3">Статистика по конфигу: <span class="text-primary">#{{ $config->id }}</span></h3>
             <ul class="list-group list-group-flush mb-3">
                 <li class="list-group-item">Всего сделок: <b>{{ $totalDeals }}</b></li>
-                <li class="list-group-item">Суммарная прибыль: <b
-                        class="{{ $totalProfit >= 0 ? 'text-success' : 'text-danger' }}">{{ $totalProfit }}</b></li>
+                <li class="list-group-item">
+                    Суммарная прибыль: <b class="text-success">+{{ $sumProfit }}</b>
+                </li>
+                <li class="list-group-item">
+                    Суммарные убытки: <b class="text-danger">{{ $sumLoss }}</b>
+                </li>
+                <li class="list-group-item">
+                    Суммарно: <b class="{{ $totalProfit >= 0 ? 'text-success' : 'text-danger' }}">{{ $totalProfit }}</b>
+                </li>
+
                 <li class="list-group-item">Средняя прибыль: <b>{{ $averageProfit }}</b></li>
             </ul>
         </div>

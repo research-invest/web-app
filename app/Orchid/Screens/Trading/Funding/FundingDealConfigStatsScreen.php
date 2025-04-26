@@ -19,7 +19,10 @@ class FundingDealConfigStatsScreen extends Screen
         $deals = $config->deals()->get();
 
         $totalDeals = $deals->count();
+        $sumProfit = $deals->where('total_pnl', '>', 0)->sum('total_pnl');
+        $sumLoss = $deals->where('total_pnl', '<', 0)->sum('total_pnl'); // будет отрицательное число
         $totalProfit = $deals->sum('total_pnl');
+
         $averageProfit = $totalDeals > 0 ? $totalProfit / $totalDeals : 0;
 
         $topDeals = $deals->sortByDesc('total_pnl')->take(5);
@@ -43,6 +46,8 @@ class FundingDealConfigStatsScreen extends Screen
         return [
             'config' => $config,
             'totalDeals' => $totalDeals,
+            'sumProfit' => $sumProfit,
+            'sumLoss' => $sumLoss,
             'totalProfit' => $totalProfit,
             'averageProfit' => $averageProfit,
             'topDeals' => $topDeals,
