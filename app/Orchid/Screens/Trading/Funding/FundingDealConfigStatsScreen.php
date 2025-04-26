@@ -20,13 +20,15 @@ class FundingDealConfigStatsScreen extends Screen
 
         $totalDeals = $deals->count();
         $sumProfit = $deals->where('total_pnl', '>', 0)->sum('total_pnl');
-        $sumLoss = $deals->where('total_pnl', '<', 0)->sum('total_pnl'); // будет отрицательное число
+        $sumLoss = $deals->where('total_pnl', '<', 0)->sum('total_pnl');
         $totalProfit = $deals->sum('total_pnl');
 
         $averageProfit = $totalDeals > 0 ? $totalProfit / $totalDeals : 0;
 
         $topDeals = $deals->sortByDesc('total_pnl')->take(5);
-        $worstDeals = $deals->sortBy('total_pnl')->take(5);
+        $worstDeals = $deals->sortBy('total_pnl')
+            ->where('total_pnl', '<', 0)
+            ->take(5);
 
         $byCurrency = $deals->groupBy('currency_id');
         $coinStats = $byCurrency->map(function ($deals, $currencyId) {
@@ -39,9 +41,8 @@ class FundingDealConfigStatsScreen extends Screen
             ];
         });
 
-        $topCoins = $coinStats->sortByDesc('total_profit')->take(3);
-        $worstCoins = $coinStats->sortBy('total_profit')->take(3);
-
+        $topCoins = $coinStats->sortByDesc('total_profit')->take(5);
+        $worstCoins = $coinStats->sortBy('total_profit')->take(5);
 
         return [
             'config' => $config,

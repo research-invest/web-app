@@ -49,7 +49,7 @@
             Name: <a href="{{ route('platform.trading.funding_deal.edit', $deal->id) }}"><b>{{ $deal->currency->name }}</b></a>
         </span>
                             <span class="{{ $deal->total_pnl >= 0 ? 'text-success' : 'text-danger' }}">
-            {{ $deal->total_pnl >= 0 ? '+' : '' }}{{ $deal->total_pnl }}
+            {{ $deal->total_pnl >= 0 ? '+' : '' }} {{ $deal->total_pnl }}
         </span>
                         </li>
                     @empty
@@ -64,7 +64,7 @@
         <div class="col-md-6 mb-4">
             <div class="card h-100">
                 <div class="card-header bg-info text-white">
-                    <h5 class="mb-0">Топ-3 прибыльных монеты</h5>
+                    <h5 class="mb-0">Топ-5 прибыльных монеты</h5>
                 </div>
                 <ul class="list-group list-group-flush">
                     @forelse($topCoins as $coin)
@@ -85,7 +85,7 @@
         <div class="col-md-6 mb-4">
             <div class="card h-100">
                 <div class="card-header bg-secondary text-white">
-                    <h5 class="mb-0">Топ-3 убыточных монеты</h5>
+                    <h5 class="mb-0">Топ-5 убыточных монеты</h5>
                 </div>
                 <ul class="list-group list-group-flush">
                     @forelse($worstCoins as $coin)
