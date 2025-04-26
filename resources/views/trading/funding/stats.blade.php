@@ -2,19 +2,14 @@
 
     <div class="card shadow-sm mb-4">
         <div class="card-body">
-            <h3 class="card-title mb-3">Статистика по конфигу: <span class="text-primary">#{{ $config->id }}</span></h3>
+            <h3 class="card-title mb-3">Статистика по конфигу: <span class="text-primary">
+                    <a target="_blank" href="{{ route('platform.trading.funding_deals', $config->id) }}">{{ $config->name }}</a>
+                </span></h3>
             <ul class="list-group list-group-flush mb-3">
                 <li class="list-group-item">Всего сделок: <b>{{ $totalDeals }}</b></li>
-                <li class="list-group-item">
-                    Суммарная прибыль: <b class="text-success">+{{ $sumProfit }}</b>
-                </li>
-                <li class="list-group-item">
-                    Суммарные убытки: <b class="text-danger">{{ $sumLoss }}</b>
-                </li>
-                <li class="list-group-item">
-                    Суммарно: <b class="{{ $totalProfit >= 0 ? 'text-success' : 'text-danger' }}">{{ $totalProfit }}</b>
-                </li>
-
+                <li class="list-group-item">Суммарная прибыль: <b class="text-success">+{{ $sumProfit }}</b></li>
+                <li class="list-group-item">Суммарные убытки: <b class="text-danger">{{ $sumLoss }}</b></li>
+                <li class="list-group-item">Суммарно: <b class="{{ $totalProfit >= 0 ? 'text-success' : 'text-danger' }}">{{ $totalProfit }}</b></li>
                 <li class="list-group-item">Средняя прибыль: <b>{{ $averageProfit }}</b></li>
             </ul>
         </div>
