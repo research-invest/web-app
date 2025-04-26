@@ -38,7 +38,7 @@ use \App\Orchid\Screens\Trading\Funding\FundingDealEditScreen;
 use \App\Orchid\Screens\Statistics\BtcWallets\BtcWalletsListScreen;
 use \App\Orchid\Screens\Statistics\BtcWallets\BtcWalletShowScreen;
 use App\Orchid\Screens\Statistics\BtcWallets\WalletTrendsScreen;
-
+use \App\Orchid\Screens\Trading\Funding\FundingDealConfigStatsScreen;
 
 /*
 |--------------------------------------------------------------------------
@@ -140,6 +140,13 @@ Route::screen('/trading/funding-deals/{config?}', FundingDealsListScreen::class)
 
 Route::screen('/trading/funding-deals/{deal}/edit', FundingDealEditScreen::class)
     ->name('platform.trading.funding_deal.edit')
+    ->breadcrumbs(fn(Trail $trail, $trade) => $trail
+        ->parent('platform.trading.funding_deals')
+        ->push('Сделка #' . $trade->id)
+    );
+
+Route::screen('/trading/funding-deals/{config}/stats', FundingDealConfigStatsScreen::class)
+    ->name('platform.trading.funding_deal.stats')
     ->breadcrumbs(fn(Trail $trail, $trade) => $trail
         ->parent('platform.trading.funding_deals')
         ->push('Сделка #' . $trade->id)

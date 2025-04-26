@@ -56,6 +56,10 @@ class ConfigListLayout extends Table
                 ->render(fn(FundingDealConfig $funding) => DropDown::make()
                     ->icon('bs.three-dots-vertical')
                     ->list([
+                        Link::make('Отчет')
+                            ->icon('bs.bar-chart')
+                            ->route('platform.trading.funding_deal.stats', $funding),
+
                         Button::make(__('Delete'))
                             ->icon('bs.trash3')
                             ->confirm('Вы уверены?')
