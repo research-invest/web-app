@@ -33,7 +33,7 @@ class FundingDealConfigStatsScreen extends Screen
             $currency = $deals->first()->currency;
             return [
                 'currency_id' => $currencyId,
-                'coin' => $currency ? $currency->symbol : 'N/A',
+                'coin' => $currency ? $currency->name : 'N/A',
                 'total_profit' => $deals->sum('total_pnl'),
                 'count' => $deals->count(),
             ];
