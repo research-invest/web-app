@@ -33,6 +33,9 @@ class FundingTrade implements ShouldQueue, ShouldBeUnique
 
     public function handle()
     {
+
+        Log::info("🚀 Start job for deal {$this->deal->id} at " . now());
+
         if ($this->deal->isStatusDone()) {
             return true;
         }
@@ -191,6 +194,8 @@ class FundingTrade implements ShouldQueue, ShouldBeUnique
         }
 
         $this->done();
+
+        Log::info("✅ End job for deal {$this->deal->id} at " . now());
 
         return true;
     }

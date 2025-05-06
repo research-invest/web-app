@@ -43,7 +43,7 @@ class ListLayout extends Table
                     $text = $trade->currency->name;
                     if ($trade->is_fake) {
                         $text .= Trade::FAKE_TRADE_TEXT;
-                        return "<a href='{$route}' class='text-danger'>{$text}</a>";
+                        return "<a data-turbo=\"false\" href='{$route}' class='text-danger'>{$text}</a>";
                     }
                     return "<a data-turbo=\"false\" href='{$route}'>{$text}</a>";
                 }),
