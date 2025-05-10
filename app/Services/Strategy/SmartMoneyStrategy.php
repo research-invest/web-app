@@ -99,7 +99,11 @@ class SmartMoneyStrategy
     private function calculateMovingAverage(array $data, int $period): float
     {
         $windowData = array_slice($data, -$period);
-        return array_sum($windowData) / count($windowData);
+        if ($count = count($windowData)) {
+            return array_sum($windowData) / $count;
+        }
+
+        return 0;
     }
 
     public function setVolumeThreshold(float $threshold): void
@@ -151,7 +155,7 @@ class SmartMoneyStrategy
     {
         $firstPrice = $candles[0]['close'];
 
-        if(!$firstPrice){
+        if (!$firstPrice) {
             return '-';
         }
         $lastPrice = end($candles)['close'];

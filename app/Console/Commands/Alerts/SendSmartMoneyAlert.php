@@ -26,9 +26,9 @@ class SendSmartMoneyAlert extends Command
 
     public function handle()
     {
-//        $this->send('BTCUSDT');
+        $this->send('BTCUSDT');
         $this->send('TAOUSDT');
-        $this->send('DOGEUSDT');
+//        $this->send('DOGEUSDT');
     }
 
     private function send(string $currency)
