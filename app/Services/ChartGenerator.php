@@ -239,10 +239,8 @@ class ChartGenerator
         $graph->legend->SetPos(0.5, 0.05, 'center', 'top');
 
 
-        // Получаем blob через IMG_HANDLER
-        $img = $graph->Stroke(_IMG_HANDLER);
         ob_start();
-        imagepng($img->img);
+        $graph->Stroke();
         $blob = ob_get_clean();
 
         return $blob; // бинарные данные PNG
