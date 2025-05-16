@@ -4,6 +4,7 @@ namespace App\Console;
 
 use App\Console\Commands\Alerts\CheckLiquidationWarnings;
 use App\Console\Commands\Alerts\FreeSpaceAlert;
+use App\Console\Commands\Alerts\GenerateMarketOscillator;
 use App\Console\Commands\Alerts\HunterFunding;
 use App\Console\Commands\Alerts\SendSmartMoneyAlert;
 use App\Console\Commands\Alerts\SendTradePnLNotification;
@@ -44,6 +45,12 @@ class Handler
             ->withoutOverlapping()
             ->runInBackground()
             ->everyTenMinutes();
+
+        $schedule->command(GenerateMarketOscillator::class)
+            ->withoutOverlapping()
+            ->runInBackground()
+            ->everyTenMinutes();
+
         $schedule->command(CheckLiquidationWarnings::class)
             ->withoutOverlapping()
             ->runInBackground()

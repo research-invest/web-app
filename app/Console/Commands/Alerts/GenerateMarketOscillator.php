@@ -17,8 +17,8 @@ class GenerateMarketOscillator extends Command
 
     private TelegramService $telegram;
     private ChartGenerator $chartGenerator;
-    private const LONG_TRADE_ID = 'LONG_TRADE_ID';
-    private const SHORT_TRADE_ID = 'SHORT_TRADE_ID';
+    private const string LONG_TRADE_ID = 'LONG_TRADE_ID';
+    private const string SHORT_TRADE_ID = 'SHORT_TRADE_ID';
 
     public function __construct(TelegramService $telegram, ChartGenerator $chartGenerator)
     {
@@ -95,7 +95,9 @@ class GenerateMarketOscillator extends Command
             $maxPnl = max(abs($longPnl), abs($shortPnl), 1); // чтобы не было деления на 0
             $longNormalized = ($longPnl / $maxPnl) * 100;
             $shortNormalized = ($shortPnl / $maxPnl) * 100;
-            $oscillator = $longNormalized - $shortNormalized;
+//            $oscillator = $longNormalized - $shortNormalized;
+
+            $oscillator = (($longPnl - $shortPnl) / $maxPnl) * 100;
 
             $chartData[] = [
                 'timestamp' => $date->format('Y-m-d H:i:s'),
