@@ -19,6 +19,7 @@ class GenerateMarketOscillator extends Command
     private ChartGenerator $chartGenerator;
     private const string LONG_TRADE_ID = 'LONG_TRADE_ID';
     private const string SHORT_TRADE_ID = 'SHORT_TRADE_ID';
+    private const int LIMIT = 100;
 
     public function __construct(TelegramService $telegram, ChartGenerator $chartGenerator)
     {
@@ -42,8 +43,8 @@ class GenerateMarketOscillator extends Command
         }
 
         // Получаем историю PNL для обеих сделок
-        $longHistory = $longTrade->pnlHistory()->latest()->limit(40)->get()->sortBy('created_at')->values();
-        $shortHistory = $shortTrade->pnlHistory()->latest()->limit(40)->get()->sortBy('created_at')->values();
+        $longHistory = $longTrade->pnlHistory()->latest()->limit(self::LIMIT)->get()->sortBy('created_at')->values();
+        $shortHistory = $shortTrade->pnlHistory()->latest()->limit(self::LIMIT)->get()->sortBy('created_at')->values();
 
         if ($longHistory->isEmpty() || $shortHistory->isEmpty()) {
             $this->error('Нет истории PNL для одной или обеих сделок');

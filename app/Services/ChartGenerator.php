@@ -215,8 +215,8 @@ class ChartGenerator
         // Оформление
         $graph->img->SetMargin(60, 20, 40, 60);
         $graph->title->Set($title);
-        $graph->xaxis->SetTickLabels($timestamps);
-        $graph->xaxis->SetLabelAngle(45);
+//        $graph->xaxis->SetTickLabels($timestamps);
+//        $graph->xaxis->SetLabelAngle(45);
         $graph->xaxis->SetTitle('Время', 'center');
         $graph->yaxis->SetTitle('PNL', 'middle');
 
@@ -238,19 +238,10 @@ class ChartGenerator
         $graph->legend->SetFrameWeight(1);
         $graph->legend->SetPos(0.5, 0.05, 'center', 'top');
 
-
         ob_start();
         $graph->Stroke();
         $blob = ob_get_clean();
 
-        return $blob; // бинарные данные PNG
-
-
-
-        // Сохраняем в файл
-        $filename = storage_path('app/public/long_short_' . date('Y-m-d_H-i-s') . '.png');
-        $graph->Stroke($filename);
-
-        return $filename;
+        return $blob;
     }
 }
