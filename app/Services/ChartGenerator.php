@@ -206,7 +206,7 @@ class ChartGenerator
 //        require_once base_path('vendor/mitoteam/jpgraph/src/jpgraph.php');
 //        require_once base_path('vendor/mitoteam/jpgraph/src/jpgraph_line.php');
 
-        MtJpGraph::load();
+        MtJpGraph::load(['line']);
 
         $timestamps = array_column($chartData, 'timestamp');
         $longs = array_column($chartData, 'long');
