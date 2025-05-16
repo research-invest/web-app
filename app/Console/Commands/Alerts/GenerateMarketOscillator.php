@@ -42,8 +42,8 @@ class GenerateMarketOscillator extends Command
         }
 
         // Получаем историю PNL для обеих сделок
-        $longHistory = $longTrade->pnlHistory()->orderBy('created_at')->limit(40)->get();
-        $shortHistory = $shortTrade->pnlHistory()->orderBy('created_at')->limit(40)->get();
+        $longHistory = $longTrade->pnlHistory()->latest()->limit(40)->get();
+        $shortHistory = $shortTrade->pnlHistory()->latest()->limit(40)->get();
 
         if ($longHistory->isEmpty() || $shortHistory->isEmpty()) {
             $this->error('Нет истории PNL для одной или обеих сделок');
@@ -64,26 +64,6 @@ class GenerateMarketOscillator extends Command
         ksort($timestamps);
 
         // Для каждой временной метки рассчитываем осциллятор
-//        foreach ($timestamps as $timestamp => $date) {
-//            $longPnl = $longHistory->where('created_at', $date)->first()?->unrealized_pnl ?? 0;
-//            $shortPnl = $shortHistory->where('created_at', $date)->first()?->unrealized_pnl ?? 0;
-//
-//            // Нормализуем PNL к диапазону -100 до 100
-//            $maxPnl = max(abs($longPnl), abs($shortPnl));
-//            if ($maxPnl == 0) {
-//                $oscillator = 0;
-//            } else {
-//                $longNormalized = ($longPnl / $maxPnl) * 100;
-//                $shortNormalized = ($shortPnl / $maxPnl) * 100;
-//                $oscillator = $longNormalized - $shortNormalized;
-//            }
-//
-//            $chartData[] = [
-//                'timestamp' => $date->format('Y-m-d H:i:s'),
-//                'score' => round($oscillator, 2)
-//            ];
-//        }
-
         $lastLongPnl = 0;
         $lastShortPnl = 0;
         foreach ($timestamps as $timestamp => $date) {
@@ -95,9 +75,9 @@ class GenerateMarketOscillator extends Command
             $maxPnl = max(abs($longPnl), abs($shortPnl), 1); // чтобы не было деления на 0
             $longNormalized = ($longPnl / $maxPnl) * 100;
             $shortNormalized = ($shortPnl / $maxPnl) * 100;
-//            $oscillator = $longNormalized - $shortNormalized;
+            $oscillator = $longNormalized - $shortNormalized;
 
-            $oscillator = (($longPnl - $shortPnl) / $maxPnl) * 100;
+//            $oscillator = (($longPnl - $shortPnl) / $maxPnl) * 100;
 
             $chartData[] = [
                 'timestamp' => $date->format('Y-m-d H:i:s'),
