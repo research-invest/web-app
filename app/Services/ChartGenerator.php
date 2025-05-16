@@ -7,6 +7,7 @@ use Imagick;
 use ImagickDraw;
 use ImagickPixel;
 use Carbon\Carbon;
+use LinePlot;
 use mitoteam\jpgraph\MtJpGraph;
 
 class ChartGenerator
@@ -224,12 +225,12 @@ class ChartGenerator
         $graph->yaxis->SetTitle('PNL', 'middle');
 
         // Линия лонга
-        $longPlot = new \LinePlot($longs);
+        $longPlot = new LinePlot($longs);
         $longPlot->SetColor('green');
         $longPlot->SetLegend('Лонг');
 
         // Линия шорта
-        $shortPlot = new \LinePlot($shorts);
+        $shortPlot = new LinePlot($shorts);
         $shortPlot->SetColor('red');
         $shortPlot->SetLegend('Шорт');
 
