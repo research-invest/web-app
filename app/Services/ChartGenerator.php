@@ -13,7 +13,7 @@ class ChartGenerator
     private int $height = 400;
     private int $padding = 60;
 
-    public function generateIndexChart(array $indexData): string
+    public function generateIndexChart(array $indexData, string $title): string
     {
         $image = new Imagick();
         $draw = new ImagickDraw();
@@ -69,13 +69,13 @@ class ChartGenerator
             );
         }
 
-        // Добавляем заголовок
-        $draw->setFillColor(new ImagickPixel('black'));
-        $draw->setFontSize(16);
+//      Добавляем заголовок
+        $draw->setFillColor(new ImagickPixel('rgb(0,150,0)'));
+        $draw->setFontSize(18);
         $draw->annotation(
             $this->padding,
-            25,
-            'Композитный индекс'
+            40,
+            $title
         );
 
         $image->drawImage($draw);

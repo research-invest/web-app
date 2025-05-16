@@ -49,7 +49,7 @@ class SendIndexChart extends Command
         $indexData = $indexCalculator->calculateIndex($data3m, $data15m, $data1h);
 
         // Генерируем изображение
-        $imageData = $chartGenerator->generateIndexChart($indexData);
+        $imageData = $chartGenerator->generateIndexChart($indexData, 'Композитный индекс');
 
         $this->telegram->sendPhoto(
             "Композитный индекс $currency\nВремя: " . now()->format('Y-m-d H:i:s'),

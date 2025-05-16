@@ -33,7 +33,7 @@ class TelegramService
         }
     }
 
-    public function sendPhoto(string $caption, $image, $chatId = null): void
+    public function sendPhoto(string $caption, $image, $chatId = null): bool
     {
         // Если $image это URL
         if (filter_var($image, FILTER_VALIDATE_URL)) {
@@ -54,5 +54,7 @@ class TelegramService
                 'parse_mode' => 'HTML'
             ]);
         }
+        $result = $response->json();
+        return $result['ok'] ?? false;
     }
 }

@@ -42,8 +42,8 @@ class GenerateMarketOscillator extends Command
         }
 
         // Получаем историю PNL для обеих сделок
-        $longHistory = $longTrade->pnlHistory()->orderBy('created_at')->limit(20)->get();
-        $shortHistory = $shortTrade->pnlHistory()->orderBy('created_at')->limit(20)->get();
+        $longHistory = $longTrade->pnlHistory()->orderBy('created_at')->limit(40)->get();
+        $shortHistory = $shortTrade->pnlHistory()->orderBy('created_at')->limit(40)->get();
 
         if ($longHistory->isEmpty() || $shortHistory->isEmpty()) {
             $this->error('Нет истории PNL для одной или обеих сделок');
@@ -64,19 +64,38 @@ class GenerateMarketOscillator extends Command
         ksort($timestamps);
 
         // Для каждой временной метки рассчитываем осциллятор
-        foreach ($timestamps as $timestamp => $date) {
-            $longPnl = $longHistory->where('created_at', $date)->first()?->unrealized_pnl ?? 0;
-            $shortPnl = $shortHistory->where('created_at', $date)->first()?->unrealized_pnl ?? 0;
+//        foreach ($timestamps as $timestamp => $date) {
+//            $longPnl = $longHistory->where('created_at', $date)->first()?->unrealized_pnl ?? 0;
+//            $shortPnl = $shortHistory->where('created_at', $date)->first()?->unrealized_pnl ?? 0;
+//
+//            // Нормализуем PNL к диапазону -100 до 100
+//            $maxPnl = max(abs($longPnl), abs($shortPnl));
+//            if ($maxPnl == 0) {
+//                $oscillator = 0;
+//            } else {
+//                $longNormalized = ($longPnl / $maxPnl) * 100;
+//                $shortNormalized = ($shortPnl / $maxPnl) * 100;
+//                $oscillator = $longNormalized - $shortNormalized;
+//            }
+//
+//            $chartData[] = [
+//                'timestamp' => $date->format('Y-m-d H:i:s'),
+//                'score' => round($oscillator, 2)
+//            ];
+//        }
 
-            // Нормализуем PNL к диапазону -100 до 100
-            $maxPnl = max(abs($longPnl), abs($shortPnl));
-            if ($maxPnl == 0) {
-                $oscillator = 0;
-            } else {
-                $longNormalized = ($longPnl / $maxPnl) * 100;
-                $shortNormalized = ($shortPnl / $maxPnl) * 100;
-                $oscillator = $longNormalized - $shortNormalized;
-            }
+        $lastLongPnl = 0;
+        $lastShortPnl = 0;
+        foreach ($timestamps as $timestamp => $date) {
+            $longPnl = $longHistory->where('created_at', '<=', $date)->last()?->unrealized_pnl ?? $lastLongPnl;
+            $shortPnl = $shortHistory->where('created_at', '<=', $date)->last()?->unrealized_pnl ?? $lastShortPnl;
+            $lastLongPnl = $longPnl;
+            $lastShortPnl = $shortPnl;
+
+            $maxPnl = max(abs($longPnl), abs($shortPnl), 1); // чтобы не было деления на 0
+            $longNormalized = ($longPnl / $maxPnl) * 100;
+            $shortNormalized = ($shortPnl / $maxPnl) * 100;
+            $oscillator = $longNormalized - $shortNormalized;
 
             $chartData[] = [
                 'timestamp' => $date->format('Y-m-d H:i:s'),
@@ -85,7 +104,14 @@ class GenerateMarketOscillator extends Command
         }
 
         // Генерируем график
-        $chartImage = $this->chartGenerator->generateIndexChart($chartData);
+        $chartImage = $this->chartGenerator->generateIndexChart($chartData, '');
+
+        // Сохраняем график в файл
+//        $filename = storage_path('app/public/oscillator_' . date('Y-m-d_H-i-s') . '.png');
+//        file_put_contents($filename, $chartImage);
+//
+//        $this->info("График сохранен в файл: {$filename}");
+
 
         // Формируем сообщение
         $currentOscillator = end($chartData)['score'];
@@ -99,7 +125,14 @@ class GenerateMarketOscillator extends Command
             $message .= "⚪ Нейтральное состояние";
         }
 
-        $this->telegram->sendPhoto($chartImage, $message); // , '-1002321524146'
-        $this->info('Осциллятор успешно отправлен');
+        if ($this->telegram->sendPhoto($message, $chartImage)) {
+            $this->info('Осциллятор успешно отправлен');
+//            unlink($filename); // удаляем файл после отправки
+        } else {
+            $this->error('Ошибка при отправке осциллятора');
+        }
+
+
+
     }
 }
