@@ -2,7 +2,7 @@
 git pull
 
 php artisan migrate --force
-php artisan optimize
+php artisan optimize:clear
 php artisan queue:restart
 
 SCRIPT_DIR=$(dirname "$(readlink -f "$0")")

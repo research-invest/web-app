@@ -29,6 +29,10 @@ class GenerateMarketOscillator extends Command
 
     public function handle()
     {
+        /**
+         * @var $longTrade Trade
+         * @var $shortTrade Trade
+         */
         $longTrade = Trade::find(env(self::LONG_TRADE_ID));
         $shortTrade = Trade::find(env(self::SHORT_TRADE_ID));
 
@@ -38,8 +42,8 @@ class GenerateMarketOscillator extends Command
         }
 
         // Получаем историю PNL для обеих сделок
-        $longHistory = $longTrade->pnlHistory()->orderBy('created_at')->get();
-        $shortHistory = $shortTrade->pnlHistory()->orderBy('created_at')->get();
+        $longHistory = $longTrade->pnlHistory()->orderBy('created_at')->limit(20)->get();
+        $shortHistory = $shortTrade->pnlHistory()->orderBy('created_at')->limit(20)->get();
 
         if ($longHistory->isEmpty() || $shortHistory->isEmpty()) {
             $this->error('Нет истории PNL для одной или обеих сделок');
