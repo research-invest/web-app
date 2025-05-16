@@ -19,7 +19,7 @@ class GenerateMarketOscillator extends Command
     private ChartGenerator $chartGenerator;
     private const string LONG_TRADE_ID = 'LONG_TRADE_ID';
     private const string SHORT_TRADE_ID = 'SHORT_TRADE_ID';
-    private const int LIMIT = 100;
+    private const int LIMIT = 60;
 
     public function __construct(TelegramService $telegram, ChartGenerator $chartGenerator)
     {
@@ -67,25 +67,6 @@ class GenerateMarketOscillator extends Command
         // Для каждой временной метки рассчитываем осциллятор
         $lastLongPnl = 0;
         $lastShortPnl = 0;
-//        foreach ($timestamps as $timestamp => $date) {
-//            $longPnl = $longHistory->where('created_at', '<=', $date)->last()?->unrealized_pnl ?? $lastLongPnl;
-//            $shortPnl = $shortHistory->where('created_at', '<=', $date)->last()?->unrealized_pnl ?? $lastShortPnl;
-//            $lastLongPnl = $longPnl;
-//            $lastShortPnl = $shortPnl;
-//
-//            $maxPnl = max(abs($longPnl), abs($shortPnl), 1); // чтобы не было деления на 0
-//            $longNormalized = ($longPnl / $maxPnl) * 100;
-//            $shortNormalized = ($shortPnl / $maxPnl) * 100;
-//            $oscillator = $longNormalized - $shortNormalized;
-//
-////            $oscillator = (($longPnl - $shortPnl) / $maxPnl) * 100;
-//
-//            $chartData[] = [
-//                'timestamp' => $date->format('Y-m-d H:i:s'),
-//                'score' => round($oscillator, 2)
-//            ];
-//        }
-
         foreach ($timestamps as $timestamp => $date) {
             $longPnl = $longHistory->where('created_at', '<=', $date)->last()?->unrealized_pnl ?? $lastLongPnl;
             $shortPnl = $shortHistory->where('created_at', '<=', $date)->last()?->unrealized_pnl ?? $lastShortPnl;
@@ -131,8 +112,5 @@ class GenerateMarketOscillator extends Command
         } else {
             $this->error('Ошибка при отправке осциллятора');
         }
-
-
-
     }
 }
