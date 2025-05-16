@@ -202,10 +202,6 @@ class ChartGenerator
 
     public function generateLongShortJpGraph(array $chartData, string $title = 'PNL Лонг/Шорт'): string
     {
-        // Подключаем JpGraph
-//        require_once base_path('vendor/mitoteam/jpgraph/src/jpgraph.php');
-//        require_once base_path('vendor/mitoteam/jpgraph/src/jpgraph_line.php');
-
         MtJpGraph::load(['line']);
 
         $timestamps = array_column($chartData, 'timestamp');
@@ -241,6 +237,17 @@ class ChartGenerator
         // Легенда
         $graph->legend->SetFrameWeight(1);
         $graph->legend->SetPos(0.5, 0.05, 'center', 'top');
+
+
+        // Получаем blob через IMG_HANDLER
+        $img = $graph->Stroke(_IMG_HANDLER);
+        ob_start();
+        imagepng($img->img);
+        $blob = ob_get_clean();
+
+        return $blob; // бинарные данные PNG
+
+
 
         // Сохраняем в файл
         $filename = storage_path('app/public/long_short_' . date('Y-m-d_H-i-s') . '.png');
