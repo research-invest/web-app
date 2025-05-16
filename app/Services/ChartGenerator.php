@@ -2,10 +2,12 @@
 
 namespace App\Services;
 
+use Graph;
 use Imagick;
 use ImagickDraw;
 use ImagickPixel;
 use Carbon\Carbon;
+use mitoteam\jpgraph\MtJpGraph;
 
 class ChartGenerator
 {
@@ -195,5 +197,54 @@ class ChartGenerator
         } catch (\Exception $e) {
             // Если что-то пошло не так, просто пропускаем заливку
         }
+    }
+
+    public function generateLongShortJpGraph(array $chartData, string $title = 'PNL Лонг/Шорт'): string
+    {
+        // Подключаем JpGraph
+//        require_once base_path('vendor/mitoteam/jpgraph/src/jpgraph.php');
+//        require_once base_path('vendor/mitoteam/jpgraph/src/jpgraph_line.php');
+
+        MtJpGraph::load();
+
+        $timestamps = array_column($chartData, 'timestamp');
+        $longs = array_column($chartData, 'long');
+        $shorts = array_column($chartData, 'short');
+
+        // Создаём график
+        $graph = new Graph(800, 400);
+        $graph->SetScale('textlin');
+
+        // Оформление
+        $graph->img->SetMargin(60, 20, 40, 60);
+        $graph->title->Set($title);
+        $graph->xaxis->SetTickLabels($timestamps);
+        $graph->xaxis->SetLabelAngle(45);
+        $graph->xaxis->SetTitle('Время', 'center');
+        $graph->yaxis->SetTitle('PNL', 'middle');
+
+        // Линия лонга
+        $longPlot = new \LinePlot($longs);
+        $longPlot->SetColor('green');
+        $longPlot->SetLegend('Лонг');
+
+        // Линия шорта
+        $shortPlot = new \LinePlot($shorts);
+        $shortPlot->SetColor('red');
+        $shortPlot->SetLegend('Шорт');
+
+        // Добавляем линии на график
+        $graph->Add($longPlot);
+        $graph->Add($shortPlot);
+
+        // Легенда
+        $graph->legend->SetFrameWeight(1);
+        $graph->legend->SetPos(0.5, 0.05, 'center', 'top');
+
+        // Сохраняем в файл
+        $filename = storage_path('app/public/long_short_' . date('Y-m-d_H-i-s') . '.png');
+        $graph->Stroke($filename);
+
+        return $filename;
     }
 }

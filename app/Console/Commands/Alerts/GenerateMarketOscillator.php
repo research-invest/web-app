@@ -66,6 +66,25 @@ class GenerateMarketOscillator extends Command
         // Для каждой временной метки рассчитываем осциллятор
         $lastLongPnl = 0;
         $lastShortPnl = 0;
+//        foreach ($timestamps as $timestamp => $date) {
+//            $longPnl = $longHistory->where('created_at', '<=', $date)->last()?->unrealized_pnl ?? $lastLongPnl;
+//            $shortPnl = $shortHistory->where('created_at', '<=', $date)->last()?->unrealized_pnl ?? $lastShortPnl;
+//            $lastLongPnl = $longPnl;
+//            $lastShortPnl = $shortPnl;
+//
+//            $maxPnl = max(abs($longPnl), abs($shortPnl), 1); // чтобы не было деления на 0
+//            $longNormalized = ($longPnl / $maxPnl) * 100;
+//            $shortNormalized = ($shortPnl / $maxPnl) * 100;
+//            $oscillator = $longNormalized - $shortNormalized;
+//
+////            $oscillator = (($longPnl - $shortPnl) / $maxPnl) * 100;
+//
+//            $chartData[] = [
+//                'timestamp' => $date->format('Y-m-d H:i:s'),
+//                'score' => round($oscillator, 2)
+//            ];
+//        }
+
         foreach ($timestamps as $timestamp => $date) {
             $longPnl = $longHistory->where('created_at', '<=', $date)->last()?->unrealized_pnl ?? $lastLongPnl;
             $shortPnl = $shortHistory->where('created_at', '<=', $date)->last()?->unrealized_pnl ?? $lastShortPnl;
@@ -73,20 +92,18 @@ class GenerateMarketOscillator extends Command
             $lastShortPnl = $shortPnl;
 
             $maxPnl = max(abs($longPnl), abs($shortPnl), 1); // чтобы не было деления на 0
-            $longNormalized = ($longPnl / $maxPnl) * 100;
-            $shortNormalized = ($shortPnl / $maxPnl) * 100;
-            $oscillator = $longNormalized - $shortNormalized;
-
-//            $oscillator = (($longPnl - $shortPnl) / $maxPnl) * 100;
+            $oscillator = (($longPnl - $shortPnl) / $maxPnl) * 100;
 
             $chartData[] = [
                 'timestamp' => $date->format('Y-m-d H:i:s'),
+                'long' => round($longPnl, 2),
+                'short' => round($shortPnl, 2),
                 'score' => round($oscillator, 2)
             ];
         }
 
         // Генерируем график
-        $chartImage = $this->chartGenerator->generateIndexChart($chartData, '');
+        $chartImage = $this->chartGenerator->generateLongShortJpGraph($chartData, '');
 
         // Сохраняем график в файл
 //        $filename = storage_path('app/public/oscillator_' . date('Y-m-d_H-i-s') . '.png');

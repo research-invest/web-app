@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2fa9924f48facf52a41d03b35f72483d",
+    "content-hash": "ab8552e105d750daaf4fedb3744962e1",
     "packages": [
         {
             "name": "brick/math",
@@ -2449,6 +2449,61 @@
                 "source": "https://github.com/zhouaini528/mxc-php/tree/1.0.9"
             },
             "time": "2024-02-22T06:27:05+00:00"
+        },
+        {
+            "name": "mitoteam/jpgraph",
+            "version": "10.4.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mitoteam/jpgraph.git",
+                "reference": "9ad8e2fcc30f765c788a28543e9705fb541d499f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mitoteam/jpgraph/zipball/9ad8e2fcc30f765c788a28543e9705fb541d499f",
+                "reference": "9ad8e2fcc30f765c788a28543e9705fb541d499f",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.5"
+            },
+            "replace": {
+                "jpgraph/jpgraph": "4.0.2",
+                "rulin132/jpgraph": "4.3.5"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "src/MtJpGraph.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "QPL-1.0"
+            ],
+            "authors": [
+                {
+                    "name": "JpGraph team",
+                    "homepage": "https://jpgraph.net",
+                    "role": "Original Library Developers"
+                },
+                {
+                    "name": "MiTo Team",
+                    "email": "info@mito-team.com",
+                    "homepage": "https://www.mito-team.com",
+                    "role": "Composer package maintenance, PHP-compatibility patches"
+                }
+            ],
+            "description": "JpGraph library composer package with PHP 8.4 support",
+            "homepage": "https://github.com/mitoteam/jpgraph",
+            "keywords": [
+                "jpgraph"
+            ],
+            "support": {
+                "issues": "https://github.com/mitoteam/jpgraph/issues",
+                "source": "https://github.com/mitoteam/jpgraph/tree/10.4.4"
+            },
+            "time": "2025-01-01T05:39:20+00:00"
         },
         {
             "name": "monolog/monolog",
