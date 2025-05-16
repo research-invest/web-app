@@ -42,8 +42,8 @@ class GenerateMarketOscillator extends Command
         }
 
         // Получаем историю PNL для обеих сделок
-        $longHistory = $longTrade->pnlHistory()->latest()->limit(40)->get();
-        $shortHistory = $shortTrade->pnlHistory()->latest()->limit(40)->get();
+        $longHistory = $longTrade->pnlHistory()->latest()->limit(40)->get()->sortBy('created_at')->values();
+        $shortHistory = $shortTrade->pnlHistory()->latest()->limit(40)->get()->sortBy('created_at')->values();
 
         if ($longHistory->isEmpty() || $shortHistory->isEmpty()) {
             $this->error('Нет истории PNL для одной или обеих сделок');
