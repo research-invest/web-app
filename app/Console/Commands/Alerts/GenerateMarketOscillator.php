@@ -99,7 +99,7 @@ class GenerateMarketOscillator extends Command
             $message .= "⚪ Нейтральное состояние";
         }
 
-        $this->telegram->sendPhoto($chartImage, $message, '-1002321524146');
+        $this->telegram->sendPhoto($chartImage, $message); // , '-1002321524146'
         $this->info('Осциллятор успешно отправлен');
     }
 }
