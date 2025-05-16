@@ -230,6 +230,18 @@ class ChartGenerator
         $shortPlot->SetColor('red');
         $shortPlot->SetLegend('Шорт');
 
+        $delta = [];
+        foreach ($chartData as $i => $row) {
+            $delta[] = $row['long'] - $row['short'];
+        }
+
+        $deltaSmooth = $this->movingAverage($delta, 7);
+
+        $deltaPlot = new LinePlot($deltaSmooth);
+        $deltaPlot->SetColor('orange');
+        $deltaPlot->SetLegend('Скользящее направление');
+        $graph->Add($deltaPlot);
+
         // Добавляем линии на график
         $graph->Add($longPlot);
         $graph->Add($shortPlot);
@@ -243,5 +255,16 @@ class ChartGenerator
         $blob = ob_get_clean();
 
         return $blob;
+    }
+
+    protected function movingAverage($data, $window = 5): array
+    {
+        $result = [];
+        for ($i = 0, $iMax = count($data); $i < $iMax; $i++) {
+            $start = max(0, $i - $window + 1);
+            $slice = array_slice($data, $start, $window);
+            $result[] = array_sum($slice) / count($slice);
+        }
+        return $result;
     }
 }
