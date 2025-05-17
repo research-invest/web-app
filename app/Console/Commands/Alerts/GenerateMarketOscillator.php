@@ -92,7 +92,7 @@ class GenerateMarketOscillator extends Command
 //        file_put_contents($filename, $chartImage);
 //
 //        $this->info("График сохранен в файл: {$filename}");
-
+//        return;
 
         // Формируем сообщение
         $currentOscillator = end($chartData)['score'];

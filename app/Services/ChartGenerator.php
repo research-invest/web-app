@@ -217,7 +217,7 @@ class ChartGenerator
         $graph->title->Set($title);
 //        $graph->xaxis->SetTickLabels($timestamps);
 //        $graph->xaxis->SetLabelAngle(45);
-        $graph->xaxis->SetTitle('Время', 'center');
+//        $graph->xaxis->SetTitle('Время', 'center');
         $graph->yaxis->SetTitle('PNL', 'middle');
 
         // Линия лонга
