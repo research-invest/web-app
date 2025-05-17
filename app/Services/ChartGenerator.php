@@ -209,7 +209,7 @@ class ChartGenerator
         $shorts = array_column($chartData, 'short');
 
         // Создаём график
-        $graph = new Graph(800, 400);
+        $graph = new Graph(1200, 600);
         $graph->SetScale('textlin');
 
         // Оформление
@@ -218,6 +218,7 @@ class ChartGenerator
 //        $graph->xaxis->SetTickLabels($timestamps);
 //        $graph->xaxis->SetLabelAngle(45);
 //        $graph->xaxis->SetTitle('Время', 'center');
+        $graph->xaxis->HideLabels();
         $graph->yaxis->SetTitle('PNL', 'middle');
 
         // Линия лонга
