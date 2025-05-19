@@ -36,7 +36,9 @@ class CheckLiquidationWarnings extends Command
 
     public function handle()
     {
-        $openTrades = Trade::where('status', 'open')->get();
+        $openTrades = Trade::where('status', 'open')
+            ->where('is_notify', true)
+            ->get();
 
         foreach ($openTrades as $trade) {
             $this->checkTradePosition($trade);
