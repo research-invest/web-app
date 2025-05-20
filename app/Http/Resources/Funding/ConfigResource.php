@@ -8,7 +8,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 /**
  * @mixin FundingDealConfig
  */
-class FundingConfigResource extends JsonResource
+class ConfigResource extends JsonResource
 {
     public function toArray($request)
     {
@@ -23,7 +23,7 @@ class FundingConfigResource extends JsonResource
             'currencies' => $this->currencies,
             'ignore_currencies' => $this->ignore_currencies,
             'is_testnet' => $this->is_testnet,
-            'deals' => $this->deals()->new()->get(),
+            'deals' => DealResource::collection($this->deals()->new()->get()),
         ];
     }
 }
