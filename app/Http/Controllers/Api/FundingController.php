@@ -60,7 +60,6 @@ class FundingController extends Controller
             'funding_fee' => 'required|numeric',
             'total_pnl' => 'required|numeric',
             'roi_percent' => 'required|numeric',
-            'price_history' => 'required|array',
         ]);
 
         if ($validator->fails()) {
@@ -88,9 +87,8 @@ class FundingController extends Controller
             'funding_fee' => $request->funding_fee,
             'total_pnl' => $request->total_pnl,
             'roi_percent' => $request->roi_percent,
-            'price_history' => $request->price_history,
+//            'price_history' => $request->price_history,
             'status' => FundingDeal::STATUS_DONE,
-            'run_time' => now(),
         ]);
 
         return response()->json([
