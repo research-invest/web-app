@@ -67,8 +67,8 @@ class FundingDealsConfig extends Command
                     'price_history' => [],
                 ]);
 
-                FundingTrade::dispatch($deal)
-                    ->delay($deal->run_time);
+//                FundingTrade::dispatch($deal)
+//                    ->delay($deal->run_time);
             }
         }
 
