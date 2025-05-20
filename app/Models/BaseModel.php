@@ -6,6 +6,7 @@ use App\Helpers\UserHelper;
 use Illuminate\Database\Eloquent\Model;
 
 /**
+ * @property int $id
  * @property int $created_by
  * @property int $updated_by
  */

@@ -6,6 +6,7 @@ use App\Helpers\UserHelper;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Http\JsonResponse;
 
 class AuthController extends Controller
 {

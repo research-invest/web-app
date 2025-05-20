@@ -19,6 +19,12 @@ class UserApiKeysLayout extends Rows
     public function fields(): array
     {
         return [
+
+            Input::make('user.api_key')
+                ->type('text')
+                ->max(255)
+                ->title('Api key'),
+
             Group::make([
                 Input::make('user.mexc_api_key')
                     ->type('text')

@@ -12,9 +12,10 @@ use \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 class Handler
 {
     protected array $aliases = [
-        'auth.private'  => AuthPrivateMiddleware::class,
-        'auth.public'   => AuthPublicMiddleware::class,
-        'auth.internal' => AuthInternalMiddleware::class,
+//        'auth.private'  => AuthPrivateMiddleware::class,
+//        'auth.public'   => AuthPublicMiddleware::class,
+//        'auth.internal' => AuthInternalMiddleware::class,
+        'api.key' => CheckApiKey::class,
     ];
 
     public function __invoke(BaseMiddleware $middleware): BaseMiddleware

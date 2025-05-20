@@ -12,6 +12,8 @@ use Orchid\Platform\Models\User as Authenticatable;
 /**
  * @property  string $name
  * @property string $email
+ * @property string $api_token
+ * @property string $api_key
  * @property string $telegram_chat_id
  * @property string $mexc_api_key
  * @property string $mexc_secret_key
@@ -38,6 +40,7 @@ class User extends Authenticatable
         'email',
         'password',
         'api_token',
+        'api_key',
         'telegram_chat_id',
 
         'bybit_secret_key',
@@ -121,5 +124,18 @@ class User extends Authenticatable
     public function fundingDeals()
     {
         return $this->hasMany(FundingDeal::class)->latest();
+    }
+
+    public function generateApiKey(): string
+    {
+        $this->api_key = bin2hex(random_bytes(32));
+        $this->save();
+        
+        return $this->api_key;
+    }
+
+    public function getApiKey(): ?string
+    {
+        return $this->api_key;
     }
 }
