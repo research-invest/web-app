@@ -20,7 +20,7 @@ class FundingController extends Controller
         $user = $request->get('user');
 
         $configs = FundingDealConfig::where('user_id', $user->id)
-            ->where('is_active', true)
+            ->isActive()
             ->with('deals', 'deals.currency')
             ->get();
 
