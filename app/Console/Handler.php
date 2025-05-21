@@ -13,6 +13,7 @@ use App\Console\Commands\BtcWallets\UpdateWalletBalances;
 use App\Console\Commands\CollectTopPerformingCoinSnapshots;
 use App\Console\Commands\Features\CollectFundingRates;
 use App\Console\Commands\Features\FundingDealsConfig;
+use App\Console\Commands\Features\FundingDealsDelete;
 use App\Console\Commands\UpdateCurrencies;
 use App\Console\Commands\UpdateTradesPnL;
 use Illuminate\Console\Scheduling\Schedule;
@@ -25,6 +26,11 @@ class Handler
             ->withoutOverlapping()
             ->runInBackground()
             ->hourly();
+
+        $schedule->command(FundingDealsDelete::class)
+            ->withoutOverlapping()
+            ->runInBackground()
+            ->everyTwoMinutes();
 
 //        $schedule->command(FundingDeals::class)
 //            ->runInBackground()
