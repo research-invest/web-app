@@ -106,9 +106,9 @@ class GenerateMarketOscillator extends Command
         $message = "📊 <b>Осциллятор рынка: {$currentOscillator}</b>\n";
 
         if ($currentOscillator > 0) {
-            $message .= "🟢 Преобладает лонг позиция";
+            $message .= "🟢 Преобладает лонг";
         } elseif ($currentOscillator < 0) {
-            $message .= "🔴 Преобладает шорт позиция";
+            $message .= "🔴 Преобладает шорт";
         } else {
             $message .= "⚪ Нейтральное состояние";
         }
@@ -137,7 +137,7 @@ class GenerateMarketOscillator extends Command
         $longStrength = $analysis['long_strength'];
         $shortStrength = $analysis['short_strength'];
 
-        $message = "📊 <b>Анализ рынка</b>\n";
+        $message = "📊 <b>Анализ</b>\n";
 
         // Корреляция
         $message .= "🔄 <b>Корреляция движения:</b> {$correlation}%\n";
@@ -150,15 +150,15 @@ class GenerateMarketOscillator extends Command
         }
 
         // Тренд рынка
-        $message .= "\n📈 <b>Тренд рынка:</b> {$marketTrend}%\n";
+        $message .= "\n📈 <b>Тренд:</b> {$marketTrend}%\n";
         if (abs($marketTrend) < 20) {
             $message .= "   ↪️ Боковое движение\n";
         } else {
-            $message .= "   ↪️ " . ($marketTrend > 0 ? "Восходящий тренд" : "Нисходящий тренд") . "\n";
+            $message .= "   ↪️ " . ($marketTrend > 0 ? "Восходящий" : "Нисходящий") . "\n";
         }
 
         // Сила позиций
-        $message .= "\n💪 <b>Сила позиций:</b>\n";
+        $message .= "\n💪 <b>Сила:</b>\n";
         $message .= "   📗 Лонг: {$longStrength}%\n";
         $message .= "   📕 Шорт: {$shortStrength}%\n";
 
