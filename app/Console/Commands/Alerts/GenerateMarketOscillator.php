@@ -103,7 +103,7 @@ class GenerateMarketOscillator extends Command
 
         // Формируем сообщение
         $currentOscillator = end($chartData)['score'];
-        $message = "📊 <b>Осциллятор рынка: {$currentOscillator}</b>\n\n";
+        $message = "📊 <b>Осциллятор рынка: {$currentOscillator}</b>\n";
 
         if ($currentOscillator > 0) {
             $message .= "🟢 Преобладает лонг позиция";
@@ -113,10 +113,10 @@ class GenerateMarketOscillator extends Command
             $message .= "⚪ Нейтральное состояние";
         }
 
-        $message .= "\n\n" . $this->formatAnalysisMessage($analysis);
+        $message .= "\n" . $this->formatAnalysisMessage($analysis);
 
-        $this->telegram->sendMessage($message);
-        dd($message);
+//        $this->telegram->sendMessage($message);
+//        dd($message);
 
         // Отправляем в Telegram
         if ($this->telegram->sendPhoto($chartImage, $message)) {
@@ -137,7 +137,7 @@ class GenerateMarketOscillator extends Command
         $longStrength = $analysis['long_strength'];
         $shortStrength = $analysis['short_strength'];
 
-        $message = "📊 <b>Анализ рынка</b>\n\n";
+        $message = "📊 <b>Анализ рынка</b>\n";
 
         // Корреляция
         $message .= "🔄 <b>Корреляция движения:</b> {$correlation}%\n";

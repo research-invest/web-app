@@ -43,8 +43,7 @@ class TelegramService
                 'photo' => $image,
                 'parse_mode' => 'HTML'
             ]);
-        }
-        // Если $image это локальный файл или бинарные данные
+        } // Если $image это локальный файл или бинарные данные
         else {
             $response = Http::attach(
                 'photo', $image, 'chart.png'
@@ -55,6 +54,11 @@ class TelegramService
             ]);
         }
         $result = $response->json();
+        if (!$result['ok']) {
+            Log::error('Telegram sendPhoto error', [
+                'result' => $result,
+            ]);
+        }
         return $result['ok'] ?? false;
     }
 }
