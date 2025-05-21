@@ -103,24 +103,23 @@ class GenerateMarketOscillator extends Command
 
         // Формируем сообщение
         $currentOscillator = end($chartData)['score'];
-        $message = sprintf(
+        $oscillMessage = sprintf(
             "📊 <b>Осциллятор: %d%%</b> %s\n",
             $currentOscillator,
             $currentOscillator > 0 ? "🟢" : ($currentOscillator < 0 ? "🔴" : "⚪")
         );
 
-        $message .= $this->formatAnalysisMessage($analysis);
-
-//        $this->telegram->sendMessage($message);
-//        dd($message);
-
         // Отправляем в Telegram
-        if ($this->telegram->sendPhoto($chartImage, $message)) {
+        if ($this->telegram->sendPhoto($chartImage, $oscillMessage)) {
             $this->info('Осциллятор успешно отправлен');
 //            unlink($filename); // удаляем файл после отправки
         } else {
             $this->error('Ошибка при отправке осциллятора');
         }
+
+        sleep(1);
+        $message = $this->formatAnalysisMessage($analysis);
+        $this->telegram->sendMessage($message);
     }
 
     /**
