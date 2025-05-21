@@ -109,6 +109,11 @@ class GenerateMarketOscillator extends Command
             $currentOscillator > 0 ? "🟢" : ($currentOscillator < 0 ? "🔴" : "⚪")
         );
 
+        var_dump($oscillMessage);
+
+        $oscillMessage = "📊 <b>Осциллятор рынка: {$currentOscillator}</b>";
+
+
         // Отправляем в Telegram
         if ($this->telegram->sendPhoto($chartImage, $oscillMessage)) {
             $this->info('Осциллятор успешно отправлен');
