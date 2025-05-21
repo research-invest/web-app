@@ -115,6 +115,9 @@ class GenerateMarketOscillator extends Command
 
         $message .= "\n\n" . $this->formatAnalysisMessage($analysis);
 
+        $this->telegram->sendMessage($message);
+        dd($message);
+
         // Отправляем в Telegram
         if ($this->telegram->sendPhoto($chartImage, $message)) {
             $this->info('Осциллятор успешно отправлен');
