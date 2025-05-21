@@ -104,7 +104,7 @@ class GenerateMarketOscillator extends Command
         // Формируем сообщение
         $currentOscillator = end($chartData)['score'];
         $oscillMessage = sprintf(
-            "📊 <b>Осциллятор: %d%%</b> %s\n",
+            "📊<b>Осциллятор: %d%%</b> %s",
             $currentOscillator,
             $currentOscillator > 0 ? "🟢" : ($currentOscillator < 0 ? "🔴" : "⚪")
         );
