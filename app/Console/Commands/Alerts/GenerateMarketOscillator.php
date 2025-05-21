@@ -5,6 +5,7 @@
 namespace App\Console\Commands\Alerts;
 
 use App\Models\Trade;
+use App\Services\Analyze\MarketOscillator;
 use App\Services\ChartGenerator;
 use App\Services\TelegramService;
 use Carbon\Carbon;
@@ -94,6 +95,12 @@ class GenerateMarketOscillator extends Command
 //        $this->info("График сохранен в файл: {$filename}");
 //        return;
 
+        // Анализируем данные
+        $oscillator = new MarketOscillator();
+        $longPnl = $longHistory->pluck('unrealized_pnl')->toArray();
+        $shortPnl = $shortHistory->pluck('unrealized_pnl')->toArray();
+        $analysis = $oscillator->analyze($longPnl, $shortPnl);
+
         // Формируем сообщение
         $currentOscillator = end($chartData)['score'];
         $message = "📊 <b>Осциллятор рынка: {$currentOscillator}</b>\n\n";
@@ -106,11 +113,70 @@ class GenerateMarketOscillator extends Command
             $message .= "⚪ Нейтральное состояние";
         }
 
-        if ($this->telegram->sendPhoto($message, $chartImage)) {
+        $message .= "\n\n" . $this->formatAnalysisMessage($analysis);
+
+        // Отправляем в Telegram
+        if ($this->telegram->sendPhoto($chartImage, $message)) {
             $this->info('Осциллятор успешно отправлен');
 //            unlink($filename); // удаляем файл после отправки
         } else {
             $this->error('Ошибка при отправке осциллятора');
         }
+    }
+
+    /**
+     * Форматируем текст для Telegram с анализом
+     */
+    private function formatAnalysisMessage(array $analysis): string
+    {
+        $correlation = $analysis['correlation'];
+        $marketTrend = $analysis['market_trend'];
+        $longStrength = $analysis['long_strength'];
+        $shortStrength = $analysis['short_strength'];
+
+        $message = "📊 <b>Анализ рынка</b>\n\n";
+
+        // Корреляция
+        $message .= "🔄 <b>Корреляция движения:</b> {$correlation}%\n";
+        if ($correlation > 80) {
+            $message .= "   ↪️ Сильное согласованное движение\n";
+        } elseif ($correlation < -80) {
+            $message .= "   ↪️ Сильное противоположное движение\n";
+        } elseif (abs($correlation) < 20) {
+            $message .= "   ↪️ Независимое движение позиций\n";
+        }
+
+        // Тренд рынка
+        $message .= "\n📈 <b>Тренд рынка:</b> {$marketTrend}%\n";
+        if (abs($marketTrend) < 20) {
+            $message .= "   ↪️ Боковое движение\n";
+        } else {
+            $message .= "   ↪️ " . ($marketTrend > 0 ? "Восходящий тренд" : "Нисходящий тренд") . "\n";
+        }
+
+        // Сила позиций
+        $message .= "\n💪 <b>Сила позиций:</b>\n";
+        $message .= "   📗 Лонг: {$longStrength}%\n";
+        $message .= "   📕 Шорт: {$shortStrength}%\n";
+
+        // Общий вывод
+        $message .= "\n📝 <b>Вывод:</b> ";
+        if (abs($marketTrend) > 50) {
+            if ($marketTrend > 0) {
+                $message .= "Сильный бычий тренд";
+            } else {
+                $message .= "Сильный медвежий тренд";
+            }
+        } elseif (abs($marketTrend) > 20) {
+            if ($marketTrend > 0) {
+                $message .= "Умеренный бычий тренд";
+            } else {
+                $message .= "Умеренный медвежий тренд";
+            }
+        } else {
+            $message .= "Нейтральный рынок";
+        }
+
+        return $message;
     }
 }
