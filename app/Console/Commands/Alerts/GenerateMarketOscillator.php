@@ -133,39 +133,47 @@ class GenerateMarketOscillator extends Command
         $longStrength = $analysis['long_strength'];
         $shortStrength = $analysis['short_strength'];
 
-        // Определяем тренд одним символом
-        $trendSymbol = match(true) {
-            $marketTrend > 50 => "⬆️",
-            $marketTrend < -50 => "⬇️",
-            $marketTrend > 20 => "↗️",
-            $marketTrend < -20 => "↘️",
-            default => "↔️",
-        };
+        $message = "📊 <b>Анализ рынка</b>\n\n";
 
-        $message = "<b>Анализ рынка {$trendSymbol}</b>\n\n";
+        // Корреляция
+        $message .= "🔄 <b>Корреляция движения:</b> {$correlation}%\n";
+        if ($correlation > 80) {
+            $message .= "   ↪️ Сильное согласованное движение\n";
+        } elseif ($correlation < -80) {
+            $message .= "   ↪️ Сильное противоположное движение\n";
+        } elseif (abs($correlation) < 20) {
+            $message .= "   ↪️ Независимое движение позиций\n";
+        }
 
-        // Корреляция и тренд в одну строку
-        $message .= sprintf(
-            "🔄 Корр: %d%% | 📈 Тренд: %d%%\n",
-            $correlation,
-            $marketTrend
-        );
-
-        // Сила позиций в одну строку
-        $message .= sprintf(
-            "💪 Лонг: %d%% | Шорт: %d%%\n",
-            $longStrength,
-            $shortStrength
-        );
-
-        // Вывод одной строкой
-        $message .= "\n📝 ";
-        if (abs($marketTrend) > 50) {
-            $message .= $marketTrend > 0 ? "Сильный бычий" : "Сильный медвежий";
-        } elseif (abs($marketTrend) > 20) {
-            $message .= $marketTrend > 0 ? "Умеренный бычий" : "Умеренный медвежий";
+        // Тренд рынка
+        $message .= "\n📈 <b>Тренд рынка:</b> {$marketTrend}%\n";
+        if (abs($marketTrend) < 20) {
+            $message .= "   ↪️ Боковое движение\n";
         } else {
-            $message .= "Нейтральный";
+            $message .= "   ↪️ " . ($marketTrend > 0 ? "Восходящий тренд" : "Нисходящий тренд") . "\n";
+        }
+
+        // Сила позиций
+        $message .= "\n💪 <b>Сила позиций:</b>\n";
+        $message .= "   📗 Лонг: {$longStrength}%\n";
+        $message .= "   📕 Шорт: {$shortStrength}%\n";
+
+        // Общий вывод
+        $message .= "\n📝 <b>Вывод:</b> ";
+        if (abs($marketTrend) > 50) {
+            if ($marketTrend > 0) {
+                $message .= "Сильный бычий тренд";
+            } else {
+                $message .= "Сильный медвежий тренд";
+            }
+        } elseif (abs($marketTrend) > 20) {
+            if ($marketTrend > 0) {
+                $message .= "Умеренный бычий тренд";
+            } else {
+                $message .= "Умеренный медвежий тренд";
+            }
+        } else {
+            $message .= "Нейтральный рынок";
         }
 
         return $message;
