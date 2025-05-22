@@ -99,7 +99,12 @@ class GenerateMarketOscillator extends Command
         $oscillator = new MarketOscillator();
         $longPnl = $longHistory->pluck('unrealized_pnl')->toArray();
         $shortPnl = $shortHistory->pluck('unrealized_pnl')->toArray();
-        $analysis = $oscillator->analyze($longPnl, $shortPnl);
+
+        $longVolumes = $longHistory->pluck('volume')->toArray();
+        $btcVolumes = $shortHistory->pluck('volume_btc')->toArray();
+        $ethVolumes = $shortHistory->pluck('volume_eth')->toArray();
+
+        $analysis = $oscillator->analyze($longPnl, $shortPnl, $longVolumes, $btcVolumes, $ethVolumes);
 
         // Формируем сообщение
         $currentOscillator = end($chartData)['score'];
@@ -128,52 +133,87 @@ class GenerateMarketOscillator extends Command
      */
     private function formatAnalysisMessage(array $analysis): string
     {
-        $correlation = $analysis['correlation'];
-        $marketTrend = $analysis['market_trend'];
-        $longStrength = $analysis['long_strength'];
-        $shortStrength = $analysis['short_strength'];
-
+        // Основные показатели
         $message = "📊 <b>Анализ рынка</b>\n\n";
 
-        // Корреляция
-        $message .= "🔄 <b>Корреляция движения:</b> {$correlation}%\n";
-        if ($correlation > 80) {
-            $message .= "   ↪️ Сильное согласованное движение\n";
-        } elseif ($correlation < -80) {
-            $message .= "   ↪️ Сильное противоположное движение\n";
-        } elseif (abs($correlation) < 20) {
-            $message .= "   ↪️ Независимое движение позиций\n";
+        // Тренд и корреляция (основная информация)
+        $message .= sprintf(
+            "🎯 <b>Тренд:</b> %+.1f%% %s\n",
+            $analysis['market_trend'],
+            $analysis['market_trend'] > 0 ? "📈" : "📉"
+        );
+
+        // Сила позиций (компактно)
+        $message .= sprintf(
+            "💪 <b>LONG/SHORT:</b> %+.1f%%/%+.1f%% %s\n",
+            $analysis['long_strength'],
+            $analysis['short_strength'],
+            $analysis['long_strength'] > abs($analysis['short_strength']) ? "🟢" : "🔴"
+        );
+
+        // Корреляция движения позиций
+        $message .= sprintf(
+            "🔄 <b>Корреляция:</b> %.1f%% %s\n",
+            $analysis['correlation'],
+            $analysis['correlation'] > 80 ? "⚡" : ($analysis['correlation'] < -80 ? "⚠️" : "➖")
+        );
+
+        // Объемы и их корреляции
+        $message .= "\n📊 <b>Анализ объемов:</b>\n";
+
+        // Общий тренд объемов
+        $message .= sprintf(
+            "📈 Тренд: %+.1f%% %s\n",
+            $analysis['weighted_volume_trend'],
+            abs($analysis['weighted_volume_trend']) > 50 ?
+                ($analysis['weighted_volume_trend'] > 0 ? "🔥" : "❄️") : "➖"
+        );
+
+        // Корреляции объемов (компактно)
+        $volCorr = $analysis['volume_correlations'];
+        $message .= sprintf(
+            "BTC: %.1f%% | ETH: %.1f%%\n",
+            $volCorr['asset_btc'],
+            $volCorr['asset_eth']
+        );
+
+        // Корреляция цены и объема
+        $priceVolCorr = $analysis['price_volume_correlations'];
+        if (abs($priceVolCorr['long']) > 20 || abs($priceVolCorr['short']) > 20) {
+            $message .= sprintf(
+                "📊 Цена/Объем: L%.1f%% | S%.1f%%\n",
+                $priceVolCorr['long'],
+                $priceVolCorr['short']
+            );
         }
 
-        // Тренд рынка
-        $message .= "\n📈 <b>Тренд рынка:</b> {$marketTrend}%\n";
-        if (abs($marketTrend) < 20) {
-            $message .= "   ↪️ Боковое движение\n";
-        } else {
-            $message .= "   ↪️ " . ($marketTrend > 0 ? "Восходящий тренд" : "Нисходящий тренд") . "\n";
-        }
-
-        // Сила позиций
-        $message .= "\n💪 <b>Сила позиций:</b>\n";
-        $message .= "   📗 Лонг: {$longStrength}%\n";
-        $message .= "   📕 Шорт: {$shortStrength}%\n";
-
-        // Общий вывод
+        // Итоговый вывод
         $message .= "\n📝 <b>Вывод:</b> ";
-        if (abs($marketTrend) > 50) {
-            if ($marketTrend > 0) {
-                $message .= "Сильный бычий тренд";
-            } else {
-                $message .= "Сильный медвежий тренд";
-            }
-        } elseif (abs($marketTrend) > 20) {
-            if ($marketTrend > 0) {
-                $message .= "Умеренный бычий тренд";
-            } else {
-                $message .= "Умеренный медвежий тренд";
-            }
+
+        // Определяем силу тренда
+        if (abs($analysis['market_trend']) > 50) {
+            $message .= $analysis['market_trend'] > 0
+                ? "Сильный бычий тренд"
+                : "Сильный медвежий тренд";
+        } elseif (abs($analysis['market_trend']) > 20) {
+            $message .= $analysis['market_trend'] > 0
+                ? "Умеренный бычий тренд"
+                : "Умеренный медвежий тренд";
         } else {
             $message .= "Нейтральный рынок";
+        }
+
+        // Добавляем информацию об объемах, если есть явный тренд
+        if (abs($analysis['weighted_volume_trend']) > 50) {
+            $message .= sprintf(
+                "\n💡 Объемы %s тренд",
+                $analysis['weighted_volume_trend'] > 0 ? "поддерживают" : "противоречат"
+            );
+        }
+
+        // Если есть сильная корреляция с основными криптовалютами
+        if ($volCorr['asset_btc'] > 90 || $volCorr['asset_eth'] > 90) {
+            $message .= "\n💫 Высокая корреляция с BTC/ETH";
         }
 
         return $message;

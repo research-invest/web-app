@@ -355,6 +355,7 @@ class CollectFundingRates extends Command
 
     private function resetAllFunding(): void
     {
+        //биржа
         $update = <<<SQL
         UPDATE currencies AS c
             SET funding_rate = 0

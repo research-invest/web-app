@@ -11,6 +11,9 @@ use App\Models\Funding\FundingDeal;
 use Illuminate\Console\Command;
 use  \Illuminate\Database\Eloquent\Collection;
 
+/**
+ * @deprecated
+ */
 class FundingDeals extends Command
 {
     protected $signature = 'funding-deals:run';
