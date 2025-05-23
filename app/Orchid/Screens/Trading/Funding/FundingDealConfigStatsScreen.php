@@ -44,8 +44,13 @@ class FundingDealConfigStatsScreen extends Screen
             ];
         });
 
-        $topCoins = $coinStats->sortByDesc('total_profit')->take(5);
-        $worstCoins = $coinStats->sortBy('total_profit')->take(5);
+        $topCoins = $coinStats
+            ->where('total_profit', '>', 0)
+            ->sortByDesc('total_profit')->take(5);
+
+        $worstCoins = $coinStats
+            ->where('total_profit', '<', 0)
+            ->sortBy('total_profit')->take(5);
 
         return [
             'config' => $config,
