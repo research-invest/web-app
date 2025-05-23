@@ -5,20 +5,15 @@ declare(strict_types=1);
 namespace App\Orchid\Screens\Trading\Funding;
 
 use App\Helpers\UserHelper;
-use App\Models\Currency;
 use App\Models\Funding\FundingDealConfig;
-use App\Models\Funding\FundingSimulation;
-use App\Models\Trade;
-use App\Models\TradeOrder;
+use App\Orchid\Filters\Deals\Funding\FiltersDealsLayout;
+use App\Orchid\Filters\Deals\Funding\FiltersLayout;
 use App\Orchid\Layouts\Trading\Deals\Funding\ConfigListLayout;
 use App\Orchid\Layouts\Trading\Deals\Funding\DealsListLayout;
+use App\Orchid\Layouts\Trading\Deals\Funding\FormConfigLayout;
 use Illuminate\Http\Request;
 use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Actions\ModalToggle;
-use Orchid\Screen\Fields\CheckBox;
-use Orchid\Screen\Fields\Input;
-use Orchid\Screen\Fields\Select;
-use Orchid\Screen\Fields\TextArea;
 use Orchid\Screen\Screen;
 use Orchid\Support\Facades\Layout;
 use Orchid\Support\Facades\Toast;
@@ -38,13 +33,13 @@ class FundingDealsListScreen extends Screen
 //        $config->load('deals');
 
         return [
+            'config' => $config,
             'configs' => FundingDealConfig::filters()
                 ->byCreator()
                 ->latest()
                 ->paginate(25),
-            'config' => $config,
             'deals' => $config->deals()
-                ->filters()
+                ->filters(FiltersDealsLayout::class)
                 ->defaultSort('created_at', 'desc')
                 ->paginate(),
         ];
@@ -55,6 +50,10 @@ class FundingDealsListScreen extends Screen
      */
     public function name(): ?string
     {
+
+        if ($this->config->exists) {
+            return 'Выбранная сделка ' . $this->config->name;
+        }
         return 'Конфигуратор funding сделок';
     }
 
@@ -84,16 +83,22 @@ class FundingDealsListScreen extends Screen
         if ($this->config->exists) {
             $bar[] = Link::make('Отчет')
                 ->icon('bs.bar-chart')
-                ->canSee($this->config->exists)
                 ->route('platform.trading.funding_deal.stats', $this->config);
+
+            $bar[] = ModalToggle::make('Редактировать конфиг')
+                ->modal('editConfigModal')
+                ->method('save')
+                ->icon('pencil')
+                ->class('btn btn-primary');
         }
 
-        $bar[] =
-            ModalToggle::make('Добавить сделку')
+        if (!$this->config->exists) {
+            $bar[] = ModalToggle::make('Добавить сделку')
                 ->modal('addConfigModal')
-                ->method('create')
+                ->method('save')
                 ->icon('plus')
                 ->class('btn btn-primary');
+        }
 
         return $bar;
     }
@@ -107,49 +112,21 @@ class FundingDealsListScreen extends Screen
     {
         $layout = [
             Layout::modal('addConfigModal', [
-                Layout::rows([
+                FormConfigLayout::class,
+            ])->title('Добавить конфиг'),
 
-                    Input::make('config.name')
-                        ->title('Название'),
-
-                    Select::make('config.exchange')
-                        ->options(Currency::getExchanges())
-                        ->title('Выберите биржу'),
-
-                    Input::make('config.min_funding_rate')
-                        ->title('min_funding_rate')
-                        ->type('number')
-                        ->step('0.00000001')
-                        ->required(),
-
-                    Input::make('config.position_size')
-                        ->title('position_size')
-                        ->value(200)
-                        ->type('number')
-                        ->required(),
-
-                    Input::make('config.leverage')
-                        ->title('leverage')
-                        ->value(10)
-                        ->type('number')
-                        ->required(),
-
-                    CheckBox::make('config.is_testnet')
-                        ->sendTrueOrFalse()
-                        ->value(0)
-                        ->placeholder('is testnet'),
-
-                    TextArea::make('config.notes')
-                        ->title('Комментарий')
-                        ->rows(3),
-                ])
-            ])->title('Добавить сделку'),
+            Layout::modal('editConfigModal', [
+                FormConfigLayout::class,
+            ])->title('Редактировать конфиг'),
         ];
 
         if ($this->config->exists) {
             $layout[] = Layout::split([
                 ConfigListLayout::class,
-                DealsListLayout::class,
+                Layout::block([
+                    FiltersDealsLayout::class,
+                    DealsListLayout::class,
+                ])->vertical(),
             ])->ratio('20/80');
         } else {
             $layout[] = ConfigListLayout::class;
@@ -158,11 +135,11 @@ class FundingDealsListScreen extends Screen
         return $layout;
     }
 
-    public function create(Request $request)
+    public function save(Request $request)
     {
         $data = $request->collect('config')->toArray();
 
-        $config = new FundingDealConfig();
+        $config = $this->config ?: new FundingDealConfig();
 
         $config->fill($data)
             ->fill([
@@ -171,7 +148,7 @@ class FundingDealsListScreen extends Screen
 
         $config->save();
 
-        Toast::success('Добавлено');
+        Toast::success('Сохранено');
     }
 
 
