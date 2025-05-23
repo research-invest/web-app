@@ -25,7 +25,10 @@ class FundingDealConfigStatsScreen extends Screen
 
         $averageProfit = $totalDeals > 0 ? $totalProfit / $totalDeals : 0;
 
-        $topDeals = $deals->sortByDesc('total_pnl')->take(5);
+        $topDeals = $deals
+            ->where('total_pnl', '>', 0)
+            ->sortByDesc('total_pnl')->take(5);
+
         $worstDeals = $deals->sortBy('total_pnl')
             ->where('total_pnl', '<', 0)
             ->take(5);
