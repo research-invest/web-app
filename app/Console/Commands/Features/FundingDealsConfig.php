@@ -6,7 +6,6 @@
 
 namespace App\Console\Commands\Features;
 
-use App\Jobs\FundingTrade;
 use App\Models\Currency;
 use App\Models\Funding\FundingDeal;
 use App\Models\Funding\FundingDealConfig;

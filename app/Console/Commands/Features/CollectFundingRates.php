@@ -6,27 +6,28 @@
 
 namespace App\Console\Commands\Features;
 
+use App\Console\Commands\Alerts\HunterFunding;
 use App\Models\Currency;
 use App\Models\Funding\FundingRate;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
-use Lin\Gate\GateFuture;
-use Lin\Gate\GateMargin;
-use Lin\Ku\Kucoin;
 use Lin\Ku\KucoinFuture;
 
 class CollectFundingRates extends Command
 {
     protected $signature = 'funding:collect';
-    protected $description = 'Collect funding rates from MEXC';
+    protected $description = 'Collect funding rates from gateio.ws';
 
     public function handle()
     {
         $timeStart = microtime(true);
 
         $this->collect();
+
+        Artisan::call(HunterFunding::class);
 
         $this->info('Использовано памяти: ' . (memory_get_peak_usage() / 1024 / 1024) . " MB");
         $this->info('Время выполнения в секундах: ' . ((microtime(true) - $timeStart)));

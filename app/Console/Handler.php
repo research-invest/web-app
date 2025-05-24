@@ -5,10 +5,8 @@ namespace App\Console;
 use App\Console\Commands\Alerts\CheckLiquidationWarnings;
 use App\Console\Commands\Alerts\FreeSpaceAlert;
 use App\Console\Commands\Alerts\GenerateMarketOscillator;
-use App\Console\Commands\Alerts\HunterFunding;
 use App\Console\Commands\Alerts\SendSmartMoneyAlert;
 use App\Console\Commands\Alerts\SendTradePnLNotification;
-use App\Console\Commands\BtcWallets\GenerateWalletReport;
 use App\Console\Commands\BtcWallets\UpdateWalletBalances;
 use App\Console\Commands\CollectTopPerformingCoinSnapshots;
 use App\Console\Commands\Features\CollectFundingRates;
@@ -61,10 +59,12 @@ class Handler
             ->withoutOverlapping()
             ->runInBackground()
             ->everyFiveMinutes();
+
         $schedule->command(FreeSpaceAlert::class)
             ->withoutOverlapping()
             ->runInBackground()
             ->hourly();
+
         $schedule->command(SendSmartMoneyAlert::class)
             ->withoutOverlapping()
             ->runInBackground()
@@ -79,12 +79,7 @@ class Handler
         $schedule->command(CollectFundingRates::class)
             ->runInBackground()
             ->withoutOverlapping()
-            ->hourly();
-
-        $schedule->command(HunterFunding::class)
-            ->runInBackground()
-            ->withoutOverlapping()
-            ->hourly();
+            ->hourlyAt(50);
 
         $schedule->command(UpdateWalletBalances::class)
             ->runInBackground()
