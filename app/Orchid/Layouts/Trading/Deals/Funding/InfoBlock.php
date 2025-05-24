@@ -47,7 +47,10 @@ class InfoBlock extends Legend
             Sight::make('pnl_before_funding', 'pnl_before_funding'),
             Sight::make('total_pnl', 'pnl'),
             Sight::make('pnl_percent', 'pnl %')->render(function (FundingDeal $trade) {
-                return MathHelper::calculatePercent($trade->initial_margin, $trade->total_pnl);
+                return MathHelper::getPercentOfNumber(
+                    $trade->initial_margin,
+                    $trade->initial_margin + $trade->total_pnl
+                );
             }),
             Sight::make('roi_percent', 'roi'),
             Sight::make('pre_funding_volatility', 'Индекс волатильности'),
