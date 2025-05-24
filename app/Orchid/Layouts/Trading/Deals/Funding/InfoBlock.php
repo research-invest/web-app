@@ -48,8 +48,8 @@ class InfoBlock extends Legend
             Sight::make('total_pnl', 'pnl'),
             Sight::make('pnl_percent', 'pnl %')->render(function (FundingDeal $trade) {
                 return MathHelper::getPercentOfNumber(
-                    $trade->initial_margin,
-                    $trade->initial_margin + $trade->total_pnl
+                    (float)$trade->initial_margin,
+                    (float)($trade->initial_margin + $trade->total_pnl)
                 );
             }),
             Sight::make('roi_percent', 'roi'),
