@@ -82,7 +82,7 @@ class FundingTrade implements ShouldQueue, ShouldBeUnique
 
                 $currentTime = now();
                 $priceData = $gate->getCurrentPrice($this->deal->currency->code);
-                $price = $priceData['price'];
+                $price = $priceData['close'];
 
                 $this->priceHistory[] = [
                     'timestamp' => $currentTime->timestamp,

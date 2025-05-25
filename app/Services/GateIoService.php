@@ -79,11 +79,33 @@ class GateIoService
 
 
         try {
-            $result = $this->future->contract()->get(['settle' => 'usdt', 'contract' => $symbol]);
+            //$result = $this->future->contract()->get(['settle' => 'usdt', 'contract' => $symbol]);
+
+            $result = $this->future->market()->getCandlesticks([
+                'settle' => 'usdt',
+                'contract' => $symbol,
+                'interval' => '1s',
+                'limit' => 1,
+            ]);
+
             $endTime = microtime(true);
 
+//            0 => array:7 [
+//                "o" => "0.001155"
+//    "v" => 0
+//    "t" => 1748152369
+//    "c" => "0.001155"
+//    "l" => "0.001155"
+//    "h" => "0.001155"
+//    "sum" => "0"
+//  ]
+
             return [
-                'price' => $result['last_price'] ?? null,
+//                'price' => $result['last_price'] ?? null,
+                'open' => $result[0]['o'] ?? null,
+                'close' => $result[0]['c'] ?? null,
+                'low' => $result[0]['l'] ?? null,
+                'high' => $result[0]['h'] ?? null,
                 'execution_time' => $this->calcExecutionTime($startTime, $endTime),
             ];
         } catch (\Exception $e) {

@@ -6,6 +6,7 @@
 
 namespace App\Console\Commands\Features;
 
+use App\Jobs\FundingTrade;
 use App\Models\Currency;
 use App\Models\Funding\FundingDeal;
 use App\Models\Funding\FundingDealConfig;
@@ -66,8 +67,11 @@ class FundingDealsConfig extends Command
                     'price_history' => [],
                 ]);
 
-//                FundingTrade::dispatch($deal)
-//                    ->delay($deal->run_time);
+                if ($config->user_id === 1) {
+                    $runTime = $currency->next_settle_time->copy()->subSeconds(60);
+                    FundingTrade::dispatch($deal)
+                        ->delay($runTime);
+                }
             }
         }
 
