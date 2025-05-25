@@ -13,6 +13,4 @@ chmod -R 775 "$SCRIPT_DIR/storage"
 chmod -R 775 "$SCRIPT_DIR/bootstrap/cache"
 
 
-#supervisorctl restart worker_cryptosasha:*
-
-
+supervisorctl restart worker_cryptosasha:*
