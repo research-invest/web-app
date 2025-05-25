@@ -23,6 +23,7 @@ class DealResource extends JsonResource
             'status' => $this->status,
             'leverage' => $this->leverage,
             'position_size' => $this->position_size,
+            'position_size_leverage' => $this->position_size * $this->leverage,
             'comment' => $this->comment,
         ];
     }

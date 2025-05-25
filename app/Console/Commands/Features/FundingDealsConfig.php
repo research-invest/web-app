@@ -58,7 +58,7 @@ class FundingDealsConfig extends Command
                     'user_id' => $config->user->id,
                     'currency_id' => $currency->id,
                     'funding_time' => $currency->next_settle_time->timestamp,
-                    'run_time' => $currency->next_settle_time->copy()->subSeconds(1),
+                    'run_time' => $currency->next_settle_time->copy()->subSeconds(3),
                     'funding_rate' => $currency->funding_rate,
                     'status' => FundingDeal::STATUS_NEW,
                     'leverage' => $config->leverage,
