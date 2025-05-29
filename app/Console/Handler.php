@@ -10,6 +10,7 @@ use App\Console\Commands\Alerts\SendTradePnLNotification;
 use App\Console\Commands\BtcWallets\UpdateWalletBalances;
 use App\Console\Commands\CollectTopPerformingCoinSnapshots;
 use App\Console\Commands\Features\CollectFundingRates;
+use App\Console\Commands\Features\DeleteOldFundingRates;
 use App\Console\Commands\Features\FundingDealsConfig;
 use App\Console\Commands\Features\FundingDealsDelete;
 use App\Console\Commands\UpdateCurrencies;
@@ -87,6 +88,11 @@ class Handler
 //            ->hourly()
             ->everyFourHours()
         ;
+
+        $schedule->command(DeleteOldFundingRates::class)
+            ->runInBackground()
+            ->withoutOverlapping()
+            ->daily();
 
 
 //        $schedule->command(AnalyzeTopPerformingCoinSnapshots::class)
