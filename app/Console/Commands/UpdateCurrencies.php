@@ -7,6 +7,7 @@ namespace App\Console\Commands;
 
 use App\Models\Currency;
 use App\Services\Api\Currencies;
+use App\Services\External\Coingecko\Coins\Tickers;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
@@ -19,13 +20,16 @@ class UpdateCurrencies extends Command
     {
         $timeStart = microtime(true);
 
-        $this->update();
+        $this->updateCoingecko();
+        $this->updateSelll();
+
+        $this->info("\nВалюты успешно обновлены.\n");
 
         $this->info('Использовано памяти: ' . (memory_get_peak_usage() / 1024 / 1024) . " MB");
         $this->info('Время выполнения в секундах: ' . ((microtime(true) - $timeStart)));
     }
 
-    private function update()
+    private function updateSelll()
     {
         $currencies = (new Currencies())->getCurrencies();
 
@@ -97,6 +101,48 @@ class UpdateCurrencies extends Command
 //        ]);
 
         $bar->finish();
-        $this->info("\nВалюты успешно обновлены.\n");
+    }
+
+    private function updateCoingecko()
+    {
+        $currencies = Currency::query()
+            ->where('source_price', Currency::SOURCE_PRICE_COINGECKO)
+            ->get();
+
+        $bar = $this->output->createProgressBar(count($currencies));
+
+        foreach ($currencies as $currency) {
+            $data = (new Tickers())->getTickers($currency->coingecko_code);
+
+            $market = [];
+            foreach ($data['tickers'] as $item) {
+                if ($item['market']['name'] === 'Gate') {
+                    $market = $item;
+                    break;
+                }
+            }
+
+            if (!$market) {
+                continue;
+            }
+
+            $volume = $market['volume'] ?? 0;
+            $price = $market['last'] ?? 0;
+
+            ///bid_ask_spread_percentage
+
+            if (!$price) {
+                continue;
+            }
+
+            $currency->update([
+                'last_price' => $price,
+                'volume' => $volume,
+            ]);
+
+            $bar->advance();
+        }
+
+        $bar->finish();
     }
 }

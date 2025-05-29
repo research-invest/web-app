@@ -36,6 +36,9 @@ use Orchid\Screen\AsSource;
  * @property float $start_funding_48h
  * @property float $start_funding_7d
  * @property float $start_funding_30d
+ * @property string $source_price
+ * @property string $coingecko_code
+ * @property string $binance_code
  *
  * @property TopPerformingCoinSnapshot[] $topPerformingSnapshots
  * @property float $price_change_24h
@@ -56,6 +59,8 @@ class Currency extends BaseModel
     public const string EXCHANGE_BYBIT = 'bybit';
     const CODE_BTC = 'BTCUSDT';
     const CODE_ETH = 'ETHUSDT';
+    const string SOURCE_PRICE_SELLL = 'api_selll';
+    const string SOURCE_PRICE_COINGECKO = 'coingecko';
 
     protected $guarded = [];
 
@@ -96,6 +101,9 @@ class Currency extends BaseModel
         'start_funding_7d',
         'start_funding_30d',
         'funding_rate',
+        'source_price',
+        'coingecko_code',
+        'binance_code',
     ];
 
     public function scopeFeatures($query)
@@ -165,6 +173,15 @@ class Currency extends BaseModel
             self::TYPE_FEATURE => 'Feature',
         ];
     }
+
+    public static function getPriceSources(): array
+    {
+        return [
+            self::SOURCE_PRICE_SELLL => 'SELLL API',
+            self::SOURCE_PRICE_COINGECKO => 'coingecko.com',
+        ];
+    }
+
 
     public static function getExchanges(): array
     {

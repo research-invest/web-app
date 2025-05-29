@@ -17,6 +17,8 @@ use App\Services\Trading\TradingStatsService;
 use Illuminate\Http\Request;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\Link;
+use Orchid\Screen\Fields\Group;
+use Orchid\Screen\Fields\Select;
 use Orchid\Screen\Screen;
 use Orchid\Support\Color;
 use Orchid\Support\Facades\Layout;
@@ -138,8 +140,30 @@ class CurrencyEditScreen extends Screen
                         $this->getFundingRates()
                     ),
                 ],
+                'Параметры валюты' => [
+                    Layout::rows([
+                        Group::make([
+                            Select::make('currency.source_price')
+                                ->title('Статус')
+                                ->options(Currency::getPriceSources())
+                                ->required(),
+                        ]),
+
+                        Button::make('Сохранить')
+                            ->method('save')
+                            ->class('btn btn-primary')
+                    ])
+                ],
             ]),
         ];
+    }
+
+    public function save(Currency $currency, Request $request)
+    {
+        $data = $request->get('currency');
+        $currency->fill($data)->save();
+
+        Toast::success('Валюта сохранена');
     }
 
     public function toggleFavorite(Request $request, Currency $currency)
