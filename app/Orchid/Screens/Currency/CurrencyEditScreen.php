@@ -161,6 +161,11 @@ class CurrencyEditScreen extends Screen
                                 ->title('binance_code'),
                         ]),
 
+                        Input::make('currency.tradingview_code')
+                            ->type('text')
+                            ->max(255)
+                            ->title('tradingview_code'),
+
                         CheckBox::make('currency.is_active')
                             ->placeholder('is_active')
                             ->sendTrueOrFalse()
