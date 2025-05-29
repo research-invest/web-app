@@ -17,7 +17,9 @@ use App\Services\Trading\TradingStatsService;
 use Illuminate\Http\Request;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\Link;
+use Orchid\Screen\Fields\CheckBox;
 use Orchid\Screen\Fields\Group;
+use Orchid\Screen\Fields\Input;
 use Orchid\Screen\Fields\Select;
 use Orchid\Screen\Screen;
 use Orchid\Support\Color;
@@ -147,7 +149,22 @@ class CurrencyEditScreen extends Screen
                                 ->title('Статус')
                                 ->options(Currency::getPriceSources())
                                 ->required(),
+
+                            Input::make('currency.coingecko_code')
+                                ->type('text')
+                                ->max(255)
+                                ->title('coingecko_code'),
+
+                            Input::make('currency.binance_code')
+                                ->type('text')
+                                ->max(255)
+                                ->title('binance_code'),
                         ]),
+
+                        CheckBox::make('currency.is_active')
+                            ->placeholder('is_active')
+                            ->sendTrueOrFalse()
+                            ->value(1),
 
                         Button::make('Сохранить')
                             ->method('save')
