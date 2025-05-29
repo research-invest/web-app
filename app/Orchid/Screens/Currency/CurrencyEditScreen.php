@@ -214,6 +214,10 @@ class CurrencyEditScreen extends Screen
 
         foreach ($this->candles as $candle) {
 
+            if (empty($candle['timestamp'])) {
+                break;
+            }
+
             $timestamp = strtotime($candle['timestamp']) * 1000;
 
             $candleData[] = [
