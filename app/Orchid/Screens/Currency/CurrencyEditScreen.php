@@ -299,6 +299,10 @@ class CurrencyEditScreen extends Screen
 
         foreach ($this->candles as $candle) {
 
+            if (empty($candle['timestamp'])) {
+                break;
+            }
+
             $timestamp = strtotime($candle['timestamp']) * 1000;
 
             $candleData[] = [
@@ -371,6 +375,11 @@ class CurrencyEditScreen extends Screen
         $candleData = [];
 
         foreach ($this->candles as $candle) {
+
+            if (empty($candle['timestamp'])) {
+                break;
+            }
+
             $timestamp = strtotime($candle['timestamp']) * 1000;
             $volumeDelta = $candle['close'] > $candle['open'] ? $candle['volume'] : -$candle['volume'];
 
