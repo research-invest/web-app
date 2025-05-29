@@ -87,6 +87,10 @@ class FundingTrade implements ShouldQueue, ShouldBeUnique
                 $this->priceHistory[] = [
                     'timestamp' => $currentTime->timestamp,
                     'price' => $price,
+                    'open' => $priceData['open'],
+                    'close' => $priceData['close'],
+                    'low' => $priceData['low'],
+                    'high' => $priceData['high'],
                     'execution_time' => $priceData['execution_time']
                 ];
 
