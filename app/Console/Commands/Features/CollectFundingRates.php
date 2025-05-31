@@ -65,6 +65,8 @@ class CollectFundingRates extends Command
 
         $fundingRates = $response->json();
 
+        $this->resetAllFunding();
+
         foreach ($fundingRates as $rate) {
 
 //            array:45 [
@@ -151,8 +153,6 @@ class CollectFundingRates extends Command
 
             $currency->fundingRates()->save($fundingRate);
         }
-
-        return;
     }
 
 
