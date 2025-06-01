@@ -126,7 +126,7 @@ class WatchController extends Controller
      */
     private function calculateTodayPnl($user)
     {
-        return round(Trade::where('user_id', 1)
+        return round(Trade::where('user_id', $user->id)
             ->where('status', Trade::STATUS_CLOSED)
             ->whereDate('closed_at', today())
             ->sum('realized_pnl'), 2);
@@ -147,10 +147,10 @@ class WatchController extends Controller
                     'entry_price' => (float)$trade->entry_price,
                     'current_price' => (float)$trade->currency->last_price,
                     'pnl' => round($trade->currentPnL, 3),
-                    'can_cancel' => true,
+                    'can_cancel' => false,
                     'average_price' => (float)$trade->getAverageEntryPrice(),
                     'liquidation_price' => (float)$trade->getLiquidationPrice(),
-                    'target_profit_amount' => $trade->target_profit_amount,
+                    'target_profit_amount' => (float)$trade->target_profit_amount,
                     'target_profit_price' => $trade->target_profit_price,
                     'target_profit_percent' => $trade->target_profit_percent,
                     'orders' => $trade->orders()->get()
@@ -180,7 +180,7 @@ class WatchController extends Controller
                 return [
                     'id' => $currency->id,
                     'code' => $currency->code,
-                    'price' => $currency->last_price,
+                    'price' => (float)$currency->last_price,
                     'price_24h' => $currency->start_price_24h,
                     'price_4h' => $currency->start_price_4h,
                     'price_1h' => $currency->start_price_1h,
