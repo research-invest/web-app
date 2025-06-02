@@ -17,6 +17,8 @@ class FundingSimulationChartCalculator
     public function getChartConfig(): array
     {
         $priceData = $this->preparePriceData();
+        $highData = $this->prepareHighData();
+        $lowData = $this->prepareLowData();
 
         return [
             'chart' => [
@@ -49,11 +51,24 @@ class FundingSimulationChartCalculator
                 ],
                 'plotLines' => $this->preparePricePlotLines()
             ],
+
             'series' => [
                 [
                     'name' => 'Цена',
                     'data' => $priceData,
                     'color' => '#3490dc'
+                ],
+                [
+                    'name' => 'Максимум',
+                    'data' => $highData,
+                    'color' => '#00E396',
+                    'dashStyle' => 'dash'
+                ],
+                [
+                    'name' => 'Минимум',
+                    'data' => $lowData,
+                    'color' => '#FF4560',
+                    'dashStyle' => 'dash'
                 ]
             ]
         ];
@@ -66,6 +81,30 @@ class FundingSimulationChartCalculator
             $data[] = [
                 Carbon::createFromTimestamp($point['timestamp'])->getPreciseTimestamp(3),
                 (float)$point['price']
+            ];
+        }
+        return $data;
+    }
+
+    private function prepareHighData(): array
+    {
+        $data = [];
+        foreach ($this->simulation->price_history as $point) {
+            $data[] = [
+                Carbon::createFromTimestamp($point['timestamp'])->getPreciseTimestamp(3),
+                (float)$point['high']
+            ];
+        }
+        return $data;
+    }
+
+    private function prepareLowData(): array
+    {
+        $data = [];
+        foreach ($this->simulation->price_history as $point) {
+            $data[] = [
+                Carbon::createFromTimestamp($point['timestamp'])->getPreciseTimestamp(3),
+                (float)$point['low']
             ];
         }
         return $data;

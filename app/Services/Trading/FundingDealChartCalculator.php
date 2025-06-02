@@ -17,6 +17,8 @@ class FundingDealChartCalculator
     public function getChartConfig(): array
     {
         $priceData = $this->preparePriceData();
+        $highData = $this->prepareHighData();
+        $lowData = $this->prepareLowData();
 
         return [
             'chart' => [
@@ -24,7 +26,7 @@ class FundingDealChartCalculator
                 'height' => 400,
             ],
             'title' => [
-                'text' => "Симуляция фандинга {$this->deal->currency->code}"
+                'text' => "Сделка фандинга {$this->deal->currency->code}"
             ],
             'xAxis' => [
                 'type' => 'datetime',
@@ -44,36 +46,29 @@ class FundingDealChartCalculator
                 ]
             ],
             'yAxis' => [
-                [
-                    'title' => [
-                        'text' => 'Цена'
-                    ],
-                    'plotLines' => $this->preparePricePlotLines()
+                'title' => [
+                    'text' => 'Цена'
                 ],
-                [
-                    'title' => [
-                        'text' => 'Время запроса (мс)',
-                        'style' => [
-                            'color' => '#FF9800'
-                        ]
-                    ],
-                    'opposite' => true,
-                    'gridLineWidth' => 0,
-                ]
+                'plotLines' => $this->preparePricePlotLines()
             ],
+
             'series' => [
                 [
                     'name' => 'Цена',
                     'data' => $priceData,
-                    'color' => '#3490dc',
-                    'yAxis' => 0
+                    'color' => '#3490dc'
                 ],
                 [
-                    'name' => 'Время запроса',
-                    'data' => $this->prepareExecutionTimeData(),
-                    'color' => '#FF9800',
-                    'yAxis' => 1,
-                    'type' => 'line'
+                    'name' => 'Максимум',
+                    'data' => $highData,
+                    'color' => '#00E396',
+                    'dashStyle' => 'dash'
+                ],
+                [
+                    'name' => 'Минимум',
+                    'data' => $lowData,
+                    'color' => '#FF4560',
+                    'dashStyle' => 'dash'
                 ]
             ]
         ];
@@ -86,6 +81,30 @@ class FundingDealChartCalculator
             $data[] = [
                 Carbon::createFromTimestamp($point['timestamp'])->getPreciseTimestamp(3),
                 (float)$point['price']
+            ];
+        }
+        return $data;
+    }
+
+    private function prepareHighData(): array
+    {
+        $data = [];
+        foreach ($this->deal->price_history as $point) {
+            $data[] = [
+                Carbon::createFromTimestamp($point['timestamp'])->getPreciseTimestamp(3),
+                (float)($point['high'] ?? 0)
+            ];
+        }
+        return $data;
+    }
+
+    private function prepareLowData(): array
+    {
+        $data = [];
+        foreach ($this->deal->price_history as $point) {
+            $data[] = [
+                Carbon::createFromTimestamp($point['timestamp'])->getPreciseTimestamp(3),
+                (float)($point['low'] ?? 0)
             ];
         }
         return $data;

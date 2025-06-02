@@ -7,6 +7,7 @@ namespace App\Orchid\Screens\Trading\Funding;
 use App\Models\Funding\FundingDeal;
 use App\Orchid\Layouts\Charts\HighchartsChart;
 use App\Orchid\Layouts\Trading\Deals\Funding\InfoBlock;
+use App\Orchid\Layouts\Trading\Deals\Funding\PriceHistoryLayout;
 use App\Services\Trading\FundingDealChartCalculator;
 use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Screen;
@@ -31,6 +32,7 @@ class FundingDealEditScreen extends Screen
 
         return [
             'deal' => $deal,
+            'price_history' => collect($deal->price_history)->sortByDesc('timestamp')->values(),
         ];
     }
 
@@ -62,6 +64,10 @@ class FundingDealEditScreen extends Screen
                 $this->getFundingDealChart()
             ),
 
+            Layout::block(PriceHistoryLayout::class)
+                ->title('История цен')
+                ->description('История изменения цен во время сделки')
+                ->vertical(),
         ];
     }
 
