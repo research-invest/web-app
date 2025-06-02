@@ -2,6 +2,7 @@
 
 namespace App\Orchid\Layouts\Trading\Deals\Funding;
 
+use App\Helpers\MathHelper;
 use Orchid\Screen\Layouts\Table;
 use Orchid\Screen\TD;
 use Carbon\Carbon;
@@ -23,6 +24,8 @@ class PriceHistoryLayout extends Table
                 ->render(fn($row) => number_format((float)($row['high'] ?? 0), 8)),
             TD::make('low', 'Минимум')
                 ->render(fn($row) => number_format((float)($row['low'] ?? 0), 8)),
+            TD::make('low', 'Diff')
+                ->render(fn($row) => MathHelper::getPercentOfNumber(($row['low'] ?? 0), ($row['high'] ?? 0))),
             TD::make('execution_time', 'Время выполнения (мс)')
                 ->render(fn($row) => number_format((float)($row['execution_time'] ?? 0), 2)),
         ];
