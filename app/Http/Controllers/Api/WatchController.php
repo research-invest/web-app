@@ -111,7 +111,7 @@ class WatchController extends Controller
      */
     private function calculateTotalPnl($user, $trades = [])
     {
-        return round(collect($trades)->sum('pnl'), 3);
+        return round(collect($trades)->where('is_fake', false)->sum('pnl'), 3);
 
         return round(Trade::where('status', Trade::STATUS_OPEN)
             ->withSum(['orders' => function ($query) {
@@ -127,6 +127,7 @@ class WatchController extends Controller
     private function calculateTodayPnl($user)
     {
         return round(Trade::where('user_id', $user->id)
+            ->where('is_fake', false)
             ->where('status', Trade::STATUS_CLOSED)
             ->whereDate('closed_at', today())
             ->sum('realized_pnl'), 2);
