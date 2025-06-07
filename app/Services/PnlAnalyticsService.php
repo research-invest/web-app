@@ -83,6 +83,9 @@ class PnlAnalyticsService
             ->map(fn($item) => (float)$item->daily_pnl)
             ->toArray();
 
+        dd($actualPnl);
+
+
         // Формируем данные для графика
         $labels = [];
         $actualData = [];
