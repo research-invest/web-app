@@ -64,9 +64,9 @@ class CurrenciesFundingListLayout extends Table
 
 
             TD::make('next_settle_time', 'Следующее изменение')
-                ->render(function(Currency $currency) {
+                ->render(function (Currency $currency) {
 //                    $timestamp = $currency->latestFundingRate->next_settle_time / 1000;
-                    $timestamp = $currency->next_settle_time ? : $currency->latestFundingRate->next_settle_time / 1000;
+                    $timestamp = $currency->next_settle_time ?: $currency->latestFundingRate->next_settle_time / 1000;
                     $nextSettleTime = is_object($currency->next_settle_time) ? $currency->next_settle_time : Carbon::createFromTimestamp($timestamp);
 
                     // Расчет оставшегося времени
@@ -85,13 +85,17 @@ class CurrenciesFundingListLayout extends Table
                         $colorClass = 'text-warning';
                     }
 
-                    return sprintf(
-                        '%s UTC<br>%s MSK<br><span class="%s">осталось: %s</span>',
-                        $currency->latestFundingRate->next_settle_time_utc,
-                        $currency->latestFundingRate->next_settle_time_msk,
-                        $colorClass,
-                        $remaining
-                    );
+                    if ($currency->latestFundingRate) {
+                        return sprintf(
+                            '%s UTC<br>%s MSK<br><span class="%s">осталось: %s</span>',
+                            $currency->latestFundingRate->next_settle_time_utc,
+                            $currency->latestFundingRate->next_settle_time_msk,
+                            $colorClass,
+                            $remaining
+                        );
+                    }
+
+                    return '-';
                 })
                 ->alignLeft(),
 
