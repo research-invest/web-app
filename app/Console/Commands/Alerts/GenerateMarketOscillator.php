@@ -20,7 +20,7 @@ class GenerateMarketOscillator extends Command
     private ChartGenerator $chartGenerator;
     private const string LONG_TRADE_ID = 'LONG_TRADE_ID';
     private const string SHORT_TRADE_ID = 'SHORT_TRADE_ID';
-    private const int LIMIT = 40;
+    private const int LIMIT = 5;
 
     public function __construct(TelegramService $telegram, ChartGenerator $chartGenerator)
     {
