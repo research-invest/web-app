@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Helpers\UserHelper;
 use App\Models\TradePeriod;
 use App\Models\Trade;
 use Illuminate\Support\Collection;
@@ -11,6 +12,14 @@ class TradingAnalyticsService
     public function analyze(TradePeriod $period): array
     {
         $trades = Trade::where('trade_period_id', $period->id)
+            ->whereIn('status', [
+                Trade::STATUS_CLOSED,
+                Trade::STATUS_LIQUIDATED,
+            ])
+            ->where('user_id', UserHelper::getId())
+            ->whereNotNull('closed_at')
+            ->whereNull('deleted_at')
+            ->where('is_fake', 0)
             ->with('currency')
             ->get();
 
@@ -55,7 +64,7 @@ class TradingAnalyticsService
             ->where('realized_pnl', '>', 0)
             ->sortByDesc('realized_pnl')
             ->where('is_fake', false)
-            ->take(5);
+            ->take(10);
     }
 
     private function getLossTrades(Collection $trades): Collection

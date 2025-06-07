@@ -92,7 +92,7 @@ class TradingReportScreen extends Screen
                     ->render(fn(Trade $trade) => number_format($trade->realized_pnl, 2) . '$'),
 
                 TD::make('notes', 'Комментарий'),
-            ])->title('Топ 5 лучших сделок'),
+            ])->title('Топ 10 лучших сделок'),
 
             Layout::table('lossTrades', [
                 TD::make('id', 'ID')
