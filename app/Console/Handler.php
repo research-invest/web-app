@@ -44,7 +44,7 @@ class Handler
         $schedule->command(UpdateCurrencyPrices::class)
             ->runInBackground()
             ->withoutOverlapping()
-            ->everyTenMinutes();
+            ->hourly();
 
         $schedule->command(UpdateTradesPnL::class)
             ->runInBackground()
