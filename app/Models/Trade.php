@@ -237,7 +237,7 @@ class Trade extends BaseModel
         $currentSize = $this->getCurrentPositionSize();
 
         if (!$averagePrice) {
-            return null;
+            //return null;
         }
 
         if ($this->isTypeLong()) {
