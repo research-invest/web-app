@@ -234,19 +234,12 @@ class Trade extends BaseModel
         }
 
         $averagePrice = $this->getAverageEntryPrice();
-        $currentSize = $this->getCurrentPositionSize();
+//        $currentSize = $this->getCurrentPositionSize();
+        $currentSize = $this->position_size;
 
         if (!$averagePrice) {
             return null;
         }
-
-        dd([
-            $currentPrice,
-            $averagePrice,
-            $currentSize,
-            $this->leverage,
-            ($currentPrice - $averagePrice) * $currentSize * $this->leverage / $averagePrice,
-        ]);
 
         if ($this->isTypeLong()) {
             return ($currentPrice - $averagePrice) * $currentSize * $this->leverage / $averagePrice;
