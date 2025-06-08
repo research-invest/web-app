@@ -14,6 +14,7 @@ use App\Console\Commands\Features\DeleteOldFundingRates;
 use App\Console\Commands\Features\FundingDealsConfig;
 use App\Console\Commands\Features\FundingDealsDelete;
 use App\Console\Commands\UpdateCurrencies;
+use App\Console\Commands\UpdateCurrencyPrices;
 use App\Console\Commands\UpdateTradesPnL;
 use Illuminate\Console\Scheduling\Schedule;
 
@@ -39,6 +40,11 @@ class Handler
             ->runInBackground()
             ->withoutOverlapping()
             ->everyMinute();
+
+        $schedule->command(UpdateCurrencyPrices::class)
+            ->runInBackground()
+            ->withoutOverlapping()
+            ->everyTenMinutes();
 
         $schedule->command(UpdateTradesPnL::class)
             ->runInBackground()

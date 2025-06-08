@@ -147,6 +147,12 @@ class Trade extends BaseModel
         return $this->hasMany(TradeCheckListItem::class, 'trade_id');
     }
 
+    public function tradePeriod()
+    {
+        return $this->belongsTo(TradePeriod::class);
+    }
+
+
 
     public function scopeFake($query)
     {
@@ -229,6 +235,10 @@ class Trade extends BaseModel
 
         $averagePrice = $this->getAverageEntryPrice();
         $currentSize = $this->getCurrentPositionSize();
+
+        if (!$averagePrice) {
+            return null;
+        }
 
         if ($this->isTypeLong()) {
             return ($currentPrice - $averagePrice) * $currentSize * $this->leverage / $averagePrice;
@@ -338,8 +348,8 @@ class Trade extends BaseModel
             'roe' => $roe,
             'volume' => $this->currency->volume,
             'funding_rate' => $this->currency->funding_rate,
-            'volume_btc' =>  $volumes[Currency::CODE_BTC] ?? 0,
-            'volume_eth' =>  $volumes[Currency::CODE_ETH] ?? 0,
+            'volume_btc' => $volumes[Currency::CODE_BTC] ?? 0,
+            'volume_eth' => $volumes[Currency::CODE_ETH] ?? 0,
         ]);
     }
 
@@ -415,12 +425,6 @@ class Trade extends BaseModel
     {
         return !$this->isEvenDay();
     }
-
-    public function tradePeriod()
-    {
-        return $this->belongsTo(TradePeriod::class);
-    }
-
 
     public function isStatusOpen(): bool
     {

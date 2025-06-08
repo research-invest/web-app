@@ -19,7 +19,6 @@ class Coingecko
 
         $this->response = Http::withHeaders([
             'Content-Type' => 'application/json',
-//            'Authorization' => 'Bearer:' .config('services.garantexio.key'),
         ]);
     }
 

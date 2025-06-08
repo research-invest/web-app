@@ -126,7 +126,8 @@
                             @if($trade->currency->last_price)
                                 <br>
                                 <small class="text-muted">
-                                    До ликвидации: {{ number_format($trade->getDistanceToLiquidation($trade->currency->last_price), 2) }}
+                                    До
+                                    ликвидации: {{ number_format($trade->getDistanceToLiquidation($trade->currency->last_price), 2) }}
                                     %
                                 </small>
                         </div>
@@ -188,7 +189,9 @@
 
                             </div>
                         @endif
-                    @else
+                    @endif
+
+                    @if(!$trade->isStatusOpen())
                         <div class="d-flex justify-content-between mb-2">
                             <span>Реализованный P&L:</span>
                             <span class="{{ $trade->realized_pnl >= 0 ? 'text-success' : 'text-danger' }}">
@@ -203,9 +206,20 @@
                                 @endif
                             </span>
                         </div>
-                        <div class="d-flex justify-content-between">
+                        <div class="d-flex justify-content-between mb-2">
                             <span>Длительность:</span>
                             <span>{{ $trade->getDurationTime() }}</span>
+                        </div>
+
+                        <hr>
+                        <div class="d-flex justify-content-between mb-2">
+                            @php
+                                $unPnl = $trade->getUnrealizedPnL($trade->currency->last_price);
+                            @endphp
+                            <span title="P&L по текущей цене">FOMO P&L {{ $unPnl >= 0 ? '😄 🥳 👍' : '💩 😭' }}</span>
+                            <span class="{{ $unPnl >= 0 ? 'text-success' : 'text-danger' }}">
+                                {{ number_format($unPnl, 2) }} USDT
+                            </span>
                         </div>
                     @endif
                 </div>
