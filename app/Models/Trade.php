@@ -237,8 +237,16 @@ class Trade extends BaseModel
         $currentSize = $this->getCurrentPositionSize();
 
         if (!$averagePrice) {
-            //return null;
+            return null;
         }
+
+        dd([
+            $currentPrice,
+            $averagePrice,
+            $currentSize,
+            $this->leverage,
+            ($currentPrice - $averagePrice) * $currentSize * $this->leverage / $averagePrice,
+        ]);
 
         if ($this->isTypeLong()) {
             return ($currentPrice - $averagePrice) * $currentSize * $this->leverage / $averagePrice;
