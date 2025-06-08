@@ -18,6 +18,7 @@ use App\Orchid\Screens\Role\RoleEditScreen;
 use App\Orchid\Screens\Role\RoleListScreen;
 use App\Orchid\Screens\Settings\SettingsScreen;
 use App\Orchid\Screens\Statistics\CompositeIndex;
+use App\Orchid\Screens\Statistics\CryptoCorrelationScreen;
 use App\Orchid\Screens\Trading\CheckListItem\CheckListItemEditScreen;
 use App\Orchid\Screens\Trading\CheckListItem\CheckItemListScreen;
 use App\Orchid\Screens\Trading\Deals\DealCloseScreen;
@@ -54,6 +55,9 @@ use \App\Orchid\Screens\Trading\Funding\FundingDealConfigStatsScreen;
 // Main
 Route::screen('/main', PlatformScreen::class)
     ->name('platform.main');
+
+Route::screen('/statistics/crypto-correlation', CryptoCorrelationScreen::class)
+    ->name('platform.statistics.crypto-correlation');
 
 Route::screen('/statistics/normalize', \App\Orchid\Screens\Statistics\Normalize::class)
     ->name('platform.statistics.normalize');

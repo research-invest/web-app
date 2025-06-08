@@ -48,6 +48,11 @@ class PlatformProvider extends OrchidServiceProvider
                 ->icon('bs.book')
                 ->title('Статистика')
                 ->list([
+                    Menu::make('Корреляция BTC/ETH')
+                        ->icon('chart')
+                        ->rawClick()
+                        ->route('platform.statistics.crypto-correlation'),
+
                     Menu::make('Funding')
                         ->icon('bs.book')
                         ->route('platform.statistics.funding'),
