@@ -160,6 +160,7 @@ class CurrenciesListLayout extends Table
 
                         Link::make('Корреляция с BTC/ETH')
                             ->icon('grid')
+                            ->target('_blank')
                             ->rawClick()
                             ->route('platform.statistics.crypto-correlation.details', [
                                 'currency' => $currency->id
