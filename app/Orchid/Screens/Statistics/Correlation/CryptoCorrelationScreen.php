@@ -94,17 +94,20 @@ class CryptoCorrelationScreen extends Screen
                         // 4H
                         $change4h = $row['btc_4h'];
                         $color4h = $this->getColorByChange($change4h);
-                        $html[] = "<div style='color: {$color4h}'>4H: {$change4h}%</div>";
+                        $html[] = "<div class='p-1 mb-1 rounded' style='background: rgba(0,0,0,0.03); color: {$color4h}'>4H: " . 
+                            ($change4h !== null ? number_format($change4h, 4) . '%' : '-') . "</div>";
 
                         // 12H
                         $change12h = $row['btc_12h'];
                         $color12h = $this->getColorByChange($change12h);
-                        $html[] = "<div style='color: {$color12h}'>12H: {$change12h}%</div>";
+                        $html[] = "<div class='p-1 mb-1 rounded' style='background: rgba(0,0,0,0.03); color: {$color12h}'>12H: " . 
+                            ($change12h !== null ? number_format($change12h, 4) . '%' : '-') . "</div>";
 
                         // 24H
                         $change24h = $row['btc_24h'];
                         $color24h = $this->getColorByChange($change24h);
-                        $html[] = "<div style='color: {$color24h}'>24H: {$change24h}%</div>";
+                        $html[] = "<div class='p-1 rounded' style='background: rgba(0,0,0,0.03); color: {$color24h}'>24H: " . 
+                            ($change24h !== null ? number_format($change24h, 4) . '%' : '-') . "</div>";
 
                         return implode('', $html);
                     }),
@@ -117,17 +120,20 @@ class CryptoCorrelationScreen extends Screen
                         // 4H
                         $change4h = $row['eth_4h'];
                         $color4h = $this->getColorByChange($change4h);
-                        $html[] = "<div style='color: {$color4h}'>4H: {$change4h}%</div>";
+                        $html[] = "<div class='p-1 mb-1 rounded' style='background: rgba(0,0,0,0.03); color: {$color4h}'>4H: " . 
+                            ($change4h !== null ? number_format($change4h, 4) . '%' : '-') . "</div>";
 
                         // 12H
                         $change12h = $row['eth_12h'];
                         $color12h = $this->getColorByChange($change12h);
-                        $html[] = "<div style='color: {$color12h}'>12H: {$change12h}%</div>";
+                        $html[] = "<div class='p-1 mb-1 rounded' style='background: rgba(0,0,0,0.03); color: {$color12h}'>12H: " . 
+                            ($change12h !== null ? number_format($change12h, 4) . '%' : '-') . "</div>";
 
                         // 24H
                         $change24h = $row['eth_24h'];
                         $color24h = $this->getColorByChange($change24h);
-                        $html[] = "<div style='color: {$color24h}'>24H: {$change24h}%</div>";
+                        $html[] = "<div class='p-1 rounded' style='background: rgba(0,0,0,0.03); color: {$color24h}'>24H: " . 
+                            ($change24h !== null ? number_format($change24h, 4) . '%' : '-') . "</div>";
 
                         return implode('', $html);
                     }),
@@ -140,12 +146,14 @@ class CryptoCorrelationScreen extends Screen
                         // BTC Volume
                         $btcVolume = $row['btc_volume_24h'];
                         $btcColor = $this->getColorByChange($btcVolume);
-                        $html[] = "<div style='color: {$btcColor}'>BTC: {$btcVolume}%</div>";
+                        $html[] = "<div class='p-1 mb-1 rounded' style='background: rgba(0,0,0,0.03); color: {$btcColor}'>BTC: " . 
+                            ($btcVolume !== null ? number_format($btcVolume, 4) . '%' : '-') . "</div>";
 
                         // ETH Volume
                         $ethVolume = $row['eth_volume_24h'];
                         $ethColor = $this->getColorByChange($ethVolume);
-                        $html[] = "<div style='color: {$ethColor}'>ETH: {$ethVolume}%</div>";
+                        $html[] = "<div class='p-1 rounded' style='background: rgba(0,0,0,0.03); color: {$ethColor}'>ETH: " . 
+                            ($ethVolume !== null ? number_format($ethVolume, 4) . '%' : '-') . "</div>";
 
                         return implode('', $html);
                     }),
