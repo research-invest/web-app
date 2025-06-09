@@ -19,7 +19,7 @@ class CryptoCorrelationScreen extends Screen
             ->groupBy('currency_id');
 
         $query = CurrencyPrice::query()
-            ->joinSub($latestIds, 'latest_prices', function($join) {
+            ->joinSub($latestIds, 'latest_prices', function ($join) {
                 $join->on('currencies_prices.id', '=', 'latest_prices.latest_id');
             })
             ->orderByDesc('total_volume');
@@ -72,16 +72,19 @@ class CryptoCorrelationScreen extends Screen
                     ->sort()
                     ->render(function ($row) {
                         return Link::make($row['code'])
-                            ->route('platform.statistics.crypto-correlation.details', ['currency' => $row['currency_id']]);
+                            ->rawClick()
+                            ->route('platform.statistics.crypto-correlation.details', [
+                                'currency' => $row['currency_id']
+                            ]);
                     }),
 
                 TD::make('current_price', 'Цена')
                     ->sort()
-                    ->render(fn ($row) => number_format($row['current_price'], 8)),
+                    ->render(fn($row) => number_format($row['current_price'], 8)),
 
                 TD::make('market_cap', 'Капитализация')
                     ->sort()
-                    ->render(fn ($row) => number_format($row['market_cap'], 0)),
+                    ->render(fn($row) => number_format($row['market_cap'], 0)),
 
                 // BTC корреляция
                 TD::make('btc_correlation', 'BTC корреляция')
