@@ -3,49 +3,50 @@
 namespace App\Orchid\Screens\Statistics;
 
 use App\Models\CurrencyPrice;
+use Illuminate\Http\Request;
+use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Screen;
 use Orchid\Screen\TD;
 use Orchid\Support\Facades\Layout;
 
 class CryptoCorrelationScreen extends Screen
 {
-    public function query(): array
+    public function query(Request $request): array
     {
-        $currencies = CurrencyPrice::query()
+        $query = CurrencyPrice::query()
             ->select([
                 'currencies_prices.*',
-                'currencies.code',
-                'currencies.name'
+//                'currencies.code',
+//                'currencies.name'
             ])
-            ->join('currencies', 'currencies.id', '=', 'currencies_prices.currency_id')
-            ->whereNotNull('currency_id')
-            ->orderByDesc('created_at')
-            ->get()
-            ->groupBy('currency_id')
-            ->map(function ($prices) {
-                $latest = $prices->first();
+//            ->join('currencies', 'currencies.id', '=', 'currencies_prices.currency_id')
+//            ->whereNotNull('currency_id')
+            ->orderByDesc('total_volume')
+            ->orderByDesc('created_at');
+
+        $currencies = $query->paginate(20)
+            ->through(function ($price) {
                 return [
-                    'code' => $latest->code,
-                    'name' => $latest->name,
-                    'current_price' => $latest->current_price,
-                    'market_cap' => $latest->market_cap,
-                    'volume' => $latest->total_volume,
+                    'id' => $price->id,
+                    'code' => $price->symbol,
+                    'name' => $price->name,
+                    'current_price' => $price->current_price,
+                    'market_cap' => $price->market_cap,
+                    'volume' => $price->total_volume,
 
                     // Изменения относительно BTC
-                    'btc_4h' => $latest->price_change_vs_btc_4h,
-                    'btc_12h' => $latest->price_change_vs_btc_12h,
-                    'btc_24h' => $latest->price_change_vs_btc_24h,
-                    'btc_volume_24h' => $latest->volume_change_vs_btc_24h,
+                    'btc_4h' => $price->price_change_vs_btc_4h,
+                    'btc_12h' => $price->price_change_vs_btc_12h,
+                    'btc_24h' => $price->price_change_vs_btc_24h,
+                    'btc_volume_24h' => $price->volume_change_vs_btc_24h,
 
                     // Изменения относительно ETH
-                    'eth_4h' => $latest->price_change_vs_eth_4h,
-                    'eth_12h' => $latest->price_change_vs_eth_12h,
-                    'eth_24h' => $latest->price_change_vs_eth_24h,
-                    'eth_volume_24h' => $latest->volume_change_vs_eth_24h,
+                    'eth_4h' => $price->price_change_vs_eth_4h,
+                    'eth_12h' => $price->price_change_vs_eth_12h,
+                    'eth_24h' => $price->price_change_vs_eth_24h,
+                    'eth_volume_24h' => $price->volume_change_vs_eth_24h,
                 ];
-            })
-            ->values()
-            ->toArray();
+            });
 
         return [
             'currencies' => $currencies
@@ -68,7 +69,10 @@ class CryptoCorrelationScreen extends Screen
             Layout::table('currencies', [
                 TD::make('code', 'Монета')
                     ->sort()
-                    ->render(fn ($row) => $row['code']),
+                    ->render(function ($row) {
+                        return Link::make($row['code'])
+                            ->route('platform.statistics.crypto-correlation.details', ['currency' => $row['id']]);
+                    }),
 
                 TD::make('current_price', 'Цена')
                     ->sort()
@@ -141,7 +145,7 @@ class CryptoCorrelationScreen extends Screen
 
                         return implode('', $html);
                     }),
-            ]),
+            ])
         ];
     }
 

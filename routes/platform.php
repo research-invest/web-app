@@ -40,6 +40,7 @@ use \App\Orchid\Screens\Statistics\BtcWallets\BtcWalletsListScreen;
 use \App\Orchid\Screens\Statistics\BtcWallets\BtcWalletShowScreen;
 use App\Orchid\Screens\Statistics\BtcWallets\WalletTrendsScreen;
 use \App\Orchid\Screens\Trading\Funding\FundingDealConfigStatsScreen;
+use App\Orchid\Screens\Statistics\CurrencyCorrelationDetailsScreen;
 
 /*
 |--------------------------------------------------------------------------
@@ -58,6 +59,9 @@ Route::screen('/main', PlatformScreen::class)
 
 Route::screen('/statistics/crypto-correlation', CryptoCorrelationScreen::class)
     ->name('platform.statistics.crypto-correlation');
+
+Route::screen('/statistics/crypto-correlation/{currency}/show', CurrencyCorrelationDetailsScreen::class)
+    ->name('platform.statistics.crypto-correlation.details');
 
 Route::screen('/statistics/normalize', \App\Orchid\Screens\Statistics\Normalize::class)
     ->name('platform.statistics.normalize');
