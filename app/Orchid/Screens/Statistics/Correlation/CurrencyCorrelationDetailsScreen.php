@@ -385,12 +385,12 @@ class CurrencyCorrelationDetailsScreen extends Screen
                 'shared' => true,
                 'crosshairs' => true,
                 'xDateFormat' => '%d.%m.%Y %H:%M',
-                'pointFormatter' => "function() {
-                    if (this.series.name === 'Объем') {
-                        return '<span style=\"color:' + this.color + '\">●</span> ' + this.series.name + ': <b>' + Highcharts.numberFormat(this.y, 0) + '</b><br/>';
-                    }
-                    return '<span style=\"color:' + this.color + '\">●</span> ' + this.series.name + ': <b>' + Highcharts.numberFormat(this.y, 2) + 'x</b><br/>';
-                }"
+//                'pointFormatter' => "function() {
+//                    if (this.series.name === 'Объем') {
+//                        return '<span style=\"color:' + this.color + '\">●</span> ' + this.series.name + ': <b>' + Highcharts.numberFormat(this.y, 0) + '</b><br/>';
+//                    }
+//                    return '<span style=\"color:' + this.color + '\">●</span> ' + this.series.name + ': <b>' + Highcharts.numberFormat(this.y, 2) + 'x</b><br/>';
+//                }"
             ],
             'series' => [
                 [
