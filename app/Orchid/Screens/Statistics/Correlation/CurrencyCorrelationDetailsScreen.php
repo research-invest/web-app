@@ -121,28 +121,42 @@ class CurrencyCorrelationDetailsScreen extends Screen
     private function getVolumeData(): array
     {
         $volumeData = [];
+        $btcVolumeData = [];
+        $ethVolumeData = [];
         $normalizedVolume = [];
-        $avgVolume = 0;
-
-        // Сначала вычисляем среднее значение объема
+        $normalizedBtcVolume = [];
+        $normalizedEthVolume = [];
+        
+        // Вычисляем средние значения объемов
         $volumes = $this->historicalData->pluck('total_volume')->filter()->toArray();
-        if (count($volumes) > 0) {
-            $avgVolume = array_sum($volumes) / count($volumes);
-        }
-
+        $btcVolumes = $this->historicalData->pluck('btc_volume')->filter()->toArray();
+        $ethVolumes = $this->historicalData->pluck('eth_volume')->filter()->toArray();
+        
+        $avgVolume = count($volumes) > 0 ? array_sum($volumes) / count($volumes) : 0;
+        $avgBtcVolume = count($btcVolumes) > 0 ? array_sum($btcVolumes) / count($btcVolumes) : 0;
+        $avgEthVolume = count($ethVolumes) > 0 ? array_sum($ethVolumes) / count($ethVolumes) : 0;
+        
         foreach ($this->historicalData as $data) {
             $timestamp = $data->created_at->timestamp * 1000;
-
+            
+            // Объемы в абсолютных значениях
             $volumeData[] = [$timestamp, (float)$data->total_volume];
-
-            // Нормализованный объем (отношение к среднему)
-            $normalized = $avgVolume > 0 ? ($data->total_volume / $avgVolume) : null;
-            $normalizedVolume[] = [$timestamp, $normalized];
+            $btcVolumeData[] = [$timestamp, (float)$data->btc_volume];
+            $ethVolumeData[] = [$timestamp, (float)$data->eth_volume];
+            
+            // Нормализованные объемы (отношение к среднему)
+            $normalizedVolume[] = [$timestamp, $avgVolume > 0 ? ($data->total_volume / $avgVolume) : null];
+            $normalizedBtcVolume[] = [$timestamp, $avgBtcVolume > 0 ? ($data->btc_volume / $avgBtcVolume) : null];
+            $normalizedEthVolume[] = [$timestamp, $avgEthVolume > 0 ? ($data->eth_volume / $avgEthVolume) : null];
         }
-
+        
         return [
             'volume' => $volumeData,
-            'normalized' => $normalizedVolume
+            'btcVolume' => $btcVolumeData,
+            'ethVolume' => $ethVolumeData,
+            'normalized' => $normalizedVolume,
+            'normalizedBtc' => $normalizedBtcVolume,
+            'normalizedEth' => $normalizedEthVolume
         ];
     }
 
@@ -355,9 +369,6 @@ class CurrencyCorrelationDetailsScreen extends Screen
                 [
                     'title' => [
                         'text' => 'Объем'
-                    ],
-                    'labels' => [
-                        'formatter' => "function() { return Highcharts.numberFormat(this.value, 0); }"
                     ]
                 ],
                 [
@@ -384,17 +395,12 @@ class CurrencyCorrelationDetailsScreen extends Screen
             'tooltip' => [
                 'shared' => true,
                 'crosshairs' => true,
-                'xDateFormat' => '%d.%m.%Y %H:%M',
-//                'pointFormatter' => "function() {
-//                    if (this.series.name === 'Объем') {
-//                        return '<span style=\"color:' + this.color + '\">●</span> ' + this.series.name + ': <b>' + Highcharts.numberFormat(this.y, 0) + '</b><br/>';
-//                    }
-//                    return '<span style=\"color:' + this.color + '\">●</span> ' + this.series.name + ': <b>' + Highcharts.numberFormat(this.y, 2) + 'x</b><br/>';
-//                }"
+                'xDateFormat' => '%d.%m.%Y %H:%M'
             ],
             'series' => [
+                // Абсолютные объемы
                 [
-                    'name' => 'Объем',
+                    'name' => "Объем {$this->currency->symbol}",
                     'data' => $this->chartData['volume']['volume'],
                     'yAxis' => 0,
                     'color' => '#7B1FA2',
@@ -403,10 +409,52 @@ class CurrencyCorrelationDetailsScreen extends Screen
                     ]
                 ],
                 [
-                    'name' => 'Нормализованный объем',
+                    'name' => 'Объем BTC',
+                    'data' => $this->chartData['volume']['btcVolume'],
+                    'yAxis' => 0,
+                    'color' => '#FFA000',
+                    'tooltip' => [
+                        'valueDecimals' => 0
+                    ]
+                ],
+                [
+                    'name' => 'Объем ETH',
+                    'data' => $this->chartData['volume']['ethVolume'],
+                    'yAxis' => 0,
+                    'color' => '#00C853',
+                    'tooltip' => [
+                        'valueDecimals' => 0
+                    ]
+                ],
+                // Нормализованные объемы
+                [
+                    'name' => "Нормализованный объем {$this->currency->symbol}",
                     'data' => $this->chartData['volume']['normalized'],
                     'yAxis' => 1,
                     'color' => '#E91E63',
+                    'dashStyle' => 'ShortDash',
+                    'tooltip' => [
+                        'valueSuffix' => 'x',
+                        'valueDecimals' => 2
+                    ]
+                ],
+                [
+                    'name' => 'Нормализованный объем BTC',
+                    'data' => $this->chartData['volume']['normalizedBtc'],
+                    'yAxis' => 1,
+                    'color' => '#FF6F00',
+                    'dashStyle' => 'ShortDash',
+                    'tooltip' => [
+                        'valueSuffix' => 'x',
+                        'valueDecimals' => 2
+                    ]
+                ],
+                [
+                    'name' => 'Нормализованный объем ETH',
+                    'data' => $this->chartData['volume']['normalizedEth'],
+                    'yAxis' => 1,
+                    'color' => '#00B8D4',
+                    'dashStyle' => 'ShortDash',
                     'tooltip' => [
                         'valueSuffix' => 'x',
                         'valueDecimals' => 2
