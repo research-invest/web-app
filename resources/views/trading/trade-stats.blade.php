@@ -216,7 +216,7 @@
                             @php
                                 $unPnl = $trade->getUnrealizedPnL($trade->currency->last_price);
                             @endphp
-                            <span title="P&L по текущей цене">FOMO P&L {{ $unPnl >= 0 ? '😄 🥳 👍' : '💩 😭' }}</span>
+                            <span title="P&L по текущей цене">FOMO P&L {{ $unPnl >= 0 ? '💩 😭' : '😄 🥳 👍' }}</span>
                             <span class="{{ $unPnl >= 0 ? 'text-success' : 'text-danger' }}">
                                 {{ number_format($unPnl, 2) }} USDT
                             </span>
