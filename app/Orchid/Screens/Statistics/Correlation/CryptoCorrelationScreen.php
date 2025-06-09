@@ -94,19 +94,19 @@ class CryptoCorrelationScreen extends Screen
                         // 4H
                         $change4h = $row['btc_4h'];
                         $color4h = $this->getColorByChange($change4h);
-                        $html[] = "<div class='p-1 mb-1 rounded' style='background: rgba(0,0,0,0.03); color: {$color4h}'>4H: " . 
+                        $html[] = "<div class='p-1 mb-1 rounded font-weight-bold' style='background: rgba(0,0,0,0.05); color: {$color4h}; text-shadow: 0 0 1px rgba(255,255,255,0.5);'>4H: " . 
                             ($change4h !== null ? number_format($change4h, 4) . '%' : '-') . "</div>";
 
                         // 12H
                         $change12h = $row['btc_12h'];
                         $color12h = $this->getColorByChange($change12h);
-                        $html[] = "<div class='p-1 mb-1 rounded' style='background: rgba(0,0,0,0.03); color: {$color12h}'>12H: " . 
+                        $html[] = "<div class='p-1 mb-1 rounded font-weight-bold' style='background: rgba(0,0,0,0.05); color: {$color12h}; text-shadow: 0 0 1px rgba(255,255,255,0.5);'>12H: " . 
                             ($change12h !== null ? number_format($change12h, 4) . '%' : '-') . "</div>";
 
                         // 24H
                         $change24h = $row['btc_24h'];
                         $color24h = $this->getColorByChange($change24h);
-                        $html[] = "<div class='p-1 rounded' style='background: rgba(0,0,0,0.03); color: {$color24h}'>24H: " . 
+                        $html[] = "<div class='p-1 rounded font-weight-bold' style='background: rgba(0,0,0,0.05); color: {$color24h}; text-shadow: 0 0 1px rgba(255,255,255,0.5);'>24H: " . 
                             ($change24h !== null ? number_format($change24h, 4) . '%' : '-') . "</div>";
 
                         return implode('', $html);
@@ -120,19 +120,19 @@ class CryptoCorrelationScreen extends Screen
                         // 4H
                         $change4h = $row['eth_4h'];
                         $color4h = $this->getColorByChange($change4h);
-                        $html[] = "<div class='p-1 mb-1 rounded' style='background: rgba(0,0,0,0.03); color: {$color4h}'>4H: " . 
+                        $html[] = "<div class='p-1 mb-1 rounded font-weight-bold' style='background: rgba(0,0,0,0.05); color: {$color4h}; text-shadow: 0 0 1px rgba(255,255,255,0.5);'>4H: " . 
                             ($change4h !== null ? number_format($change4h, 4) . '%' : '-') . "</div>";
 
                         // 12H
                         $change12h = $row['eth_12h'];
                         $color12h = $this->getColorByChange($change12h);
-                        $html[] = "<div class='p-1 mb-1 rounded' style='background: rgba(0,0,0,0.03); color: {$color12h}'>12H: " . 
+                        $html[] = "<div class='p-1 mb-1 rounded font-weight-bold' style='background: rgba(0,0,0,0.05); color: {$color12h}; text-shadow: 0 0 1px rgba(255,255,255,0.5);'>12H: " . 
                             ($change12h !== null ? number_format($change12h, 4) . '%' : '-') . "</div>";
 
                         // 24H
                         $change24h = $row['eth_24h'];
                         $color24h = $this->getColorByChange($change24h);
-                        $html[] = "<div class='p-1 rounded' style='background: rgba(0,0,0,0.03); color: {$color24h}'>24H: " . 
+                        $html[] = "<div class='p-1 rounded font-weight-bold' style='background: rgba(0,0,0,0.05); color: {$color24h}; text-shadow: 0 0 1px rgba(255,255,255,0.5);'>24H: " . 
                             ($change24h !== null ? number_format($change24h, 4) . '%' : '-') . "</div>";
 
                         return implode('', $html);
@@ -146,13 +146,13 @@ class CryptoCorrelationScreen extends Screen
                         // BTC Volume
                         $btcVolume = $row['btc_volume_24h'];
                         $btcColor = $this->getColorByChange($btcVolume);
-                        $html[] = "<div class='p-1 mb-1 rounded' style='background: rgba(0,0,0,0.03); color: {$btcColor}'>BTC: " . 
+                        $html[] = "<div class='p-1 mb-1 rounded font-weight-bold' style='background: rgba(0,0,0,0.05); color: {$btcColor}; text-shadow: 0 0 1px rgba(255,255,255,0.5);'>BTC: " . 
                             ($btcVolume !== null ? number_format($btcVolume, 4) . '%' : '-') . "</div>";
 
                         // ETH Volume
                         $ethVolume = $row['eth_volume_24h'];
                         $ethColor = $this->getColorByChange($ethVolume);
-                        $html[] = "<div class='p-1 rounded' style='background: rgba(0,0,0,0.03); color: {$ethColor}'>ETH: " . 
+                        $html[] = "<div class='p-1 rounded font-weight-bold' style='background: rgba(0,0,0,0.05); color: {$ethColor}; text-shadow: 0 0 1px rgba(255,255,255,0.5);'>ETH: " . 
                             ($ethVolume !== null ? number_format($ethVolume, 4) . '%' : '-') . "</div>";
 
                         return implode('', $html);
@@ -164,25 +164,25 @@ class CryptoCorrelationScreen extends Screen
     private function getColorByChange(?float $change): string
     {
         if ($change === null) {
-            return 'inherit';
+            return '#666666';  // Темно-серый для null значений
         }
 
         if ($change > 5) {
-            return 'green';
+            return '#00b300';  // Насыщенный зеленый для сильного роста
         }
 
         if ($change < -5) {
-            return 'red';
+            return '#cc0000';  // Насыщенный красный для сильного падения
         }
 
         if ($change > 0) {
-            return '#90EE90'; // Light green
+            return '#2d862d';  // Умеренный зеленый для роста
         }
 
         if ($change < 0) {
-            return '#FFB6C1'; // Light red
+            return '#b30000';  // Умеренный красный для падения
         }
 
-        return 'inherit';
+        return '#666666';  // Темно-серый для нулевых значений
     }
 }
