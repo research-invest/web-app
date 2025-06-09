@@ -68,7 +68,7 @@ class CurrencyCorrelationDetailsScreen extends Screen
         $btcCorrelation12h = [];
         $btcCorrelation24h = [];
         $btcCorrelationAvg = [];
-        
+
         $ethCorrelation4h = [];
         $ethCorrelation12h = [];
         $ethCorrelation24h = [];
@@ -76,30 +76,30 @@ class CurrencyCorrelationDetailsScreen extends Screen
 
         foreach ($this->historicalData as $data) {
             $timestamp = $data->created_at->timestamp * 1000;
-            
+
             // BTC корреляции
             $btc4h = round($data->price_change_vs_btc_4h, 5);
             $btc12h = round($data->price_change_vs_btc_12h, 5);
             $btc24h = round($data->price_change_vs_btc_24h, 5);
-            
+
             $btcCorrelation4h[] = [$timestamp, $btc4h];
             $btcCorrelation12h[] = [$timestamp, $btc12h];
             $btcCorrelation24h[] = [$timestamp, $btc24h];
-            
+
             // Среднее значение BTC
             $btcValues = array_filter([$btc4h, $btc12h, $btc24h], fn($value) => $value !== null);
             $btcAvg = count($btcValues) > 0 ? array_sum($btcValues) / count($btcValues) : null;
             $btcCorrelationAvg[] = [$timestamp, $btcAvg];
-            
+
             // ETH корреляции
             $eth4h = round($data->price_change_vs_eth_4h, 5);
             $eth12h = round($data->price_change_vs_eth_12h, 5);
             $eth24h = round($data->price_change_vs_eth_24h, 5);
-            
+
             $ethCorrelation4h[] = [$timestamp, $eth4h];
             $ethCorrelation12h[] = [$timestamp, $eth12h];
             $ethCorrelation24h[] = [$timestamp, $eth24h];
-            
+
             // Среднее значение ETH
             $ethValues = array_filter([$eth4h, $eth12h, $eth24h], fn($value) => $value !== null);
             $ethAvg = count($ethValues) > 0 ? array_sum($ethValues) / count($ethValues) : null;
@@ -123,24 +123,23 @@ class CurrencyCorrelationDetailsScreen extends Screen
         $volumeData = [];
         $normalizedVolume = [];
         $avgVolume = 0;
-        
+
         // Сначала вычисляем среднее значение объема
         $volumes = $this->historicalData->pluck('total_volume')->filter()->toArray();
         if (count($volumes) > 0) {
             $avgVolume = array_sum($volumes) / count($volumes);
         }
-        
+
         foreach ($this->historicalData as $data) {
             $timestamp = $data->created_at->timestamp * 1000;
-            
-            // Обычный объем
-            $volumeData[] = [$timestamp, MathHelper::humanNumber($data->total_volume)];
-            
+
+            $volumeData[] = [$timestamp, $data->total_volume];
+
             // Нормализованный объем (отношение к среднему)
             $normalized = $avgVolume > 0 ? ($data->total_volume / $avgVolume) : null;
             $normalizedVolume[] = [$timestamp, $normalized];
         }
-        
+
         return [
             'volume' => $volumeData,
             'normalized' => $normalizedVolume
@@ -385,7 +384,13 @@ class CurrencyCorrelationDetailsScreen extends Screen
             'tooltip' => [
                 'shared' => true,
                 'crosshairs' => true,
-                'xDateFormat' => '%d.%m.%Y %H:%M'
+                'xDateFormat' => '%d.%m.%Y %H:%M',
+                'pointFormatter' => "function() {
+                    if (this.series.name === 'Объем') {
+                        return '<span style=\"color:' + this.color + '\">●</span> ' + this.series.name + ': <b>' + Highcharts.numberFormat(this.y, 0) + '</b><br/>';
+                    }
+                    return '<span style=\"color:' + this.color + '\">●</span> ' + this.series.name + ': <b>' + Highcharts.numberFormat(this.y, 2) + 'x</b><br/>';
+                }"
             ],
             'series' => [
                 [
@@ -394,7 +399,7 @@ class CurrencyCorrelationDetailsScreen extends Screen
                     'yAxis' => 0,
                     'color' => '#7B1FA2',
                     'tooltip' => [
-                        'valueDecimals' => 2
+                        'valueDecimals' => 0
                     ]
                 ],
                 [
