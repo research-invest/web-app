@@ -4,6 +4,7 @@ namespace App\Orchid\Screens\Statistics;
 
 use App\Models\CurrencyPrice;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Screen;
 use Orchid\Screen\TD;
@@ -13,21 +14,21 @@ class CryptoCorrelationScreen extends Screen
 {
     public function query(Request $request): array
     {
+        $latestIds = CurrencyPrice::query()
+            ->select('currency_id', DB::raw('MAX(id) as latest_id'))
+            ->groupBy('currency_id');
+
         $query = CurrencyPrice::query()
-            ->select([
-                'currencies_prices.*',
-//                'currencies.code',
-//                'currencies.name'
-            ])
-//            ->join('currencies', 'currencies.id', '=', 'currencies_prices.currency_id')
-//            ->whereNotNull('currency_id')
-            ->orderByDesc('total_volume')
-            ->orderByDesc('created_at');
+            ->joinSub($latestIds, 'latest_prices', function($join) {
+                $join->on('currencies_prices.id', '=', 'latest_prices.latest_id');
+            })
+            ->orderByDesc('total_volume');
 
         $currencies = $query->paginate(20)
-            ->through(function ($price) {
+            ->through(function (CurrencyPrice $price) {
                 return [
                     'id' => $price->id,
+                    'currency_id' => $price->currency_id,
                     'code' => $price->symbol,
                     'name' => $price->name,
                     'current_price' => $price->current_price,
@@ -71,7 +72,7 @@ class CryptoCorrelationScreen extends Screen
                     ->sort()
                     ->render(function ($row) {
                         return Link::make($row['code'])
-                            ->route('platform.statistics.crypto-correlation.details', ['currency' => $row['id']]);
+                            ->route('platform.statistics.crypto-correlation.details', ['currency' => $row['currency_id']]);
                     }),
 
                 TD::make('current_price', 'Цена')

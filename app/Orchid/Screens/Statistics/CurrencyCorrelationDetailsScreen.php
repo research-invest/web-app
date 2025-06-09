@@ -2,7 +2,6 @@
 
 namespace App\Orchid\Screens\Statistics;
 
-use App\Models\Currency;
 use App\Models\CurrencyPrice;
 use App\Orchid\Layouts\Charts\HighchartsChart;
 use Illuminate\Http\Request;
@@ -18,8 +17,13 @@ class CurrencyCorrelationDetailsScreen extends Screen
     public function query(Request $request): array
     {
         $currencyId = $request->route('currency');
-        $this->currency = CurrencyPrice::findOrFail($currencyId);
-
+        
+        // Получаем последнюю запись для этой монеты
+        $this->currency = CurrencyPrice::query()
+            ->where('currency_id', $currencyId)
+            ->orderByDesc('id')
+            ->firstOrFail();
+        
         $this->chartData = $this->getChartData($currencyId);
 
         return [
@@ -30,7 +34,7 @@ class CurrencyCorrelationDetailsScreen extends Screen
 
     public function name(): ?string
     {
-        return $this->currency ? "Анализ {$this->currency->code}" : 'Анализ корреляции';
+        return $this->currency ? "Анализ {$this->currency->symbol}" : 'Анализ корреляции';
     }
 
     public function description(): ?string
@@ -58,7 +62,7 @@ class CurrencyCorrelationDetailsScreen extends Screen
                         'zoomType' => 'x'
                     ],
                     'title' => [
-                        'text' => "Корреляция {$this->currency->code} с BTC/ETH"
+                        'text' => "Корреляция {$this->currency->symbol} с BTC/ETH"
                     ],
                     'xAxis' => [
                         'type' => 'datetime',
@@ -103,7 +107,7 @@ class CurrencyCorrelationDetailsScreen extends Screen
                     ],
                     'series' => [
                         [
-                            'name' => "Цена {$this->currency->code}",
+                            'name' => "Цена {$this->currency->symbol}",
                             'data' => $this->chartData['price'],
                             'yAxis' => 0,
                             'color' => '#3F51B5',
@@ -135,18 +139,15 @@ class CurrencyCorrelationDetailsScreen extends Screen
                 ])
             ])->title('График корреляции')
              ->description('Показывает движение цены и корреляцию с основными криптовалютами'),
-
-            // Здесь можно добавить дополнительные блоки с другими графиками
-            // или статистической информацией
         ];
     }
 
-    private function getChartData($currencyPriceId): array
+    private function getChartData($currencyId): array
     {
         $historicalData = CurrencyPrice::query()
-            ->where('id', $currencyPriceId)
+            ->where('currency_id', $currencyId)
             ->orderBy('created_at')
-            ->limit(200) // Увеличил количество точек для более детального анализа
+            ->limit(200)
             ->get();
 
         $priceData = [];
@@ -155,7 +156,7 @@ class CurrencyCorrelationDetailsScreen extends Screen
 
         foreach ($historicalData as $data) {
             $timestamp = $data->created_at->timestamp * 1000;
-
+            
             $priceData[] = [$timestamp, round($data->current_price, 8)];
             $btcCorrelationData[] = [$timestamp, round($data->price_change_vs_btc_24h, 2)];
             $ethCorrelationData[] = [$timestamp, round($data->price_change_vs_eth_24h, 2)];
