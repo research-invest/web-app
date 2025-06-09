@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Orchid\Screens\Statistics;
+namespace App\Orchid\Screens\Statistics\Correlation;
 
 use App\Models\CurrencyPrice;
 use Illuminate\Http\Request;

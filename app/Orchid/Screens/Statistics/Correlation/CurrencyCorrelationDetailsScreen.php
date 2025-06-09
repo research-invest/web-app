@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Orchid\Screens\Statistics;
+namespace App\Orchid\Screens\Statistics\Correlation;
 
 use App\Models\CurrencyPrice;
 use App\Orchid\Layouts\Charts\HighchartsChart;
@@ -17,13 +17,12 @@ class CurrencyCorrelationDetailsScreen extends Screen
     public function query(Request $request): array
     {
         $currencyId = $request->route('currency');
-        
-        // Получаем последнюю запись для этой монеты
+
         $this->currency = CurrencyPrice::query()
             ->where('currency_id', $currencyId)
             ->orderByDesc('id')
             ->firstOrFail();
-        
+
         $this->chartData = $this->getChartData($currencyId);
 
         return [
@@ -156,10 +155,10 @@ class CurrencyCorrelationDetailsScreen extends Screen
 
         foreach ($historicalData as $data) {
             $timestamp = $data->created_at->timestamp * 1000;
-            
+
             $priceData[] = [$timestamp, round($data->current_price, 8)];
-            $btcCorrelationData[] = [$timestamp, round($data->price_change_vs_btc_24h, 2)];
-            $ethCorrelationData[] = [$timestamp, round($data->price_change_vs_eth_24h, 2)];
+            $btcCorrelationData[] = [$timestamp, round($data->price_change_vs_btc_24h, 5)];
+            $ethCorrelationData[] = [$timestamp, round($data->price_change_vs_eth_24h, 5)];
         }
 
         return [
