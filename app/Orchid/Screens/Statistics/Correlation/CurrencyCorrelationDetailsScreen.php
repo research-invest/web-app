@@ -133,7 +133,7 @@ class CurrencyCorrelationDetailsScreen extends Screen
         foreach ($this->historicalData as $data) {
             $timestamp = $data->created_at->timestamp * 1000;
 
-            $volumeData[] = [$timestamp, $data->total_volume];
+            $volumeData[] = [$timestamp, (float)$data->total_volume];
 
             // Нормализованный объем (отношение к среднему)
             $normalized = $avgVolume > 0 ? ($data->total_volume / $avgVolume) : null;
