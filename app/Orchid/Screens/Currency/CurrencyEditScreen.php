@@ -99,6 +99,13 @@ class CurrencyEditScreen extends Screen
                 ->rawClick()
                 ->href($this->currency->getTVLink()),
 
+            Link::make('Корреляция с BTC/ETH')
+                ->icon('grid')
+                ->rawClick()
+                ->route('platform.statistics.crypto-correlation.details', [
+                    'currency' => $this->currency->id
+                ]),
+
             Button::make($isFav ? 'Удалить из избранного' : 'Добавить в избранное')
                 ->method('toggleFavorite')
                 ->icon('heart')

@@ -30,7 +30,7 @@ class CurrenciesListLayout extends Table
                 ->sort()
                 ->cantHide()
                 ->filter(Input::make())
-                ->render(fn (Currency $currency) =>  Link::make((string)$currency->id)
+                ->render(fn(Currency $currency) => Link::make((string)$currency->id)
                     ->route('platform.currencies.edit', $currency->id)
                     ->rawClick()
                     ->icon('bs.pencil')),
@@ -39,7 +39,7 @@ class CurrenciesListLayout extends Table
                 ->sort()
                 ->cantHide()
                 ->filter(Input::make())
-                ->render(fn (Currency $currency) => Link::make($currency->name)
+                ->render(fn(Currency $currency) => Link::make($currency->name)
                     ->route('platform.currencies.edit', $currency->id)
                     ->rawClick()),
 
@@ -47,13 +47,13 @@ class CurrenciesListLayout extends Table
 
             TD::make('type', 'Тип')
                 ->defaultHidden()
-                ->render(fn (Currency $currency) => $currency->type_name),
+                ->render(fn(Currency $currency) => $currency->type_name),
 
 
             TD::make('last_price', 'Цена')
                 ->sort()
-                ->render(function(Currency $currency) {
-                    if(!$currency->last_price){
+                ->render(function (Currency $currency) {
+                    if (!$currency->last_price) {
                         return '';
                     }
 
@@ -84,9 +84,9 @@ class CurrenciesListLayout extends Table
 
             TD::make('volume', 'Объем')
                 ->sort()
-                ->render(function(Currency $currency) {
+                ->render(function (Currency $currency) {
 
-                    if(!$currency->volume){
+                    if (!$currency->volume) {
                         return '';
                     }
 
@@ -143,7 +143,7 @@ class CurrenciesListLayout extends Table
             TD::make(__('Actions'))
                 ->align(TD::ALIGN_CENTER)
                 ->width('100px')
-                ->render(fn (Currency $currency) => DropDown::make()
+                ->render(fn(Currency $currency) => DropDown::make()
                     ->icon('bs.three-dots-vertical')
                     ->list([
                         Link::make('Открыть TradingView')
@@ -157,6 +157,13 @@ class CurrenciesListLayout extends Table
                             ->target('_blank')
                             ->rawClick()
                             ->href($currency->getExchangeLink()),
+
+                        Link::make('Корреляция с BTC/ETH')
+                            ->icon('grid')
+                            ->rawClick()
+                            ->route('platform.statistics.crypto-correlation.details', [
+                                'currency' => $currency->id
+                            ]),
 
                         Link::make(__('Edit'))
                             ->route('platform.currencies.edit', $currency->id)
