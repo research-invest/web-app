@@ -108,26 +108,66 @@ class CurrencyPriceService
             if ($historicalData) {
                 // Изменение цены относительно BTC
                 $btcPriceChangePercent = 0;
-                if ($historicalData->price_btc != 0) {
-                    $btcPriceChangePercent = (($this->priceBtc - $historicalData->price_btc) / $historicalData->price_btc) * 100;
+                if ($historicalData->price_btc != 0 && $this->priceBtc != 0 && $historicalData->current_price != 0) {
+                    // Изменение цены монеты
+                    $coinPriceChange = (($currentPrice - $historicalData->current_price) / $historicalData->current_price) * 100;
+                    
+                    // Изменение цены BTC
+                    $btcPriceChange = (($this->priceBtc - $historicalData->price_btc) / $historicalData->price_btc) * 100;
+                    
+                    // Если BTC растет, а монета падает (или наоборот) - отрицательная корреляция
+                    // Если оба растут или оба падают - положительная корреляция
+                    // Сила корреляции зависит от разницы в процентах
+                    if (($btcPriceChange > 0 && $coinPriceChange < 0) || ($btcPriceChange < 0 && $coinPriceChange > 0)) {
+                        $btcPriceChangePercent = -abs($coinPriceChange - $btcPriceChange);
+                    } else {
+                        $btcPriceChangePercent = abs($coinPriceChange - $btcPriceChange);
+                    }
                 }
 
                 // Изменение цены относительно ETH
                 $ethPriceChangePercent = 0;
-                if ($historicalData->price_eth != 0) {
-                    $ethPriceChangePercent = (($this->priceEth - $historicalData->price_eth) / $historicalData->price_eth) * 100;
+                if ($historicalData->price_eth != 0 && $this->priceEth != 0 && $historicalData->current_price != 0) {
+                    // Изменение цены монеты
+                    $coinPriceChange = (($currentPrice - $historicalData->current_price) / $historicalData->current_price) * 100;
+                    
+                    // Изменение цены ETH
+                    $ethPriceChange = (($this->priceEth - $historicalData->price_eth) / $historicalData->price_eth) * 100;
+                    
+                    // Аналогичная логика для ETH
+                    if (($ethPriceChange > 0 && $coinPriceChange < 0) || ($ethPriceChange < 0 && $coinPriceChange > 0)) {
+                        $ethPriceChangePercent = -abs($coinPriceChange - $ethPriceChange);
+                    } else {
+                        $ethPriceChangePercent = abs($coinPriceChange - $ethPriceChange);
+                    }
                 }
 
                 // Изменение объема относительно BTC
                 $btcVolumeChangePercent = 0;
-                if ($historicalData->volume_btc != 0) {
-                    $btcVolumeChangePercent = (($this->volumeBtc - $historicalData->volume_btc) / $historicalData->volume_btc) * 100;
+                if ($historicalData->volume_btc != 0 && $this->volumeBtc != 0 && $historicalData->total_volume != 0) {
+                    $coinVolumeChange = (($currentVolume - $historicalData->total_volume) / $historicalData->total_volume) * 100;
+                    $btcVolumeChange = (($this->volumeBtc - $historicalData->volume_btc) / $historicalData->volume_btc) * 100;
+                    
+                    // Та же логика для объемов
+                    if (($btcVolumeChange > 0 && $coinVolumeChange < 0) || ($btcVolumeChange < 0 && $coinVolumeChange > 0)) {
+                        $btcVolumeChangePercent = -abs($coinVolumeChange - $btcVolumeChange);
+                    } else {
+                        $btcVolumeChangePercent = abs($coinVolumeChange - $btcVolumeChange);
+                    }
                 }
 
                 // Изменение объема относительно ETH
                 $ethVolumeChangePercent = 0;
-                if ($historicalData->volume_eth != 0) {
-                    $ethVolumeChangePercent = (($this->volumeEth - $historicalData->volume_eth) / $historicalData->volume_eth) * 100;
+                if ($historicalData->volume_eth != 0 && $this->volumeEth != 0 && $historicalData->total_volume != 0) {
+                    $coinVolumeChange = (($currentVolume - $historicalData->total_volume) / $historicalData->total_volume) * 100;
+                    $ethVolumeChange = (($this->volumeEth - $historicalData->volume_eth) / $historicalData->volume_eth) * 100;
+                    
+                    // Та же логика для объемов ETH
+                    if (($ethVolumeChange > 0 && $coinVolumeChange < 0) || ($ethVolumeChange < 0 && $coinVolumeChange > 0)) {
+                        $ethVolumeChangePercent = -abs($coinVolumeChange - $ethVolumeChange);
+                    } else {
+                        $ethVolumeChangePercent = abs($coinVolumeChange - $ethVolumeChange);
+                    }
                 }
 
                 $results["price_change_vs_btc_{$key}"] = $btcPriceChangePercent;
