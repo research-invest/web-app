@@ -31,7 +31,7 @@ class CryptoCorrelationScreen extends Screen
         if ($sort) {
             $direction = 'asc';
             $column = $sort;
-            
+
             // Если есть минус в начале, значит сортировка по убыванию
             if (str_starts_with($sort, '-')) {
                 $direction = 'desc';

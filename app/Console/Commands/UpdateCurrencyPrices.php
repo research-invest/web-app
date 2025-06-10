@@ -5,6 +5,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\CurrencyPrice;
 use App\Services\CurrencyPriceService;
 use Illuminate\Console\Command;
 
@@ -17,6 +18,7 @@ class UpdateCurrencyPrices extends Command
     {
         $timeStart = microtime(true);
 
+        $this->cleanup();
         $this->updateCoingecko();
 
         $this->info("\nЦены валют успешно обновлены.\n");
@@ -28,5 +30,16 @@ class UpdateCurrencyPrices extends Command
     private function updateCoingecko(): void
     {
         (new CurrencyPriceService())->getPricesByCoinGecko();
+    }
+
+    private function cleanup(): void
+    {
+        $deleted = CurrencyPrice::query()
+            ->where('created_at', '<=', now()->subDays(3))
+            ->delete();
+
+        if ($deleted > 0) {
+            $this->info("\nУдалено {$deleted} устаревших записей.");
+        }
     }
 }
