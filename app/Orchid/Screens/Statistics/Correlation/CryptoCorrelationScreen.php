@@ -23,7 +23,7 @@ class CryptoCorrelationScreen extends Screen
 
         // Основной запрос с подзапросом
         $prices = CurrencyPrice::query()
-            ->whereIn('id', function($query) use ($latestPrices) {
+            ->whereIn('id', function ($query) use ($latestPrices) {
                 $query->select('max_id')
                     ->from($latestPrices);
             });
@@ -60,7 +60,7 @@ class CryptoCorrelationScreen extends Screen
         // Получаем исторические цены для расчета изменений
         $historicalPrices = CurrencyPrice::query()
             ->whereIn('currency_id', $prices->pluck('currency_id'))
-            ->where(function($query) {
+            ->where(function ($query) {
                 $query->where('created_at', '<=', now()->subHours(4))
                     ->orWhere('created_at', '<=', now()->subHours(12))
                     ->orWhere('created_at', '<=', now()->subHours(24));
@@ -74,15 +74,15 @@ class CryptoCorrelationScreen extends Screen
                 $currencyHistoricalPrices = $historicalPrices[$price->currency_id] ?? collect();
 
                 // Находим цены для каждого периода
-                $price4h = $currencyHistoricalPrices->first(function($p) {
+                $price4h = $currencyHistoricalPrices->first(function ($p) {
                     return $p->created_at <= now()->subHours(4);
                 });
 
-                $price12h = $currencyHistoricalPrices->first(function($p) {
+                $price12h = $currencyHistoricalPrices->first(function ($p) {
                     return $p->created_at <= now()->subHours(12);
                 });
 
-                $price24h = $currencyHistoricalPrices->first(function($p) {
+                $price24h = $currencyHistoricalPrices->first(function ($p) {
                     return $p->created_at <= now()->subHours(24);
                 });
 
@@ -141,6 +141,11 @@ class CryptoCorrelationScreen extends Screen
                 TD::make('code', 'Монета')
                     ->sort()
                     ->render(function ($row) {
+
+                        if (!$row['currency_id']) {
+                            return $row['code'];
+                        }
+
                         return Link::make($row['code'])
                             ->rawClick()
                             ->route('platform.statistics.crypto-correlation.details', [
