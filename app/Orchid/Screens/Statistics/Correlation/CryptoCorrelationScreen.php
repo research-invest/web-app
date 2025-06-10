@@ -33,7 +33,7 @@ class CryptoCorrelationScreen extends Screen
         if ($sort) {
             $direction = 'asc';
             $column = $sort;
-            
+
             // Если есть минус в начале, значит сортировка по убыванию
             if (str_starts_with($sort, '-')) {
                 $direction = 'desc';
@@ -77,11 +77,11 @@ class CryptoCorrelationScreen extends Screen
                 $price4h = $currencyHistoricalPrices->first(function($p) {
                     return $p->created_at <= now()->subHours(4);
                 });
-                
+
                 $price12h = $currencyHistoricalPrices->first(function($p) {
                     return $p->created_at <= now()->subHours(12);
                 });
-                
+
                 $price24h = $currencyHistoricalPrices->first(function($p) {
                     return $p->created_at <= now()->subHours(24);
                 });
@@ -152,6 +152,10 @@ class CryptoCorrelationScreen extends Screen
                     ->sort()
                     ->render(fn($row) => MathHelper::humanNumber($row['current_price'])),
 
+                TD::make('market_cap', 'Капитализация')
+                    ->sort()
+                    ->render(fn($row) => MathHelper::humanNumber($row['market_cap'])),
+
                 // Изменение цены
                 TD::make('price_change', 'Изменение цены')
                     ->alignCenter()
@@ -179,10 +183,6 @@ class CryptoCorrelationScreen extends Screen
                         return implode('', $html);
                     }),
 
-                TD::make('market_cap', 'Капитализация')
-                    ->sort()
-                    ->render(fn($row) => MathHelper::humanNumber($row['market_cap'])),
-
                 // BTC корреляция
                 TD::make('btc_correlation', 'BTC корреляция')
                     ->alignCenter()
@@ -193,29 +193,20 @@ class CryptoCorrelationScreen extends Screen
                         // 4H
                         $change4h = $row['btc_4h'];
                         $color4h = $this->getColorByChange($change4h);
-                        $html[] = "<div class='p-1 mb-1 rounded font-weight-bold' style='background: rgba(0,0,0,0.05);'>";
-                        $html[] = "<div style='color: {$color4h}; text-shadow: 0 0 1px rgba(255,255,255,0.5);'>Корр: " .
+                        $html[] = "<div class='p-1 mb-1 rounded font-weight-bold' style='background: rgba(0,0,0,0.05); color: {$color4h}; text-shadow: 0 0 1px rgba(255,255,255,0.5);'>4H: " .
                             ($change4h !== null ? number_format($change4h, 4) . '%' : '-') . "</div>";
-                        $html[] = "<div style='color: {$color4h}; text-shadow: 0 0 1px rgba(255,255,255,0.5);'>4H</div>";
-                        $html[] = "</div>";
 
                         // 12H
                         $change12h = $row['btc_12h'];
                         $color12h = $this->getColorByChange($change12h);
-                        $html[] = "<div class='p-1 mb-1 rounded font-weight-bold' style='background: rgba(0,0,0,0.05);'>";
-                        $html[] = "<div style='color: {$color12h}; text-shadow: 0 0 1px rgba(255,255,255,0.5);'>Корр: " .
+                        $html[] = "<div class='p-1 mb-1 rounded font-weight-bold' style='background: rgba(0,0,0,0.05); color: {$color12h}; text-shadow: 0 0 1px rgba(255,255,255,0.5);'>12H: " .
                             ($change12h !== null ? number_format($change12h, 4) . '%' : '-') . "</div>";
-                        $html[] = "<div style='color: {$color12h}; text-shadow: 0 0 1px rgba(255,255,255,0.5);'>12H</div>";
-                        $html[] = "</div>";
 
                         // 24H
                         $change24h = $row['btc_24h'];
                         $color24h = $this->getColorByChange($change24h);
-                        $html[] = "<div class='p-1 rounded font-weight-bold' style='background: rgba(0,0,0,0.05);'>";
-                        $html[] = "<div style='color: {$color24h}; text-shadow: 0 0 1px rgba(255,255,255,0.5);'>Корр: " .
+                        $html[] = "<div class='p-1 rounded font-weight-bold' style='background: rgba(0,0,0,0.05); color: {$color24h}; text-shadow: 0 0 1px rgba(255,255,255,0.5);'>24H: " .
                             ($change24h !== null ? number_format($change24h, 4) . '%' : '-') . "</div>";
-                        $html[] = "<div style='color: {$color24h}; text-shadow: 0 0 1px rgba(255,255,255,0.5);'>24H</div>";
-                        $html[] = "</div>";
 
                         return implode('', $html);
                     }),
@@ -230,55 +221,46 @@ class CryptoCorrelationScreen extends Screen
                         // 4H
                         $change4h = $row['eth_4h'];
                         $color4h = $this->getColorByChange($change4h);
-                        $html[] = "<div class='p-1 mb-1 rounded font-weight-bold' style='background: rgba(0,0,0,0.05);'>";
-                        $html[] = "<div style='color: {$color4h}; text-shadow: 0 0 1px rgba(255,255,255,0.5);'>Корр: " .
+                        $html[] = "<div class='p-1 mb-1 rounded font-weight-bold' style='background: rgba(0,0,0,0.05); color: {$color4h}; text-shadow: 0 0 1px rgba(255,255,255,0.5);'>4H: " .
                             ($change4h !== null ? number_format($change4h, 4) . '%' : '-') . "</div>";
-                        $html[] = "<div style='color: {$color4h}; text-shadow: 0 0 1px rgba(255,255,255,0.5);'>4H</div>";
-                        $html[] = "</div>";
 
                         // 12H
                         $change12h = $row['eth_12h'];
                         $color12h = $this->getColorByChange($change12h);
-                        $html[] = "<div class='p-1 mb-1 rounded font-weight-bold' style='background: rgba(0,0,0,0.05);'>";
-                        $html[] = "<div style='color: {$color12h}; text-shadow: 0 0 1px rgba(255,255,255,0.5);'>Корр: " .
+                        $html[] = "<div class='p-1 mb-1 rounded font-weight-bold' style='background: rgba(0,0,0,0.05); color: {$color12h}; text-shadow: 0 0 1px rgba(255,255,255,0.5);'>12H: " .
                             ($change12h !== null ? number_format($change12h, 4) . '%' : '-') . "</div>";
-                        $html[] = "<div style='color: {$color12h}; text-shadow: 0 0 1px rgba(255,255,255,0.5);'>12H</div>";
-                        $html[] = "</div>";
 
                         // 24H
                         $change24h = $row['eth_24h'];
                         $color24h = $this->getColorByChange($change24h);
-                        $html[] = "<div class='p-1 rounded font-weight-bold' style='background: rgba(0,0,0,0.05);'>";
-                        $html[] = "<div style='color: {$color24h}; text-shadow: 0 0 1px rgba(255,255,255,0.5);'>Корр: " .
+                        $html[] = "<div class='p-1 rounded font-weight-bold' style='background: rgba(0,0,0,0.05); color: {$color24h}; text-shadow: 0 0 1px rgba(255,255,255,0.5);'>24H: " .
                             ($change24h !== null ? number_format($change24h, 4) . '%' : '-') . "</div>";
-                        $html[] = "<div style='color: {$color24h}; text-shadow: 0 0 1px rgba(255,255,255,0.5);'>24H</div>";
-                        $html[] = "</div>";
 
                         return implode('', $html);
                     }),
 
                 // Объем
-                TD::make('volume', 'Объем 24H')
+                TD::make('volume', 'Объем')
                     ->alignCenter()
                     ->sort()
                     ->render(function ($row) {
                         $html = [];
 
+                        // Текущий объем
+                        $html[] = "<div class='p-1 mb-1 rounded font-weight-bold' style='background: rgba(0,0,0,0.05);'>" .
+                            MathHelper::humanNumber($row['volume']) . "</div>";
+
                         // BTC Volume
                         $btcVolume = $row['btc_volume_24h'];
                         $btcColor = $this->getColorByChange($btcVolume);
-                        $html[] = "<div class='p-1 mb-1 rounded font-weight-bold' style='background: rgba(0,0,0,0.05);'>";
-                        $html[] = "<div style='color: {$btcColor}; text-shadow: 0 0 1px rgba(255,255,255,0.5);'>BTC корр: " .
+                        $html[] = "<div class='p-1 mb-1 rounded font-weight-bold' style='background: rgba(0,0,0,0.05); color: {$btcColor}; text-shadow: 0 0 1px rgba(255,255,255,0.5);'>vs BTC: " .
                             ($btcVolume !== null ? number_format($btcVolume, 4) . '%' : '-') . "</div>";
-                        $html[] = "</div>";
 
                         // ETH Volume
                         $ethVolume = $row['eth_volume_24h'];
                         $ethColor = $this->getColorByChange($ethVolume);
-                        $html[] = "<div class='p-1 rounded font-weight-bold' style='background: rgba(0,0,0,0.05);'>";
-                        $html[] = "<div style='color: {$ethColor}; text-shadow: 0 0 1px rgba(255,255,255,0.5);'>ETH корр: " .
+                        $html[] = "<div class='p-1 rounded font-weight-bold' style='background: rgba(0,0,0,0.05); color: {$ethColor}; text-shadow: 0 0 1px rgba(255,255,255,0.5);'>vs ETH: " .
                             ($ethVolume !== null ? number_format($ethVolume, 4) . '%' : '-') . "</div>";
-                        $html[] = "</div>";
 
                         return implode('', $html);
                     }),
