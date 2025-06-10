@@ -15,17 +15,47 @@ class CryptoCorrelationScreen extends Screen
 {
     public function query(Request $request): array
     {
-        $latestIds = CurrencyPrice::query()
-            ->select('currency_id', DB::raw('MAX(id) as latest_id'))
-            ->groupBy('currency_id');
+        $prices = CurrencyPrice::query()
+            ->select('currencies_prices.*')
+            ->join(DB::raw('(
+                SELECT currency_id, MAX(created_at) as max_created_at
+                FROM currencies_prices
+                GROUP BY currency_id
+            ) latest'), function($join) {
+                $join->on('currencies_prices.currency_id', '=', 'latest.currency_id')
+                    ->on('currencies_prices.created_at', '=', 'latest.max_created_at');
+            });
 
-        $query = CurrencyPrice::query()
-            ->joinSub($latestIds, 'latest_prices', function ($join) {
-                $join->on('currencies_prices.id', '=', 'latest_prices.latest_id');
-            })
-            ->orderByDesc('total_volume');
+        // Обработка сортировки
+        $sort = $request->get('sort');
+        if ($sort) {
+            $direction = 'asc';
+            $column = $sort;
+            
+            // Если есть минус в начале, значит сортировка по убыванию
+            if (str_starts_with($sort, '-')) {
+                $direction = 'desc';
+                $column = substr($sort, 1);
+            }
 
-        $currencies = $query->paginate(20)
+            switch ($column) {
+                case 'btc_correlation':
+                    $prices->orderBy('price_change_vs_btc_4h', $direction);
+                    break;
+                case 'eth_correlation':
+                    $prices->orderBy('price_change_vs_eth_4h', $direction);
+                    break;
+                case 'volume':
+                    $prices->orderBy('total_volume', $direction);
+                    break;
+                default:
+                    $prices->orderByDesc('total_volume');
+            }
+        } else {
+            $prices->orderByDesc('total_volume');
+        }
+
+        $currencies = $prices->paginate(20)
             ->through(function (CurrencyPrice $price) {
                 return [
                     'id' => $price->id,
@@ -89,6 +119,8 @@ class CryptoCorrelationScreen extends Screen
 
                 // BTC корреляция
                 TD::make('btc_correlation', 'BTC корреляция')
+                    ->alignCenter()
+                    ->sort()
                     ->render(function ($row) {
                         $html = [];
 
@@ -115,6 +147,8 @@ class CryptoCorrelationScreen extends Screen
 
                 // ETH корреляция
                 TD::make('eth_correlation', 'ETH корреляция')
+                    ->alignCenter()
+                    ->sort()
                     ->render(function ($row) {
                         $html = [];
 
@@ -140,7 +174,9 @@ class CryptoCorrelationScreen extends Screen
                     }),
 
                 // Объем
-                TD::make('volume_correlation', 'Объем 24H')
+                TD::make('volume', 'Объем 24H')
+                    ->alignCenter()
+                    ->sort()
                     ->render(function ($row) {
                         $html = [];
 
