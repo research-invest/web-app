@@ -12,7 +12,7 @@ use Orchid\Support\Facades\Layout;
 
 class CurrencyCorrelationDetailsScreen extends Screen
 {
-    public $currency;
+    public $currencyPrice;
     public $chartData;
     private $historicalData;
 
@@ -20,7 +20,7 @@ class CurrencyCorrelationDetailsScreen extends Screen
     {
         $currencyId = $request->route('currency');
 
-        $this->currency = CurrencyPrice::query()
+        $this->currencyPrice = CurrencyPrice::query()
             ->where('currency_id', $currencyId)
             ->orderByDesc('id')
             ->firstOrFail();
@@ -29,7 +29,7 @@ class CurrencyCorrelationDetailsScreen extends Screen
         $this->prepareChartData();
 
         return [
-            'currency' => $this->currency,
+            'currencyPrice' => $this->currencyPrice,
             'chartData' => $this->chartData
         ];
     }
@@ -126,30 +126,30 @@ class CurrencyCorrelationDetailsScreen extends Screen
         $normalizedVolume = [];
         $normalizedBtcVolume = [];
         $normalizedEthVolume = [];
-        
+
         // Вычисляем средние значения объемов
         $volumes = $this->historicalData->pluck('total_volume')->filter()->toArray();
         $btcVolumes = $this->historicalData->pluck('btc_volume')->filter()->toArray();
         $ethVolumes = $this->historicalData->pluck('eth_volume')->filter()->toArray();
-        
+
         $avgVolume = count($volumes) > 0 ? array_sum($volumes) / count($volumes) : 0;
         $avgBtcVolume = count($btcVolumes) > 0 ? array_sum($btcVolumes) / count($btcVolumes) : 0;
         $avgEthVolume = count($ethVolumes) > 0 ? array_sum($ethVolumes) / count($ethVolumes) : 0;
-        
+
         foreach ($this->historicalData as $data) {
             $timestamp = $data->created_at->timestamp * 1000;
-            
+
             // Объемы в абсолютных значениях
             $volumeData[] = [$timestamp, (float)$data->total_volume];
             $btcVolumeData[] = [$timestamp, (float)$data->btc_volume];
             $ethVolumeData[] = [$timestamp, (float)$data->eth_volume];
-            
+
             // Нормализованные объемы (отношение к среднему)
             $normalizedVolume[] = [$timestamp, $avgVolume > 0 ? ($data->total_volume / $avgVolume) : null];
             $normalizedBtcVolume[] = [$timestamp, $avgBtcVolume > 0 ? ($data->btc_volume / $avgBtcVolume) : null];
             $normalizedEthVolume[] = [$timestamp, $avgEthVolume > 0 ? ($data->eth_volume / $avgEthVolume) : null];
         }
-        
+
         return [
             'volume' => $volumeData,
             'btcVolume' => $btcVolumeData,
@@ -162,7 +162,7 @@ class CurrencyCorrelationDetailsScreen extends Screen
 
     public function name(): ?string
     {
-        return $this->currency ? "Анализ {$this->currency->symbol}" : 'Анализ корреляции';
+        return $this->currencyPrice ? "Анализ {$this->currencyPrice->symbol}" : 'Анализ корреляции';
     }
 
     public function description(): ?string
@@ -173,6 +173,14 @@ class CurrencyCorrelationDetailsScreen extends Screen
     public function commandBar(): array
     {
         return [
+
+            Link::make('TV')
+                ->icon('grid')
+                ->target('_blank')
+                ->rawClick()
+                ->canSee((bool)$this->currencyPrice->currency)
+                ->href($this->currencyPrice->currency->getTVLink()),
+
             Link::make('Назад к списку')
                 ->route('platform.statistics.crypto-correlation')
                 ->icon('arrow-left'),
@@ -203,7 +211,7 @@ class CurrencyCorrelationDetailsScreen extends Screen
                 'zoomType' => 'x'
             ],
             'title' => [
-                'text' => "Корреляция {$this->currency->symbol} с BTC/ETH"
+                'text' => "Корреляция {$this->currencyPrice->symbol} с BTC/ETH"
             ],
             'xAxis' => [
                 'type' => 'datetime',
@@ -248,7 +256,7 @@ class CurrencyCorrelationDetailsScreen extends Screen
             ],
             'series' => [
                 [
-                    'name' => "Цена {$this->currency->symbol}",
+                    'name' => "Цена {$this->currencyPrice->symbol}",
                     'data' => $this->chartData['price'],
                     'yAxis' => 0,
                     'color' => '#3F51B5',
@@ -357,7 +365,7 @@ class CurrencyCorrelationDetailsScreen extends Screen
                 'zoomType' => 'x'
             ],
             'title' => [
-                'text' => "Объемы торгов {$this->currency->symbol}"
+                'text' => "Объемы торгов {$this->currencyPrice->symbol}"
             ],
             'xAxis' => [
                 'type' => 'datetime',
@@ -400,7 +408,7 @@ class CurrencyCorrelationDetailsScreen extends Screen
             'series' => [
                 // Абсолютные объемы
                 [
-                    'name' => "Объем {$this->currency->symbol}",
+                    'name' => "Объем {$this->currencyPrice->symbol}",
                     'data' => $this->chartData['volume']['volume'],
                     'yAxis' => 0,
                     'color' => '#7B1FA2',
@@ -428,7 +436,7 @@ class CurrencyCorrelationDetailsScreen extends Screen
                 ],
                 // Нормализованные объемы
                 [
-                    'name' => "Нормализованный объем {$this->currency->symbol}",
+                    'name' => "Нормализованный объем {$this->currencyPrice->symbol}",
                     'data' => $this->chartData['volume']['normalized'],
                     'yAxis' => 1,
                     'color' => '#E91E63',
