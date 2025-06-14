@@ -74,8 +74,8 @@ class SendTradePnLNotification extends Command
             $message .= "🎯 Целевая цена: " . $trade->target_profit_price . "\n";
             $message .= "⚠️ Ликвидация: " . MathHelper::formatNumber($liquidationPrice) . "\n";
             $message .= "🛡️ До ликвидации: " . MathHelper::formatNumber($distanceToLiquidation) . "%\n";
-            $message .= "📊 <a href='" . (route('platform.trading.deal.edit', $trade)) . "'>Selll</a>\n";
-            $message .= "📊 <a href='" . $trade->currency->getTVLink() . "'>TradingView</a>\n\n";
+            $message .= "🚀 <a href='" . (route('platform.trading.deal.edit', $trade)) . "'>Selll</a>\n";
+            $message .= "🚀 <a href='" . $trade->currency->getTVLink() . "'>TradingView</a>\n\n";
         }
 
         $message .= "📊 <b>Общий PNL: " . MathHelper::formatNumber($totalPnl) . " USDT</b>";
