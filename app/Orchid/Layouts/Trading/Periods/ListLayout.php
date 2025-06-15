@@ -26,7 +26,12 @@ class ListLayout extends Table
     {
         return [
             TD::make('id', 'ID')
-                ->width(20),
+                ->width(20)
+                ->render(function (TradePeriod $period) {
+                    return Link::make((string)$period->id)
+                        ->route('platform.trading.report', $period->id)
+                        ->icon('notebook');
+                }),
 
             TD::make('name', 'Название'),
             TD::make('start_date', 'Дата начала')
