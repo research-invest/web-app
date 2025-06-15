@@ -110,10 +110,10 @@ class DealCloseScreen extends Screen
             $pnl = ($averagePrice - $exitPrice) * $trade->position_size * $trade->leverage / $averagePrice;
         }
 
-        $currentPeriod = TradePeriod::isActive()
-            ->latest()
-            ->byCreator()
-            ->first();
+//        $currentPeriod = TradePeriod::isActive()
+//            ->latest()
+//            ->byCreator()
+//            ->first();
 
         $trade
             ->fill($data)
@@ -125,7 +125,7 @@ class DealCloseScreen extends Screen
                 'notes' => $trade->notes . "\n\nЗакрытие: " . $request->input('notes'),
                 'close_currency_volume' => $trade->currency->volume,
                 'profit_percentage' => $trade->getProfitPercentage(),
-                'trade_period_id' => $currentPeriod?->id, // Устанавливаем период по дате закрытия
+//                'trade_period_id' => $currentPeriod?->id, // Устанавливаем период по дате закрытия
             ]);
 
         $trade->save();
