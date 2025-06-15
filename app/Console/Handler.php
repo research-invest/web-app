@@ -57,10 +57,10 @@ class Handler
             ->runInBackground()
             ->everyTenMinutes();
 
-        $schedule->command(GenerateMarketOscillator::class)
-            ->withoutOverlapping()
-            ->runInBackground()
-            ->everyTenMinutes();
+//        $schedule->command(GenerateMarketOscillator::class)
+//            ->withoutOverlapping()
+//            ->runInBackground()
+//            ->everyTenMinutes();
 
         $schedule->command(CheckLiquidationWarnings::class)
             ->withoutOverlapping()
