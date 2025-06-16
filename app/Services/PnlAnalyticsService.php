@@ -306,6 +306,7 @@ class PnlAnalyticsService
             ],
             'chart' => [
                 'type' => 'line',
+                'height' => 400,
             ],
             'title' => [
                 'text' => 'PnL История'
@@ -368,7 +369,8 @@ class PnlAnalyticsService
                 'timezone' => 'Europe/Moscow',
             ],
             'chart' => [
-                'type' => 'line'
+                'type' => 'line',
+                'height' => 400,
             ],
             'title' => [
                 'text' => 'Торговый объем'

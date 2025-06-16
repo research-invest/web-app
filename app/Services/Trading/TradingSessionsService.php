@@ -127,7 +127,7 @@ class TradingSessionsService
             ],
             'chart' => [
                 'type' => 'line',
-                'height' => 120,
+                'height' => 200,
             ],
             'title' => [
                 'text' => 'Kill Zones (KZ) (МСК)'
