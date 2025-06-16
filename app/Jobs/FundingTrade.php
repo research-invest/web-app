@@ -68,7 +68,7 @@ class FundingTrade implements ShouldQueue, ShouldBeUnique
             $isTestNet,
         );
 
-        $endTime = $this->deal->funding_time->copy()->addSeconds(30); // +90 секунд (1 минута после + 30 секунд дополнительно)
+        $endTime = $this->deal->funding_time->copy()->addSeconds(60); // +90 секунд (1 минута после + 30 секунд дополнительно)
 
         $entryPrice = null;
         $positionClosed = false;
@@ -184,7 +184,7 @@ class FundingTrade implements ShouldQueue, ShouldBeUnique
 //                    return;
 //                }
 
-                sleep(1);
+//                sleep(1);
 
             } catch (\Exception $e) {
                 Log::error('Funding deal failed', [
