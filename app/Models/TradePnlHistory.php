@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Orchid\Screen\AsSource;
 
 /**
@@ -12,6 +13,8 @@ use Orchid\Screen\AsSource;
  * @property float $funding_rate
  * @property float $volume_btc
  * @property float $volume_eth
+ *
+ * @property Carbon $created_at
  */
 class TradePnlHistory extends BaseModel
 {

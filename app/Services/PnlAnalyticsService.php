@@ -292,12 +292,8 @@ class PnlAnalyticsService
     {
         $unrealizedData = $roeData = $labels = $timestamps = [];
         foreach ($trade->pnlHistory as $history) {
-//            $unrealizedData[] = (float)$history->unrealized_pnl;
-//            $roeData[] = (float)$history->roe;
-//            $labels[] = MathHelper::formatNumber($history->price);
-//            $timestamps[] = strtotime($history->created_at);
-
-            $timestamp = strtotime($history->created_at) * 1000;
+//            $timestamp = strtotime($history->created_at) * 1000;
+            $timestamp = $history->created_at->getTimestamp();
             $unrealizedData[] = [$timestamp, (float)$history->unrealized_pnl];
             $roeData[] = [$timestamp, (float)$history->roe];
             $timestamps[] = $timestamp;

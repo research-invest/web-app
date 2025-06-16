@@ -86,12 +86,12 @@ class DealsListScreen extends Screen
         return [
             FiltersLayout::class,
             ListLayout::class,
-            Layout::view('trading.sessions-info', [
-                'sessions' => $this->tradingSessionsService->getSessionsInfo()
-            ]),
             new HighchartsChart(
                 $this->tradingSessionsService->getChartConfig()
             ),
+            Layout::view('trading.sessions-info', [
+                'sessions' => $this->tradingSessionsService->getSessionsInfo()
+            ]),
         ];
     }
 
