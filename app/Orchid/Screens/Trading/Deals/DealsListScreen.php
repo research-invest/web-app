@@ -6,14 +6,24 @@ namespace App\Orchid\Screens\Trading\Deals;
 
 use App\Models\Trade;
 use App\Orchid\Filters\Deals\FiltersLayout;
+use App\Orchid\Layouts\Charts\HighchartsChart;
 use App\Orchid\Layouts\Trading\Deals\ListLayout;
+use App\Services\Trading\TradingSessionsService;
 use Illuminate\Http\Request;
 use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Screen;
 use Orchid\Support\Facades\Toast;
+use Orchid\Support\Facades\Layout;
 
 class DealsListScreen extends Screen
 {
+    private TradingSessionsService $tradingSessionsService;
+
+    public function __construct(TradingSessionsService $tradingSessionsService)
+    {
+        $this->tradingSessionsService = $tradingSessionsService;
+    }
+
     /**
      * Fetch data to be displayed on the screen.
      *
@@ -76,6 +86,12 @@ class DealsListScreen extends Screen
         return [
             FiltersLayout::class,
             ListLayout::class,
+            Layout::view('trading.sessions-info', [
+                'sessions' => $this->tradingSessionsService->getSessionsInfo()
+            ]),
+            new HighchartsChart(
+                $this->tradingSessionsService->getChartConfig()
+            ),
         ];
     }
 
@@ -87,5 +103,4 @@ class DealsListScreen extends Screen
 
         return redirect()->route('platform.trading.deals');
     }
-
 }

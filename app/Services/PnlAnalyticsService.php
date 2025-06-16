@@ -290,52 +290,30 @@ class PnlAnalyticsService
 
     public function getPnlHistoryChart(Trade $trade)
     {
-        $unrealizedData = $roeData = $labels = [];
+        $unrealizedData = $roeData = $labels = $timestamps = [];
         foreach ($trade->pnlHistory as $history) {
             $unrealizedData[] = (float)$history->unrealized_pnl;
             $roeData[] = (float)$history->roe;
             $labels[] = MathHelper::formatNumber($history->price);
+            $timestamps[] = strtotime($history->created_at);
         }
+
+        $plotBands = $this->getTradingSessionsPlotBands($timestamps);
 
         return [
             'chart' => [
                 'type' => 'line',
-//                'type' => 'column',
             ],
             'title' => [
-                'text' => 'История P&L'
+                'text' => 'PnL История'
             ],
             'xAxis' => [
-                'categories' => $labels
+                'categories' => $labels,
+                'plotBands' => $plotBands,
             ],
             'yAxis' => [
                 'title' => [
                     'text' => ''
-                ]
-            ],
-
-            'rangeSelector' => [
-                'enabled' => true,
-                'buttons' => [
-                    [
-                        'type' => 'hour',
-                        'count' => 1,
-                        'text' => '1ч'
-                    ],
-                    [
-                        'type' => 'hour',
-                        'count' => 4,
-                        'text' => '4ч'
-                    ],
-                    [
-                        'type' => 'day',
-                        'count' => 1,
-                        'text' => '1д'
-                    ],
-                    [
-                        'type' => 'all',
-                        'text' => 'Все'
-                    ]
                 ]
             ],
             'navigator' => [
@@ -346,11 +324,11 @@ class PnlAnalyticsService
             ],
             'series' => [
                 [
-                    'name' => 'Нереализованный P&L',
+                    'name' => 'Unrealized PnL',
                     'data' => $unrealizedData
                 ],
                 [
-                    'name' => 'roe',
+                    'name' => 'ROE',
                     'data' => $roeData
                 ],
             ],
@@ -367,7 +345,7 @@ class PnlAnalyticsService
             return [];
         }
 
-        $volumesData = $volumesDataBtc = $volumesDataEth = $labels = [];
+        $volumesData = $volumesDataBtc = $volumesDataEth = $labels = $timestamps = [];
         $firstVolume = (float)$trade->pnlHistory->first()->volume ?: 1;
         $firstVolumeBtc = (float)$trade->pnlHistory->first()->volume_btc ?: 1;
         $firstVolumeEth = (float)$trade->pnlHistory->first()->volume_eth ?: 1;
@@ -376,17 +354,11 @@ class PnlAnalyticsService
             $volumesData[] = ((float)$history->volume / $firstVolume) * 100;
             $volumesDataBtc[] = ((float)$history->volume_btc / $firstVolumeBtc) * 100;
             $volumesDataEth[] = ((float)$history->volume_eth / $firstVolumeEth) * 100;
-
-//            $labels[] = sprintf(
-//                "Price: %s | Vol: %s | BTC: %s | ETH: %s",
-//                MathHelper::formatNumber($history->price),
-//                MathHelper::formatNumber($history->volume),
-//                MathHelper::formatNumber($history->volume_btc),
-//                MathHelper::formatNumber($history->volume_eth)
-//            );
-
             $labels[] = MathHelper::formatNumber($history->price);
+            $timestamps[] = strtotime($history->created_at);
         }
+
+        $plotBands = $this->getTradingSessionsPlotBands($timestamps);
 
         return [
             'chart' => [
@@ -396,7 +368,8 @@ class PnlAnalyticsService
                 'text' => 'Торговый объем'
             ],
             'xAxis' => [
-                'categories' => $labels
+                'categories' => $labels,
+                'plotBands' => $plotBands,
             ],
             'yAxis' => [
                 'title' => [
@@ -428,6 +401,50 @@ class PnlAnalyticsService
                 'valueSuffix' => ' '
             ]
         ];
+    }
+
+    private function getTradingSessionsPlotBands(array $timestamps): array
+    {
+        if (empty($timestamps)) return [];
+        $plotBands = [];
+        $days = [];
+        foreach ($timestamps as $ts) {
+            $day = Carbon::createFromTimestamp($ts)->startOfDay()->timestamp;
+            $days[$day] = true;
+        }
+        foreach (array_keys($days) as $dayTs) {
+            // Азия: 05:00-14:00 МСК (UTC+3)
+            $plotBands[] = [
+                'from' => ($dayTs + 5 * 3600) * 1000,
+                'to' => ($dayTs + 14 * 3600) * 1000,
+                'color' => 'rgba(255,69,96,0.08)',
+                'label' => [
+                    'text' => 'Азия',
+                    'style' => ['color' => '#FF4560', 'fontWeight' => 'bold']
+                ]
+            ];
+            // Лондон: 11:00-19:00 МСК
+            $plotBands[] = [
+                'from' => ($dayTs + 11 * 3600) * 1000,
+                'to' => ($dayTs + 19 * 3600) * 1000,
+                'color' => 'rgba(0,227,150,0.08)',
+                'label' => [
+                    'text' => 'Лондон',
+                    'style' => ['color' => '#00E396', 'fontWeight' => 'bold']
+                ]
+            ];
+            // Нью-Йорк: 16:00-00:00 МСК
+            $plotBands[] = [
+                'from' => ($dayTs + 16 * 3600) * 1000,
+                'to' => ($dayTs + 24 * 3600) * 1000,
+                'color' => 'rgba(52,144,220,0.08)',
+                'label' => [
+                    'text' => 'Нью-Йорк',
+                    'style' => ['color' => '#3490dc', 'fontWeight' => 'bold']
+                ]
+            ];
+        }
+        return $plotBands;
     }
 
     public function getPnlHistoryFundingRateChart(Trade $trade)
