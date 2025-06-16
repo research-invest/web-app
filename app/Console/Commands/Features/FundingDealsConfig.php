@@ -67,11 +67,9 @@ class FundingDealsConfig extends Command
                     'price_history' => [],
                 ]);
 
-//                if ($config->user_id === 1) {
-                    $runTime = $currency->next_settle_time->copy()->subSeconds(60);
-                    FundingTrade::dispatch($deal)
-                        ->delay($runTime);
-//                }
+                $runTime = $currency->next_settle_time->copy()->subSeconds(60);
+                FundingTrade::dispatch($deal)
+                    ->delay($runTime);
             }
         }
 

@@ -354,7 +354,7 @@ class PnlAnalyticsService
         $firstVolumeEth = (float)$trade->pnlHistory->first()->volume_eth ?: 1;
 
         foreach ($trade->pnlHistory as $history) {
-            $timestamp = $history->created_at->getTimestamp() * 1000;
+            $timestamp = $history->created_at->getTimestamp();
             $volumesData[] = [$timestamp, ((float)$history->volume / $firstVolume) * 100];
             $volumesDataBtc[] = [$timestamp, ((float)$history->volume_btc / $firstVolumeBtc) * 100];
             $volumesDataEth[] = [$timestamp, ((float)$history->volume_eth / $firstVolumeEth) * 100];
@@ -417,41 +417,43 @@ class PnlAnalyticsService
 
         $plotLines = [];
         $days = [];
+
         foreach ($timestamps as $ts) {
-            $day = Carbon::createFromTimestamp($ts)->startOfDay()->timestamp;
-            $days[$day] = true;
+            $day = Carbon::createFromTimestamp($ts / 1000)->startOfDay();
+            $days[$day->timestamp] = $day->format('d.m.Y');
         }
-        foreach (array_keys($days) as $dayTs) {
+
+        foreach ($days as $dayTs => $dayLabel) {
             // Азия: 05:00 МСК (UTC+3)
             $plotLines[] = [
-                'value' => ($dayTs + 5 * 3600),
+                'value' => ($dayTs + 5 * 3600) * 1000,
                 'color' => '#FF4560',
                 'width' => 1,
                 'dashStyle' => 'shortdash',
                 'label' => [
-                    'text' => 'Азия',
+                    'text' => "Азия\n$dayLabel",
                     'style' => ['color' => '#FF4560', 'fontWeight' => 'bold']
                 ]
             ];
             // Лондон: 11:00 МСК
             $plotLines[] = [
-                'value' => ($dayTs + 11 * 3600) ,
+                'value' => ($dayTs + 11 * 3600) * 1000,
                 'color' => '#00E396',
                 'width' => 1,
                 'dashStyle' => 'shortdash',
                 'label' => [
-                    'text' => 'Лондон',
+                    'text' => "Лондон\n$dayLabel",
                     'style' => ['color' => '#00E396', 'fontWeight' => 'bold']
                 ]
             ];
             // Нью-Йорк: 16:00 МСК
             $plotLines[] = [
-                'value' => ($dayTs + 16 * 3600) ,
+                'value' => ($dayTs + 16 * 3600) * 1000,
                 'color' => '#3490dc',
                 'width' => 1,
                 'dashStyle' => 'shortdash',
                 'label' => [
-                    'text' => 'Нью-Йорк',
+                    'text' => "Нью-Йорк\n$dayLabel",
                     'style' => ['color' => '#3490dc', 'fontWeight' => 'bold']
                 ]
             ];
