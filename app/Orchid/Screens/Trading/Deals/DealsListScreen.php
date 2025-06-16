@@ -92,6 +92,9 @@ class DealsListScreen extends Screen
             new HighchartsChart(
                 $this->tradingSessionsService->getChartConfig()
             ),
+            new HighchartsChart(
+                $this->tradingSessionsService->getKillZonesChartConfig()
+            ),
         ];
     }
 

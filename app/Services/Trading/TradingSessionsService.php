@@ -40,11 +40,6 @@ class TradingSessionsService
                 'type' => 'datetime',
                 'min' => $startOfDay->timestamp * 1000,
                 'max' => $endOfDay->timestamp * 1000,
-//                'dateTimeLabelFormats' => [
-//                    'day' => '%e of %b',
-//                    'minute' => '%I:%M',
-//                    'hour' => '%I:%M',
-//                ],
                 'plotBands' => [
                     [
                         'from' => $asiaStart->timestamp * 1000,
@@ -110,6 +105,96 @@ class TradingSessionsService
         ];
     }
 
+    public function getKillZonesChartConfig(): array
+    {
+        $now = Carbon::now()->setTimezone('Europe/Moscow');
+        $startOfDay = $now->copy()->startOfDay();
+        $endOfDay = $now->copy()->endOfDay();
+
+        // Kill Zones
+        $akzStart = $startOfDay->copy()->addHours(9);
+        $akzEnd = $startOfDay->copy()->addHours(12);
+        $lkzStart = $startOfDay->copy()->addHours(10);
+        $lkzEnd = $startOfDay->copy()->addHours(13);
+        $nykzStart = $startOfDay->copy()->addHours(15);
+        $nykzEnd = $startOfDay->copy()->addHours(18);
+        $lunchKzStart = $startOfDay->copy()->addHours(19);
+        $lunchKzEnd = $startOfDay->copy()->addHours(20);
+
+        return [
+            'time' => [
+                'timezone' => 'Europe/Moscow',
+            ],
+            'chart' => [
+                'type' => 'line',
+                'height' => 120,
+            ],
+            'title' => [
+                'text' => 'Kill Zones (KZ) (МСК)'
+            ],
+            'xAxis' => [
+                'type' => 'datetime',
+                'min' => $startOfDay->timestamp * 1000,
+                'max' => $endOfDay->timestamp * 1000,
+                'plotBands' => [
+                    [
+                        'from' => $akzStart->timestamp * 1000,
+                        'to' => $akzEnd->timestamp * 1000,
+                        'color' => 'rgba(255,193,7,0.4)',
+                        'label' => [
+                            'text' => 'AKZ',
+                            'style' => ['color' => '#bfa800', 'fontWeight' => 'bold']
+                        ]
+                    ],
+                    [
+                        'from' => $lkzStart->timestamp * 1000,
+                        'to' => $lkzEnd->timestamp * 1000,
+                        'color' => 'rgba(255,87,34,0.4)',
+                        'label' => [
+                            'text' => 'LKZ',
+                            'style' => ['color' => '#ff5722', 'fontWeight' => 'bold']
+                        ]
+                    ],
+                    [
+                        'from' => $nykzStart->timestamp * 1000,
+                        'to' => $nykzEnd->timestamp * 1000,
+                        'color' => 'rgba(103,58,183,0.4)',
+                        'label' => [
+                            'text' => 'NYKZ',
+                            'style' => ['color' => '#673ab7', 'fontWeight' => 'bold']
+                        ]
+                    ],
+                    [
+                        'from' => $lunchKzStart->timestamp * 1000,
+                        'to' => $lunchKzEnd->timestamp * 1000,
+                        'color' => 'rgba(96,125,139,0.4)',
+                        'label' => [
+                            'text' => 'Lunch KZ',
+                            'style' => ['color' => '#607d8b', 'fontWeight' => 'bold']
+                        ]
+                    ],
+                ],
+            ],
+            'yAxis' => [
+                'title' => [
+                    'text' => ''
+                ],
+                'max' => 1,
+                'min' => 0,
+                'visible' => false
+            ],
+            'series' => [
+                [
+                    'name' => 'KZ',
+                    'data' => []
+                ]
+            ],
+            'legend' => [
+                'enabled' => false
+            ]
+        ];
+    }
+
     public function getSessionsInfo(): array
     {
         return [
@@ -117,16 +202,42 @@ class TradingSessionsService
                 'name' => 'Азия',
                 'time' => '05:00 — 14:00 (МСК)',
                 'color' => '#FF4560',
+                'kz' => [
+                    [
+                        'name' => 'Asia Kill Zone (AKZ)',
+                        'time' => '09:00 — 12:00 (МСК)',
+                        'color' => '#ffc107',
+                    ]
+                ]
             ],
             [
                 'name' => 'Лондон',
                 'time' => '11:00 — 19:00 (МСК)',
                 'color' => '#00E396',
+                'kz' => [
+                    [
+                        'name' => 'London Kill Zone (LKZ)',
+                        'time' => '10:00 — 13:00 (МСК)',
+                        'color' => '#ff5722',
+                    ]
+                ]
             ],
             [
                 'name' => 'Нью-Йорк',
                 'time' => '16:00 — 00:00 (МСК)',
                 'color' => '#3490dc',
+                'kz' => [
+                    [
+                        'name' => 'New York Kill Zone (NYKZ)',
+                        'time' => '15:00 — 18:00 (МСК)',
+                        'color' => '#673ab7',
+                    ],
+                    [
+                        'name' => 'Lunch Kill Zone',
+                        'time' => '19:00 — 20:00 (МСК)',
+                        'color' => '#607d8b',
+                    ]
+                ]
             ],
         ];
     }

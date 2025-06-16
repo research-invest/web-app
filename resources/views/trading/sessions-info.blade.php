@@ -9,6 +9,15 @@
                     <div style="font-size: 1.2rem; color: #222; margin-top: 8px; font-weight: bold;">
                         {{ $session['time'] }}
                     </div>
+                    @if(isset($session['kz']))
+                        <div class="mt-2">
+                            @foreach($session['kz'] as $kz)
+                                <div style="font-size: 1rem; font-weight: bold; color: {{ $kz['color'] }};">
+                                    {{ $kz['name'] }}: {{ $kz['time'] }}
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
                 </div>
             </div>
         @endforeach
@@ -16,4 +25,4 @@
     <div class="mt-3" style="font-size: 1.1rem; font-weight: bold; color: #333;">
         Время указано по МСК (UTC+3)
     </div>
-</div> 
+</div>
