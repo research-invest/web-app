@@ -33,7 +33,7 @@ tmux attach -t crypto_analyzer
 prod
 composer install --no-interaction --no-dev
 
-sh ch_clean.sh 202503
+sh ch_clean.sh 202504
 
 sudo apt install supervisor
 cd /etc/supervisor/conf.d/
