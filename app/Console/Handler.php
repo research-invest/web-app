@@ -49,7 +49,7 @@ class Handler
         $schedule->command(UpdateTradesPnL::class)
             ->runInBackground()
             ->withoutOverlapping()
-            ->everyTwoMinutes();
+            ->everyFiveMinutes();
 
 //        $schedule->command(CheckTradeLevels::class)->everyTwoMinutes();
         $schedule->command(SendTradePnLNotification::class)

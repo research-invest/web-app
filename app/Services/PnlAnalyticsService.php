@@ -290,9 +290,8 @@ class PnlAnalyticsService
 
     public function getPnlHistoryChart(Trade $trade)
     {
-        $unrealizedData = $roeData = $labels = $timestamps = [];
+        $unrealizedData = $roeData = $timestamps = [];
         foreach ($trade->pnlHistory as $history) {
-//            $timestamp = strtotime($history->created_at) * 1000;
             $timestamp = $history->created_at->getTimestamp();
             $unrealizedData[] = [$timestamp, (float)$history->unrealized_pnl];
             $roeData[] = [$timestamp, (float)$history->roe];
@@ -349,22 +348,25 @@ class PnlAnalyticsService
             return [];
         }
 
-        $volumesData = $volumesDataBtc = $volumesDataEth = $labels = $timestamps = [];
+        $volumesData = $volumesDataBtc = $volumesDataEth = $timestamps = [];
         $firstVolume = (float)$trade->pnlHistory->first()->volume ?: 1;
         $firstVolumeBtc = (float)$trade->pnlHistory->first()->volume_btc ?: 1;
         $firstVolumeEth = (float)$trade->pnlHistory->first()->volume_eth ?: 1;
 
         foreach ($trade->pnlHistory as $history) {
-            $volumesData[] = ((float)$history->volume / $firstVolume) * 100;
-            $volumesDataBtc[] = ((float)$history->volume_btc / $firstVolumeBtc) * 100;
-            $volumesDataEth[] = ((float)$history->volume_eth / $firstVolumeEth) * 100;
-            $labels[] = MathHelper::formatNumber($history->price);
-            $timestamps[] = strtotime($history->created_at);
+            $timestamp = $history->created_at->getTimestamp();
+            $volumesData[] = [$timestamp, ((float)$history->volume / $firstVolume) * 100];
+            $volumesDataBtc[] = [$timestamp, ((float)$history->volume_btc / $firstVolumeBtc) * 100];
+            $volumesDataEth[] = [$timestamp, ((float)$history->volume_eth / $firstVolumeEth) * 100];
+            $timestamps[] = $timestamp;
         }
 
         $plotBands = $this->getTradingSessionsPlotBands($timestamps);
 
         return [
+            'time' => [
+                'timezone' => 'Europe/Moscow',
+            ],
             'chart' => [
                 'type' => 'line'
             ],
@@ -372,7 +374,7 @@ class PnlAnalyticsService
                 'text' => 'Торговый объем'
             ],
             'xAxis' => [
-                'categories' => $labels,
+                'type' => 'datetime',
                 'plotBands' => $plotBands,
             ],
             'yAxis' => [
@@ -381,10 +383,10 @@ class PnlAnalyticsService
                 ]
             ],
             'navigator' => [
-                'enabled' => true,
+                'enabled' => false,
             ],
             'scrollbar' => [
-                'enabled' => true
+                'enabled' => false
             ],
             'series' => [
                 [
