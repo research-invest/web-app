@@ -292,7 +292,7 @@ class PnlAnalyticsService
     {
         $unrealizedData = $roeData = $timestamps = [];
         foreach ($trade->pnlHistory as $history) {
-            $timestamp = $history->created_at->getTimestamp();
+            $timestamp = $history->created_at->getTimestamp() * 1000;
             $unrealizedData[] = [$timestamp, (float)$history->unrealized_pnl];
             $roeData[] = [$timestamp, (float)$history->roe];
             $timestamps[] = $timestamp;
@@ -354,7 +354,7 @@ class PnlAnalyticsService
         $firstVolumeEth = (float)$trade->pnlHistory->first()->volume_eth ?: 1;
 
         foreach ($trade->pnlHistory as $history) {
-            $timestamp = $history->created_at->getTimestamp();
+            $timestamp = $history->created_at->getTimestamp() * 1000;
             $volumesData[] = [$timestamp, ((float)$history->volume / $firstVolume) * 100];
             $volumesDataBtc[] = [$timestamp, ((float)$history->volume_btc / $firstVolumeBtc) * 100];
             $volumesDataEth[] = [$timestamp, ((float)$history->volume_eth / $firstVolumeEth) * 100];
@@ -424,7 +424,7 @@ class PnlAnalyticsService
         foreach (array_keys($days) as $dayTs) {
             // Азия: 05:00 МСК (UTC+3)
             $plotLines[] = [
-                'value' => ($dayTs + 5 * 3600) * 1000,
+                'value' => ($dayTs + 5 * 3600),
                 'color' => '#FF4560',
                 'width' => 1,
                 'dashStyle' => 'shortdash',
@@ -435,7 +435,7 @@ class PnlAnalyticsService
             ];
             // Лондон: 11:00 МСК
             $plotLines[] = [
-                'value' => ($dayTs + 11 * 3600) * 1000,
+                'value' => ($dayTs + 11 * 3600) ,
                 'color' => '#00E396',
                 'width' => 1,
                 'dashStyle' => 'shortdash',
@@ -446,7 +446,7 @@ class PnlAnalyticsService
             ];
             // Нью-Йорк: 16:00 МСК
             $plotLines[] = [
-                'value' => ($dayTs + 16 * 3600) * 1000,
+                'value' => ($dayTs + 16 * 3600) ,
                 'color' => '#3490dc',
                 'width' => 1,
                 'dashStyle' => 'shortdash',
