@@ -298,7 +298,7 @@ class PnlAnalyticsService
             $timestamps[] = $timestamp;
         }
 
-        $plotBands = $this->getTradingSessionsPlotBands($timestamps);
+        $plotLines = $this->getTradingSessionsPlotBands($timestamps);
 
         return [
             'time' => [
@@ -312,7 +312,7 @@ class PnlAnalyticsService
             ],
             'xAxis' => [
                 'type' => 'datetime',
-                'plotBands' => $plotBands,
+                'plotLines' => $plotLines,
             ],
             'yAxis' => [
                 'title' => [
@@ -361,7 +361,7 @@ class PnlAnalyticsService
             $timestamps[] = $timestamp;
         }
 
-        $plotBands = $this->getTradingSessionsPlotBands($timestamps);
+        $plotLines = $this->getTradingSessionsPlotBands($timestamps);
 
         return [
             'time' => [
@@ -375,7 +375,7 @@ class PnlAnalyticsService
             ],
             'xAxis' => [
                 'type' => 'datetime',
-                'plotBands' => $plotBands,
+                'plotLines' => $plotLines,
             ],
             'yAxis' => [
                 'title' => [
@@ -415,45 +415,48 @@ class PnlAnalyticsService
             return [];
         }
 
-        $plotBands = [];
+        $plotLines = [];
         $days = [];
         foreach ($timestamps as $ts) {
             $day = Carbon::createFromTimestamp($ts)->startOfDay()->timestamp;
             $days[$day] = true;
         }
         foreach (array_keys($days) as $dayTs) {
-            // Азия: 05:00-14:00 МСК (UTC+3)
-            $plotBands[] = [
-                'from' => ($dayTs + 5 * 3600) * 1000,
-                'to' => ($dayTs + 14 * 3600) * 1000,
-                'color' => 'rgba(255,69,96,0.08)',
+            // Азия: 05:00 МСК (UTC+3)
+            $plotLines[] = [
+                'value' => ($dayTs + 5 * 3600) * 1000,
+                'color' => '#FF4560',
+                'width' => 1,
+                'dashStyle' => 'shortdash',
                 'label' => [
                     'text' => 'Азия',
                     'style' => ['color' => '#FF4560', 'fontWeight' => 'bold']
                 ]
             ];
-            // Лондон: 11:00-19:00 МСК
-            $plotBands[] = [
-                'from' => ($dayTs + 11 * 3600) * 1000,
-                'to' => ($dayTs + 19 * 3600) * 1000,
-                'color' => 'rgba(0,227,150,0.08)',
+            // Лондон: 11:00 МСК
+            $plotLines[] = [
+                'value' => ($dayTs + 11 * 3600) * 1000,
+                'color' => '#00E396',
+                'width' => 1,
+                'dashStyle' => 'shortdash',
                 'label' => [
                     'text' => 'Лондон',
                     'style' => ['color' => '#00E396', 'fontWeight' => 'bold']
                 ]
             ];
-            // Нью-Йорк: 16:00-00:00 МСК
-            $plotBands[] = [
-                'from' => ($dayTs + 16 * 3600) * 1000,
-                'to' => ($dayTs + 24 * 3600) * 1000,
-                'color' => 'rgba(52,144,220,0.08)',
+            // Нью-Йорк: 16:00 МСК
+            $plotLines[] = [
+                'value' => ($dayTs + 16 * 3600) * 1000,
+                'color' => '#3490dc',
+                'width' => 1,
+                'dashStyle' => 'shortdash',
                 'label' => [
                     'text' => 'Нью-Йорк',
                     'style' => ['color' => '#3490dc', 'fontWeight' => 'bold']
                 ]
             ];
         }
-        return $plotBands;
+        return $plotLines;
     }
 
     public function getPnlHistoryFundingRateChart(Trade $trade)
