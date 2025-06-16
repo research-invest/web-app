@@ -292,15 +292,23 @@ class PnlAnalyticsService
     {
         $unrealizedData = $roeData = $labels = $timestamps = [];
         foreach ($trade->pnlHistory as $history) {
-            $unrealizedData[] = (float)$history->unrealized_pnl;
-            $roeData[] = (float)$history->roe;
-            $labels[] = MathHelper::formatNumber($history->price);
-            $timestamps[] = strtotime($history->created_at);
+//            $unrealizedData[] = (float)$history->unrealized_pnl;
+//            $roeData[] = (float)$history->roe;
+//            $labels[] = MathHelper::formatNumber($history->price);
+//            $timestamps[] = strtotime($history->created_at);
+
+            $timestamp = strtotime($history->created_at) * 1000;
+            $unrealizedData[] = [$timestamp, (float)$history->unrealized_pnl];
+            $roeData[] = [$timestamp, (float)$history->roe];
+            $timestamps[] = $timestamp;
         }
 
         $plotBands = $this->getTradingSessionsPlotBands($timestamps);
 
         return [
+            'time' => [
+                'timezone' => 'Europe/Moscow',
+            ],
             'chart' => [
                 'type' => 'line',
             ],
@@ -308,7 +316,7 @@ class PnlAnalyticsService
                 'text' => 'PnL История'
             ],
             'xAxis' => [
-                'categories' => $labels,
+                'type' => 'datetime',
                 'plotBands' => $plotBands,
             ],
             'yAxis' => [
@@ -317,10 +325,10 @@ class PnlAnalyticsService
                 ]
             ],
             'navigator' => [
-                'enabled' => true,
+                'enabled' => false,
             ],
             'scrollbar' => [
-                'enabled' => true
+                'enabled' => false
             ],
             'series' => [
                 [
@@ -405,7 +413,10 @@ class PnlAnalyticsService
 
     private function getTradingSessionsPlotBands(array $timestamps): array
     {
-        if (empty($timestamps)) return [];
+        if (empty($timestamps)) {
+            return [];
+        }
+
         $plotBands = [];
         $days = [];
         foreach ($timestamps as $ts) {
