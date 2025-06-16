@@ -354,7 +354,7 @@ class PnlAnalyticsService
         $firstVolumeEth = (float)$trade->pnlHistory->first()->volume_eth ?: 1;
 
         foreach ($trade->pnlHistory as $history) {
-            $timestamp = $history->created_at->getTimestamp();
+            $timestamp = $history->created_at->getTimestamp() * 1000;
             $volumesData[] = [$timestamp, ((float)$history->volume / $firstVolume) * 100];
             $volumesDataBtc[] = [$timestamp, ((float)$history->volume_btc / $firstVolumeBtc) * 100];
             $volumesDataEth[] = [$timestamp, ((float)$history->volume_eth / $firstVolumeEth) * 100];

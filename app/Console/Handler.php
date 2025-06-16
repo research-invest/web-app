@@ -8,6 +8,7 @@ use App\Console\Commands\Alerts\GenerateMarketOscillator;
 use App\Console\Commands\Alerts\SendSmartMoneyAlert;
 use App\Console\Commands\Alerts\SendTradePnLNotification;
 use App\Console\Commands\BtcWallets\UpdateWalletBalances;
+use App\Console\Commands\ClearOldPnlHistory;
 use App\Console\Commands\CollectTopPerformingCoinSnapshots;
 use App\Console\Commands\Features\CollectFundingRates;
 use App\Console\Commands\Features\DeleteOldFundingRates;
@@ -50,6 +51,11 @@ class Handler
             ->runInBackground()
             ->withoutOverlapping()
             ->everyFiveMinutes();
+
+        $schedule->command(ClearOldPnlHistory::class)
+            ->runInBackground()
+            ->withoutOverlapping()
+            ->daily();
 
 //        $schedule->command(CheckTradeLevels::class)->everyTwoMinutes();
         $schedule->command(SendTradePnLNotification::class)
