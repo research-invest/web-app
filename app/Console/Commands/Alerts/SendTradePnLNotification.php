@@ -46,7 +46,7 @@ class SendTradePnLNotification extends Command
     {
         $message = "🔄 <b>Состояние открытых позиций</b>\n\n";
 
-        $totalPnl = 0;
+        $totalPnl = $totalPositionSize = 0;
 
         /**
          * @var Trade $trade
@@ -57,7 +57,9 @@ class SendTradePnLNotification extends Command
             $roe = $trade->getCurrentRoe($currentPrice);
             $liquidationPrice = $trade->getLiquidationPrice();
             $distanceToLiquidation = $trade->getDistanceToLiquidation($currentPrice);
+            $positionSize = $trade->getCurrentPositionSize();
             $totalPnl += $unrealizedPnl;
+            $totalPositionSize += $positionSize;
 
             $emoji = $unrealizedPnl >= 0 ? '📈' : '📉';
             $direction = $trade->isTypeLong() ? 'LONG' : 'SHORT';
@@ -67,7 +69,7 @@ class SendTradePnLNotification extends Command
             $message .= "{$emoji} <b>{$name}</b> {$direction}\n";
             $message .= "💰 PNL: " . MathHelper::formatNumber($unrealizedPnl) . " USDT\n";
             $message .= "📊 ROE: " . MathHelper::formatNumber($roe) . "%\n";
-            $message .= "👙 Размер позиции: " . MathHelper::formatNumber($trade->getCurrentPositionSize()) . "\n";
+            $message .= "👙 Размер позиции: " . MathHelper::formatNumber($positionSize) . "\n";
             $message .= "💵 Средняя цена: " . MathHelper::formatNumber($trade->getAverageEntryPrice()) . "\n";
             $message .= "💵 Текущая цена: " . MathHelper::formatNumber($currentPrice) . "\n";
             $message .= "🎯 Цель: " . $trade->target_profit_amount . "\n";
@@ -78,7 +80,8 @@ class SendTradePnLNotification extends Command
             $message .= "🚀 <a href='" . $trade->currency->getTVLink() . "'>TradingView</a>\n\n";
         }
 
-        $message .= "📊 <b>Общий PNL: " . MathHelper::formatNumber($totalPnl) . " USDT</b>";
+        $message .= "📊 <b>Общий PNL: " . MathHelper::formatNumber($totalPnl) . " USDT</b>\n";
+        $message .= "📊 <b>Всего вложено: " . MathHelper::formatNumber($totalPositionSize) . " USDT</b>";
 
         return $message;
     }
