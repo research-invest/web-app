@@ -8,6 +8,7 @@ use App\Models\Funding\FundingDealConfig;
 use Orchid\Screen\Actions\Button;
 use Orchid\Screen\Actions\DropDown;
 use Orchid\Screen\Actions\Link;
+use Orchid\Screen\Components\Cells\DateTimeSplit;
 use Orchid\Screen\Layouts\Table;
 use Orchid\Screen\TD;
 
@@ -49,6 +50,11 @@ class ConfigListLayout extends Table
             TD::make('min_funding_rate', 'min funding rate'),
             TD::make('position_size', 'position size'),
             TD::make('leverage', 'leverage'),
+
+            TD::make('created_at', __('Created'))
+                ->usingComponent(DateTimeSplit::class)
+                ->align(TD::ALIGN_RIGHT)
+                ->defaultHidden(),
 
             TD::make(__('Actions'))
                 ->align(TD::ALIGN_CENTER)
