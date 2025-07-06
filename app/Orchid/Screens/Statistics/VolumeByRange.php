@@ -87,6 +87,7 @@ class VolumeByRange extends Screen
 
             new HighchartsChart([
                 'chart' => [
+                    'height' => 600,
                     'type' => 'column'
                 ],
                 'title' => [

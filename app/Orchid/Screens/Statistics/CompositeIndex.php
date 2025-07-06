@@ -73,6 +73,7 @@ class CompositeIndex extends Screen
             // График цены
             new HighchartsChart([
                 'chart' => [
+                    'height' => 600,
                     'type' => 'line',
                     'zoomType' => 'x'
                 ],
@@ -97,6 +98,7 @@ class CompositeIndex extends Screen
             // График индекса
             new HighchartsChart([
                 'chart' => [
+                    'height' => 600,
                     'type' => 'line',
                     'zoomType' => 'x'
                 ],

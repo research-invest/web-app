@@ -42,6 +42,7 @@ class PnlAnalyticsService
                 ],
                 'graph' => [
                     'chart' => [
+                        'height' => 600,
                         'type' => 'line'
                     ],
                     'title' => [
@@ -122,6 +123,7 @@ class PnlAnalyticsService
 
             'graph' => [
                 'chart' => [
+                    'height' => 600,
                     'type' => 'line'
                 ],
                 'title' => [
@@ -188,6 +190,7 @@ class PnlAnalyticsService
         return [
             'graph' => [
                 'chart' => [
+                    'height' => 600,
                     'type' => 'pie'
                 ],
                 'title' => [
@@ -252,6 +255,7 @@ class PnlAnalyticsService
         return [
             'graph' => [
                 'chart' => [
+                    'height' => 600,
                     'type' => 'pie'
                 ],
                 'title' => [
@@ -473,6 +477,7 @@ class PnlAnalyticsService
 
         return [
             'chart' => [
+                'height' => 600,
                 'type' => 'line'
             ],
             'title' => [
@@ -550,6 +555,7 @@ class PnlAnalyticsService
         return [
             'graph' => [
                 'chart' => [
+                    'height' => 600,
                     'type' => 'pie'
                 ],
                 'title' => [
@@ -659,6 +665,7 @@ class PnlAnalyticsService
         return [
             'graph' => [
                 'chart' => [
+                    'height' => 600,
                     'type' => 'column'
                 ],
                 'title' => [

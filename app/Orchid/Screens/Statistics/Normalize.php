@@ -130,6 +130,7 @@ class Normalize extends Screen
 
             new HighchartsChart([
                 'chart' => [
+                    'height' => 600,
                     'type' => 'line',
                     'zoomType' => 'x'
                 ],
@@ -171,6 +172,7 @@ class Normalize extends Screen
 
             new HighchartsChart([
                 'chart' => [
+                    'height' => 600,
                     'type' => 'line',
                     'zoomType' => 'x'
                 ],
