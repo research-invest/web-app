@@ -52,10 +52,10 @@ class Handler
             ->withoutOverlapping()
             ->everyFiveMinutes();
 
-        $schedule->command(ClearOldPnlHistory::class)
-            ->runInBackground()
-            ->withoutOverlapping()
-            ->daily();
+//        $schedule->command(ClearOldPnlHistory::class)
+//            ->runInBackground()
+//            ->withoutOverlapping()
+//            ->daily();
 
 //        $schedule->command(CheckTradeLevels::class)->everyTwoMinutes();
         $schedule->command(SendTradePnLNotification::class)
