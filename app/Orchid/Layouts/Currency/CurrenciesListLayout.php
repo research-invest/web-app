@@ -6,6 +6,7 @@ namespace App\Orchid\Layouts\Currency;
 
 use App\Helpers\MathHelper;
 use App\Models\Currency;
+use Lintaba\OrchidTables\Screen\TDChecklist;
 use Orchid\Screen\Actions\DropDown;
 use Orchid\Screen\Actions\Link;
 use Orchid\Screen\Components\Cells\DateTimeSplit;
@@ -26,6 +27,8 @@ class CurrenciesListLayout extends Table
     public function columns(): array
     {
         return [
+            TDChecklist::make(),
+
             TD::make('id', 'ID')
                 ->sort()
                 ->cantHide()
