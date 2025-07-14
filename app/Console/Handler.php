@@ -24,12 +24,12 @@ class Handler
     public function __invoke(Schedule $schedule): void
     {
         $schedule->command(FundingDealsConfig::class)
-            ->withoutOverlapping()
+//            ->withoutOverlapping()
             ->runInBackground()
             ->hourly();
 
         $schedule->command(FundingDealsDelete::class)
-            ->withoutOverlapping()
+//            ->withoutOverlapping()
             ->runInBackground()
             ->everyTwoMinutes();
 
@@ -39,17 +39,17 @@ class Handler
 
         $schedule->command(UpdateCurrencies::class)
             ->runInBackground()
-            ->withoutOverlapping()
+//            ->withoutOverlapping()
             ->everyFiveMinutes();
 
         $schedule->command(UpdateCurrencyPrices::class)
             ->runInBackground()
-            ->withoutOverlapping()
+//            ->withoutOverlapping()
             ->hourly();
 
         $schedule->command(UpdateTradesPnL::class)
             ->runInBackground()
-            ->withoutOverlapping()
+//            ->withoutOverlapping()
             ->everyFiveMinutes();
 
 //        $schedule->command(ClearOldPnlHistory::class)
@@ -59,7 +59,7 @@ class Handler
 
 //        $schedule->command(CheckTradeLevels::class)->everyTwoMinutes();
         $schedule->command(SendTradePnLNotification::class)
-            ->withoutOverlapping()
+//            ->withoutOverlapping()
             ->runInBackground()
             ->everyTenMinutes();
 
@@ -69,17 +69,17 @@ class Handler
 //            ->everyTenMinutes();
 
         $schedule->command(CheckLiquidationWarnings::class)
-            ->withoutOverlapping()
+//            ->withoutOverlapping()
             ->runInBackground()
             ->everyFiveMinutes();
 
         $schedule->command(FreeSpaceAlert::class)
-            ->withoutOverlapping()
+//            ->withoutOverlapping()
             ->runInBackground()
             ->hourly();
 
         $schedule->command(SendSmartMoneyAlert::class)
-            ->withoutOverlapping()
+//            ->withoutOverlapping()
             ->runInBackground()
             ->everyThirtyMinutes();
 //        $schedule->command(SendIndexChart::class)->everyThirtyMinutes();
@@ -91,19 +91,19 @@ class Handler
 
         $schedule->command(CollectFundingRates::class)
             ->runInBackground()
-            ->withoutOverlapping()
+//            ->withoutOverlapping()
             ->hourlyAt(50);
 
         $schedule->command(UpdateWalletBalances::class)
             ->runInBackground()
-            ->withoutOverlapping()
+//            ->withoutOverlapping()
 //            ->hourly()
             ->everyFourHours()
         ;
 
         $schedule->command(DeleteOldFundingRates::class)
             ->runInBackground()
-            ->withoutOverlapping()
+//            ->withoutOverlapping()
             ->daily();
 
 
