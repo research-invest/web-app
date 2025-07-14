@@ -16,6 +16,7 @@ class ClearOldPnlHistory extends Command
 
     public function handle()
     {
+        dd('ds');
         $weekAgo = now()->subWeeks(1);
 
         $deleted = DB::table('trade_pnl_history')
