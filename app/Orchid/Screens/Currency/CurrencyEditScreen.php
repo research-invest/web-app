@@ -179,6 +179,10 @@ class CurrencyEditScreen extends Screen
                             ->sendTrueOrFalse()
                             ->value(1),
 
+                        Select::make('currency.type')
+                            ->title('Тип')
+                            ->options(Currency::getTypes()),
+
                         Button::make('Сохранить')
                             ->method('save')
                             ->class('btn btn-primary')
