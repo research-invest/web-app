@@ -160,8 +160,9 @@ class Currency extends BaseModel
         $code = $this->tradingview_code ?: $this->code;
 
         if ($this->isExchangeMexc() && $this->isTypeFeature()) {
-            $code = str_replace('_', '', $code);
         }
+        $code = str_replace('_', '', $code);
+
         return sprintf('https://ru.tradingview.com/chart/?symbol=%s&interval=%s',
             $code, 240);
     }

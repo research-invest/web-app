@@ -311,6 +311,7 @@ class PnlAnalyticsService
             'chart' => [
                 'type' => 'line',
                 'height' => 400,
+                'zoomType' => 'x'
             ],
             'title' => [
                 'text' => 'PnL История'
@@ -375,6 +376,7 @@ class PnlAnalyticsService
             'chart' => [
                 'type' => 'line',
                 'height' => 400,
+                'zoomType' => 'x'
             ],
             'title' => [
                 'text' => 'Торговый объем'
