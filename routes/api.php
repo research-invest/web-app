@@ -1,9 +1,11 @@
 <?php
 
+use App\Http\Controllers\Api\BookOscillatorController;
 use App\Http\Controllers\Api\WatchController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\FundingController;
 use Illuminate\Support\Facades\Route;
+
 
 // Маршруты, требующие API ключ
 Route::prefix('v1')->group(function () {
@@ -19,6 +21,9 @@ Route::prefix('v1')->group(function () {
         Route::post('/deals/update-result', [FundingController::class, 'updateDealResult']);
     });
 
+
+    //api/v1/oscillator
+    Route::get('/oscillator', [BookOscillatorController::class, 'get']);
 });
 
 Route::post('/login', [AuthController::class, 'login'])->name('login');
