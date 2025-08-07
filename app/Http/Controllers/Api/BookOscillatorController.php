@@ -11,9 +11,7 @@ class BookOscillatorController extends Controller
     public function get(Request $request)
     {
         $symbol = strtoupper($request->query('symbol', 'BTCUSDT'));
-        $percentages = [3, 5, 8];
 
-        // Binance REST API depth
         $response = Http::get("https://api.binance.com/api/v3/depth", [
             'symbol' => $symbol,
             'limit' => 100
@@ -26,18 +24,18 @@ class BookOscillatorController extends Controller
         $depth = $response->json();
         $price = (float)$depth['bids'][0][0]; // best bid
 
+        // Количество уровней стакана, которые мы анализируем
+        $depthMap = [
+            3 => 10,
+            5 => 30,
+            8 => 60
+        ];
+
         $result = [];
 
-        foreach ($percentages as $pct) {
-            $range = $price * ($pct / 100);
-
-            $buyVol = collect($depth['bids'])
-                ->filter(fn($bid) => (float)$bid[0] >= $price - $range)
-                ->sum(fn($bid) => (float)$bid[1]);
-
-            $sellVol = collect($depth['asks'])
-                ->filter(fn($ask) => (float)$ask[0] <= $price + $range)
-                ->sum(fn($ask) => (float)$ask[1]);
+        foreach ($depthMap as $pct => $levels) {
+            $buyVol = collect($depth['bids'])->take($levels)->sum(fn($b) => (float)$b[1]);
+            $sellVol = collect($depth['asks'])->take($levels)->sum(fn($a) => (float)$a[1]);
 
             $osc = ($buyVol - $sellVol) / max($buyVol + $sellVol, 1e-9);
             $result["osc_{$pct}"] = round($osc, 4);
