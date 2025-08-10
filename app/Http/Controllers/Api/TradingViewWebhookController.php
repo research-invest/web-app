@@ -27,7 +27,7 @@ class TradingViewWebhookController extends Controller
 
             // Получаем сырой текст сообщения
             $rawMessage = '';
-            
+
             // Проверяем разные способы получения данных
             if ($request->has('message')) {
                 $rawMessage = $request->input('message');
@@ -41,6 +41,11 @@ class TradingViewWebhookController extends Controller
 
             // Парсим данные из сообщения
             $parsedData = $this->parseWebhookMessage($rawMessage);
+
+            Log::info('TradingView Webhook parseWebhookMessage', [
+                'rawMessage' => $rawMessage,
+                'parsedData' => $parsedData,
+            ]);
 
             // Создаем запись в базе данных
             $webhook = TradingViewWebhook::create([
@@ -88,56 +93,127 @@ class TradingViewWebhookController extends Controller
         }
     }
 
-    /**
+        /**
      * Парсинг сообщения от TradingView для извлечения данных
      */
     private function parseWebhookMessage(string $message): array
     {
         $parsed = [];
         
-        // Извлекаем символ (первое слово, обычно в формате BTCUSDT, ETHUSDT)
-        if (preg_match('/^([A-Z]{3,10}USDT?|[A-Z]{3,10}BTC|[A-Z]{3,10}ETH)/', $message, $matches)) {
-            $symbol = $matches[1];
-            // Форматируем в читаемый вид (BTCUSDT -> BTC/USDT)
-            if (str_ends_with($symbol, 'USDT')) {
-                $base = str_replace('USDT', '', $symbol);
-                $parsed['symbol'] = $base . '/USDT';
-            } elseif (str_ends_with($symbol, 'BTC')) {
-                $base = str_replace('BTC', '', $symbol);
-                $parsed['symbol'] = $base . '/BTC';
-            } elseif (str_ends_with($symbol, 'ETH')) {
-                $base = str_replace('ETH', '', $symbol);
-                $parsed['symbol'] = $base . '/ETH';
-            } else {
-                $parsed['symbol'] = $symbol;
-            }
-        }
-
-        // Определяем действие на основе ключевых слов
-        $message_lower = mb_strtolower($message);
-        if (strpos($message_lower, 'buy') !== false || strpos($message_lower, 'покупка') !== false || strpos($message_lower, 'long') !== false) {
-            $parsed['action'] = 'buy';
-        } elseif (strpos($message_lower, 'sell') !== false || strpos($message_lower, 'продажа') !== false || strpos($message_lower, 'short') !== false) {
-            $parsed['action'] = 'sell';
-        } elseif (strpos($message_lower, 'close') !== false || strpos($message_lower, 'закрыт') !== false) {
-            $parsed['action'] = 'close';
-        } else {
-            $parsed['action'] = 'alert';
-        }
-
-        // Извлекаем стратегию (текст между запятой и следующими данными)
-        if (preg_match('/,\s*(.+?)\s+{{/', $message, $matches)) {
-            $parsed['strategy'] = trim($matches[1]);
-        }
-
-        // Извлекаем данные из плейсхолдеров
+        // Убираем лишние пробелы
+        $message = trim($message);
+        
+        // Сначала заменяем все плейсхолдеры на маркеры, чтобы получить чистую структуру
+        $cleanMessage = $message;
         $placeholders = [
-            'ticker' => 'symbol',
-            'exchange' => 'exchange', 
+            '{{ticker}}', '{{exchange}}', '{{interval}}', '{{close}}', '{{open}}', 
+            '{{high}}', '{{low}}', '{{volume}}', '{{time}}', '{{timenow}}'
+        ];
+        
+        foreach ($placeholders as $placeholder) {
+            $cleanMessage = str_replace($placeholder, '[PLACEHOLDER]', $cleanMessage);
+        }
+        
+        // Разбиваем по пробелам, убирая плейсхолдеры
+        $parts = array_filter(explode(' ', $cleanMessage), function($part) {
+            return $part !== '[PLACEHOLDER]' && !empty(trim($part));
+        });
+        
+        // Переиндексируем массив
+        $parts = array_values($parts);
+        
+        // Парсим по позициям:
+        // Позиция 0: может быть символом (если не плейсхолдер) или действием
+        // Позиция 1: действие (BUY/SELL/CLOSE) или стратегия
+        // Позиция 2+: название стратегии
+        
+        $symbolFromText = null;
+        $actionFromText = null;
+        $strategyParts = [];
+        
+        foreach ($parts as $index => $part) {
+            $partUpper = strtoupper($part);
+            $partLower = strtolower($part);
+            
+            // Проверяем, является ли это действием
+            if (in_array($partUpper, ['BUY', 'SELL', 'CLOSE']) || 
+                in_array($partLower, ['покупка', 'продажа', 'закрыт', 'long', 'short'])) {
+                $actionFromText = $this->normalizeAction($part);
+                continue;
+            }
+            
+            // Проверяем, является ли это символом (содержит USDT, BTC и т.д.)
+            if (preg_match('/^[A-Z]{3,10}(USDT|BTC|ETH)$/i', $part)) {
+                $symbolFromText = $this->formatSymbol($part);
+                continue;
+            }
+            
+            // Все остальное считаем частью стратегии
+            $strategyParts[] = $part;
+        }
+        
+        // Устанавливаем распарсенные данные
+        $parsed['symbol'] = $symbolFromText ?: 'UNKNOWN';
+        $parsed['action'] = $actionFromText ?: 'alert';
+        $parsed['strategy'] = !empty($strategyParts) ? implode(' ', $strategyParts) : null;
+        
+        // Определяем какие плейсхолдеры присутствуют
+        $this->detectPlaceholders($message, $parsed);
+        
+        return $parsed;
+    }
+    
+    /**
+     * Нормализация действия
+     */
+    private function normalizeAction(string $action): string
+    {
+        $action = strtolower($action);
+        
+        if (in_array($action, ['buy', 'покупка', 'long'])) {
+            return 'buy';
+        } elseif (in_array($action, ['sell', 'продажа', 'short'])) {
+            return 'sell';
+        } elseif (in_array($action, ['close', 'закрыт'])) {
+            return 'close';
+        }
+        
+        return 'alert';
+    }
+    
+    /**
+     * Форматирование символа
+     */
+    private function formatSymbol(string $symbol): string
+    {
+        $symbol = strtoupper($symbol);
+        
+        if (str_ends_with($symbol, 'USDT')) {
+            $base = str_replace('USDT', '', $symbol);
+            return $base . '/USDT';
+        } elseif (str_ends_with($symbol, 'BTC')) {
+            $base = str_replace('BTC', '', $symbol);
+            return $base . '/BTC';
+        } elseif (str_ends_with($symbol, 'ETH')) {
+            $base = str_replace('ETH', '', $symbol);
+            return $base . '/ETH';
+        }
+        
+        return $symbol;
+    }
+    
+    /**
+     * Определение присутствующих плейсхолдеров
+     */
+    private function detectPlaceholders(string $message, array &$parsed): void
+    {
+        $placeholders = [
+            'ticker' => 'symbol_placeholder',
+            'exchange' => 'exchange',
             'interval' => 'timeframe',
             'volume' => 'volume',
             'open' => 'open_price',
-            'close' => 'price',
+            'close' => 'close_price',
             'high' => 'high_price',
             'low' => 'low_price',
             'time' => 'time',
@@ -145,17 +221,10 @@ class TradingViewWebhookController extends Controller
         ];
 
         foreach ($placeholders as $placeholder => $field) {
-            if (preg_match('/{{' . $placeholder . '}}/', $message)) {
+            if (strpos($message, '{{' . $placeholder . '}}') !== false) {
                 $parsed['has_' . $field] = true;
             }
         }
-
-        // Пытаемся извлечь числовые значения (цены)
-        if (preg_match('/(\d+\.?\d*)/', $message, $matches)) {
-            $parsed['extracted_number'] = floatval($matches[1]);
-        }
-
-        return $parsed;
     }
 
     /**
