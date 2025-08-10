@@ -27,7 +27,7 @@ class TradingViewWebhook extends BaseModel
 
     protected $table = 'trading_view_webhooks';
 
-    protected $fillable = [
+        protected $fillable = [
 //        'symbol',
         'action',
         'strategy',
