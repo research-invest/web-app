@@ -164,9 +164,9 @@ class WebhookListScreen extends Screen
                 Input::make('webhook.source_ip')->title('IP адрес'),
                 Input::make('webhook.created_at')->title('Дата получения'),
             ]))
+                ->withoutApplyButton()
                 ->async('asyncGetWebhookDetails')
-                ->title('Полные данные вебхука')
-                ->applyButton('Закрыть'),
+                ->title('Полные данные вебхука'),
         ];
     }
 
