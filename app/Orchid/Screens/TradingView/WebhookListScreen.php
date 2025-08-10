@@ -98,7 +98,7 @@ class WebhookListScreen extends Screen
                     ),
 
                 TD::make('action', 'Действие')
-                    ->sort()
+//                    ->sort()
                     ->render(function (TradingViewWebhook $webhook) {
                         $colors = [
                             'buy' => 'success',
@@ -107,7 +107,7 @@ class WebhookListScreen extends Screen
                             'alert' => 'info'
                         ];
                         $color = $colors[$webhook->action] ?? 'secondary';
-                        return "<span class='badge badge-{$color}'>{$webhook->action}</span>";
+                        return "<div class='alert alert-{$color}'>{$webhook->action}</div>";
                     }),
 
                 TD::make('strategy', 'Стратегия')
@@ -126,10 +126,6 @@ class WebhookListScreen extends Screen
 
                 TD::make('exchange', 'Биржа')
                     ->render(fn(TradingViewWebhook $webhook) => $webhook->exchange ? ucfirst($webhook->exchange) : '-'
-                    ),
-
-                TD::make('source_ip', 'IP')
-                    ->render(fn(TradingViewWebhook $webhook) => $webhook->source_ip ? "<small><code>{$webhook->source_ip}</code></small>" : '-'
                     ),
 
                 TD::make('created_at', 'Получен')
