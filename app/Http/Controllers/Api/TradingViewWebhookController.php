@@ -17,29 +17,9 @@ class TradingViewWebhookController extends Controller
     public function receive(Request $request): JsonResponse
     {
         try {
-            // Логируем входящий запрос для отладки
-            Log::info('TradingView Webhook received', [
-                'payload' => $request->all(),
-                'headers' => $request->headers->all(),
-                'ip' => $request->ip(),
-                'user_agent' => $request->userAgent(),
-            ]);
 
-            // Получаем сырой текст сообщения
-            $rawMessage = '';
+            $rawMessage = $request->getContent();
 
-            // Проверяем разные способы получения данных
-            if ($request->has('message')) {
-                $rawMessage = $request->input('message');
-            } elseif ($request->has('text')) {
-                $rawMessage = $request->input('text');
-            } elseif ($request->getContent()) {
-                $rawMessage = $request->getContent();
-            } else {
-                $rawMessage = json_encode($request->all());
-            }
-
-            // Парсим данные из сообщения
             $parsedData = $this->parseWebhookMessage($rawMessage);
 
             Log::info('TradingView Webhook parseWebhookMessage', [
@@ -67,18 +47,10 @@ class TradingViewWebhookController extends Controller
                 'user_agent' => $request->userAgent(),
             ]);
 
-            Log::info('TradingView Webhook saved successfully', [
-                'webhook_id' => $webhook->id,
-                'symbol' => $webhook->symbol,
-                'action' => $webhook->action,
-                'raw_message' => $rawMessage
-            ]);
-
             return response()->json([
                 'success' => true,
                 'message' => 'Вебхук успешно обработан',
                 'webhook_id' => $webhook->id,
-                'parsed_data' => $parsedData
             ], 200);
 
         } catch (\Exception $e) {
