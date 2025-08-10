@@ -89,7 +89,7 @@ class WebhookListScreen extends Screen
             Layout::table('webhooks', [
                 TD::make('id', 'ID')
                     ->sort()
-                    ->render(fn(TradingViewWebhook $webhook) => "<span class='badge badge-light'>#{$webhook->id}</span>"
+                    ->render(fn(TradingViewWebhook $webhook) => "<span class=''>#{$webhook->id}</span>"
                     ),
 
                 TD::make('symbol', 'Символ')
