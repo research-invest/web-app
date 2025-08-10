@@ -36,6 +36,7 @@ use App\Orchid\Screens\Trading\FundingSimalations\FundingSimulationsDealsListScr
 use App\Orchid\Screens\Trading\StrategiesScreen;
 use App\Orchid\Screens\Trading\TradingPeriodScreen;
 use App\Orchid\Screens\Trading\TradingReportScreen;
+use App\Orchid\Screens\TradingView\WebhookListScreen;
 use App\Orchid\Screens\User\UserEditScreen;
 use App\Orchid\Screens\User\UserListScreen;
 use App\Orchid\Screens\User\UserProfileScreen;
@@ -171,6 +172,13 @@ Route::screen('trading/check-list/{checkListItem?}/edit', CheckListItemEditScree
 
 Route::screen('trading/check-list/create', CheckListItemEditScreen::class)
     ->name('platform.trading.check-item.create');
+
+// TradingView Webhooks
+Route::screen('tradingview/webhooks', WebhookListScreen::class)
+    ->name('platform.tradingview.webhooks')
+    ->breadcrumbs(fn(Trail $trail) => $trail
+        ->parent('platform.index')
+        ->push('TradingView Вебхуки', route('platform.tradingview.webhooks')));
 
 Route::screen('currencies/{currency}/edit', CurrencyEditScreen::class)
     ->name('platform.currencies.edit')

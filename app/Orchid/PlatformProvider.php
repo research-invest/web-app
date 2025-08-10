@@ -44,6 +44,11 @@ class PlatformProvider extends OrchidServiceProvider
                 ->rawClick()
                 ->route('platform.currencies'),
 
+            Menu::make('TradingView')
+                ->icon('signal')
+                ->rawClick()
+                ->route('platform.tradingview.webhooks'),
+
             Menu::make('Статистика')
                 ->icon('bs.book')
                 ->title('Статистика')

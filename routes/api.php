@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\BookOscillatorController;
 use App\Http\Controllers\Api\WatchController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\FundingController;
+use App\Http\Controllers\Api\TradingViewWebhookController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -24,6 +25,20 @@ Route::prefix('v1')->group(function () {
 
     //api/v1/oscillator
     Route::get('/oscillator', [BookOscillatorController::class, 'get']);
+
+    // TradingView Webhooks - публичные маршруты
+    //selll.ru/api/v1/tradingview/webhook
+
+    Route::prefix('tradingview')->group(function () {
+        Route::post('/webhook', [TradingViewWebhookController::class, 'receive'])->name('api.tradingview.webhook');
+        Route::get('/test', [TradingViewWebhookController::class, 'test'])->name('api.tradingview.test');
+    });
+
+    // TradingView Webhooks - защищенные маршруты (требуют аутентификации)
+    Route::middleware('api.key')->prefix('tradingview')->group(function () {
+        Route::get('/webhooks', [TradingViewWebhookController::class, 'index'])->name('api.tradingview.webhooks.index');
+        Route::get('/webhooks/{webhook}', [TradingViewWebhookController::class, 'show'])->name('api.tradingview.webhooks.show');
+    });
 });
 
 Route::post('/login', [AuthController::class, 'login'])->name('login');
