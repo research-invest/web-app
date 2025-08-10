@@ -3,8 +3,8 @@
 namespace App\Orchid\Screens\TradingView;
 
 use App\Models\TradingViewWebhook;
-use Orchid\Filters\Filter;
 use Orchid\Screen\Actions\Button;
+use Orchid\Screen\Actions\ModalToggle;
 use Orchid\Screen\Fields\Input;
 use Orchid\Screen\Fields\Select;
 use Orchid\Screen\Screen;
@@ -89,14 +89,12 @@ class WebhookListScreen extends Screen
             Layout::table('webhooks', [
                 TD::make('id', 'ID')
                     ->sort()
-                    ->render(fn (TradingViewWebhook $webhook) => 
-                        "<span class='badge badge-light'>#{$webhook->id}</span>"
+                    ->render(fn(TradingViewWebhook $webhook) => "<span class='badge badge-light'>#{$webhook->id}</span>"
                     ),
 
                 TD::make('symbol', 'Символ')
                     ->sort()
-                    ->render(fn (TradingViewWebhook $webhook) => 
-                        "<strong class='text-primary'>{$webhook->symbol}</strong>"
+                    ->render(fn(TradingViewWebhook $webhook) => "<strong class='text-primary'>{$webhook->symbol}</strong>"
                     ),
 
                 TD::make('action', 'Действие')
@@ -104,7 +102,7 @@ class WebhookListScreen extends Screen
                     ->render(function (TradingViewWebhook $webhook) {
                         $colors = [
                             'buy' => 'success',
-                            'sell' => 'danger', 
+                            'sell' => 'danger',
                             'close' => 'warning',
                             'alert' => 'info'
                         ];
@@ -114,39 +112,41 @@ class WebhookListScreen extends Screen
 
                 TD::make('strategy', 'Стратегия')
                     ->sort()
-                    ->render(fn (TradingViewWebhook $webhook) => 
-                        $webhook->strategy ? "<em>{$webhook->strategy}</em>" : '-'
+                    ->render(fn(TradingViewWebhook $webhook) => $webhook->strategy ? "<em>{$webhook->strategy}</em>" : '-'
                     ),
 
                 TD::make('price', 'Цена')
                     ->sort()
-                    ->render(fn (TradingViewWebhook $webhook) => 
-                        $webhook->price ? number_format($webhook->price, 8) : '-'
+                    ->render(fn(TradingViewWebhook $webhook) => $webhook->price ? number_format($webhook->price, 8) : '-'
                     ),
 
                 TD::make('timeframe', 'Таймфрейм')
-                    ->render(fn (TradingViewWebhook $webhook) => 
-                        $webhook->timeframe ? "<code>{$webhook->timeframe}</code>" : '-'
+                    ->render(fn(TradingViewWebhook $webhook) => $webhook->timeframe ? "<code>{$webhook->timeframe}</code>" : '-'
                     ),
 
                 TD::make('exchange', 'Биржа')
-                    ->render(fn (TradingViewWebhook $webhook) => 
-                        $webhook->exchange ? ucfirst($webhook->exchange) : '-'
+                    ->render(fn(TradingViewWebhook $webhook) => $webhook->exchange ? ucfirst($webhook->exchange) : '-'
                     ),
 
                 TD::make('source_ip', 'IP')
-                    ->render(fn (TradingViewWebhook $webhook) => 
-                        $webhook->source_ip ? "<small><code>{$webhook->source_ip}</code></small>" : '-'
+                    ->render(fn(TradingViewWebhook $webhook) => $webhook->source_ip ? "<small><code>{$webhook->source_ip}</code></small>" : '-'
                     ),
 
                 TD::make('created_at', 'Получен')
                     ->sort()
-                    ->render(fn (TradingViewWebhook $webhook) => 
-                        $webhook->created_at->format('d.m.Y H:i:s')
+                    ->render(fn(TradingViewWebhook $webhook) => $webhook->created_at->format('d.m.Y H:i:s')
                     ),
 
                 TD::make('actions', 'Действия')
                     ->render(function (TradingViewWebhook $webhook) {
+
+                        return ModalToggle::make('Детали')
+                            ->modal('webhookDetailModal')
+                            ->icon('eye')
+                            ->asyncParameters(['webhook' => $webhook->id])
+//                            ->method('addOrder')
+                            ->class('btn btn-primary');
+
                         return Button::make('Детали')
                             ->icon('eye')
                             ->type(Color::LINK)
@@ -158,17 +158,19 @@ class WebhookListScreen extends Screen
             ]),
 
             Layout::modal('webhookDetailModal', Layout::rows([
-                Input::make('webhook.id')->title('ID')->readonly(),
-                Input::make('webhook.symbol')->title('Символ')->readonly(),
-                Input::make('webhook.action')->title('Действие')->readonly(),
-                Input::make('webhook.strategy')->title('Стратегия')->readonly(),
-                Input::make('webhook.price')->title('Цена')->readonly(),
-                Input::make('webhook.timeframe')->title('Таймфрейм')->readonly(),
-                Input::make('webhook.exchange')->title('Биржа')->readonly(),
-                Input::make('webhook.source_ip')->title('IP адрес')->readonly(),
-                Input::make('webhook.created_at')->title('Дата получения')->readonly(),
-            ]))->title('Полные данные вебхука')
-              ->applyButton('Закрыть'),
+                Input::make('webhook.id')->title('ID'),
+                Input::make('webhook.symbol')->title('Символ'),
+                Input::make('webhook.action')->title('Действие'),
+                Input::make('webhook.strategy')->title('Стратегия'),
+                Input::make('webhook.price')->title('Цена'),
+                Input::make('webhook.timeframe')->title('Таймфрейм'),
+                Input::make('webhook.exchange')->title('Биржа'),
+                Input::make('webhook.source_ip')->title('IP адрес'),
+                Input::make('webhook.created_at')->title('Дата получения'),
+            ]))
+                ->async('asyncGetWebhookDetails')
+                ->title('Полные данные вебхука')
+                ->applyButton('Закрыть'),
         ];
     }
 
@@ -203,7 +205,7 @@ class WebhookListScreen extends Screen
     public function clearOld()
     {
         $deleted = TradingViewWebhook::where('created_at', '<', now()->subDays(30))->delete();
-        
+
         return redirect()->route('platform.tradingview.webhooks')
             ->with('success', "Удалено {$deleted} старых вебхуков");
     }
@@ -211,7 +213,7 @@ class WebhookListScreen extends Screen
     /**
      * Получить детали вебхука для модального окна
      */
-    public function getWebhookDetails(TradingViewWebhook $webhook): array
+    public function asyncGetWebhookDetails(TradingViewWebhook $webhook): array
     {
         return [
             'webhook' => [
