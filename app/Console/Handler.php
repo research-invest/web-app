@@ -7,6 +7,7 @@ use App\Console\Commands\Alerts\FreeSpaceAlert;
 use App\Console\Commands\Alerts\GenerateMarketOscillator;
 use App\Console\Commands\Alerts\SendSmartMoneyAlert;
 use App\Console\Commands\Alerts\SendTradePnLNotification;
+use App\Console\Commands\Alerts\UsdtEthPrinterNotify;
 use App\Console\Commands\BtcWallets\UpdateWalletBalances;
 use App\Console\Commands\ClearOldPnlHistory;
 use App\Console\Commands\CollectTopPerformingCoinSnapshots;
@@ -105,6 +106,11 @@ class Handler
             ->runInBackground()
 //            ->withoutOverlapping()
             ->daily();
+
+        $schedule->command(UsdtEthPrinterNotify::class)
+            ->runInBackground()
+//            ->withoutOverlapping()
+            ->hourly();
 
 
 //        $schedule->command(AnalyzeTopPerformingCoinSnapshots::class)
