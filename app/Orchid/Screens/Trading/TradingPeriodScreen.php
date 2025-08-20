@@ -51,14 +51,14 @@ class TradingPeriodScreen extends Screen
                 Input::make('period.daily_target')
                     ->title('Дневная цель')
                     ->type('number')
-                    ->value(100)
+                    ->value(50)
                     ->step(1)
                     ->required(),
 
                 Input::make('period.weekend_target')
                     ->title('Цель для выходных')
                     ->type('number')
-                    ->value(50)
+                    ->value(25)
                     ->step(1)
                     ->required(),
 
