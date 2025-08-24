@@ -45,6 +45,7 @@ class TradingViewWebhookController extends Controller
                 ],
                 'source_ip' => $request->ip(),
                 'user_agent' => $request->userAgent(),
+                'is_read' => false, // По умолчанию непрочитанное
             ]);
 
             return response()->json([
@@ -118,35 +119,6 @@ class TradingViewWebhookController extends Controller
         return 'alert';
     }
 
-
-    /**
-     * Получение списка вебхуков (для API)
-     */
-    public function index(Request $request): JsonResponse
-    {
-        $webhooks = TradingViewWebhook::query()
-            ->when($request->symbol, fn($q) => $q->bySymbol($request->symbol))
-            ->when($request->action, fn($q) => $q->byAction($request->action))
-            ->when($request->strategy, fn($q) => $q->byStrategy($request->strategy))
-            ->latest()
-            ->paginate($request->per_page ?? 20);
-
-        return response()->json([
-            'success' => true,
-            'data' => $webhooks
-        ]);
-    }
-
-    /**
-     * Получение конкретного вебхука
-     */
-    public function show(TradingViewWebhook $webhook): JsonResponse
-    {
-        return response()->json([
-            'success' => true,
-            'data' => $webhook
-        ]);
-    }
 
     /**
      * Тестовый эндпоинт для проверки работы

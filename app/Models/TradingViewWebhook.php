@@ -37,11 +37,13 @@ class TradingViewWebhook extends BaseModel
         'raw_data',
         'source_ip',
         'user_agent',
+        'is_read',
     ];
 
     protected $casts = [
         'raw_data' => 'array',
         'price' => 'decimal:8',
+        'is_read' => 'boolean',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
@@ -61,5 +63,31 @@ class TradingViewWebhook extends BaseModel
     public function scopeByStrategy($query, $strategy)
     {
         return $query->where('strategy', $strategy);
+    }
+
+    public function scopeUnread($query)
+    {
+        return $query->where('is_read', false);
+    }
+
+    public function scopeRead($query)
+    {
+        return $query->where('is_read', true);
+    }
+
+    /**
+     * Пометить уведомление как прочитанное
+     */
+    public function markAsRead(): bool
+    {
+        return $this->update(['is_read' => true]);
+    }
+
+    /**
+     * Пометить уведомление как непрочитанное
+     */
+    public function markAsUnread(): bool
+    {
+        return $this->update(['is_read' => false]);
     }
 }
