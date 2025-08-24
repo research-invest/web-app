@@ -4,9 +4,12 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\TradingViewWebhook;
+use App\Models\User;
+use App\Notifications\TradingViewWebhookReceived;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Validator;
 
 class TradingViewWebhookController extends Controller
@@ -46,7 +49,10 @@ class TradingViewWebhookController extends Controller
                 'source_ip' => $request->ip(),
                 'user_agent' => $request->userAgent(),
                 'is_read' => false, // По умолчанию непрочитанное
+                'user_id' => 1, // По умолчанию основной пользователь
             ]);
+
+            $this->sendTelegramNotification($webhook);
 
             return response()->json([
                 'success' => true,
@@ -119,6 +125,35 @@ class TradingViewWebhookController extends Controller
         return 'alert';
     }
 
+    /**
+     * Отправка уведомления в Telegram
+     */
+    private function sendTelegramNotification(TradingViewWebhook $webhook): void
+    {
+        try {
+            $user = User::find($webhook->user_id);
+
+            if ($user) {
+                $user->notify(new TradingViewWebhookReceived($webhook));
+
+                Log::info('TradingView Webhook notification queued', [
+                    'webhook_id' => $webhook->id,
+                    'user_id' => $user->id,
+                    'telegram_chat_id' => $user->telegram_chat_id
+                ]);
+            } else {
+                Log::warning('User not found for webhook notification', [
+                    'webhook_id' => $webhook->id,
+                    'user_id' => $webhook->user_id
+                ]);
+            }
+        } catch (\Exception $e) {
+            Log::error('Failed to queue Telegram notification', [
+                'webhook_id' => $webhook->id,
+                'error' => $e->getMessage()
+            ]);
+        }
+    }
 
     /**
      * Тестовый эндпоинт для проверки работы

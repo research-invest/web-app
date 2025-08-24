@@ -38,6 +38,7 @@ class TradingViewWebhook extends BaseModel
         'source_ip',
         'user_agent',
         'is_read',
+        'user_id',
     ];
 
     protected $casts = [
@@ -89,5 +90,13 @@ class TradingViewWebhook extends BaseModel
     public function markAsUnread(): bool
     {
         return $this->update(['is_read' => false]);
+    }
+
+    /**
+     * Связь с пользователем
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

@@ -28,6 +28,7 @@ class UsdtEthPrinterNotify extends Command
     {
         parent::__construct();
         $this->telegram = $telegram;
+        $this->telegram->setNotificationBot();
     }
 
     public function handle(): int
