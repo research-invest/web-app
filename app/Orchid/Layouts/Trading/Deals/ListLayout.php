@@ -45,6 +45,7 @@ class ListLayout extends Table
                         $text .= Trade::FAKE_TRADE_TEXT;
                         return "<a data-turbo=\"false\" href='{$route}' class='text-danger'>{$text}</a>";
                     }
+                    $text .= ($trade->is_spot ? ' [Spot]' : ' [Fut]');
                     return "<a data-turbo=\"false\" href='{$route}'>{$text}</a>";
                 }),
 
