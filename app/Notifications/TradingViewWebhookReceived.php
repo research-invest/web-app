@@ -15,7 +15,7 @@ class TradingViewWebhookReceived extends Notification implements ShouldQueue
     public function __construct(
         public TradingViewWebhook $webhook
     ) {
-        $this->onQueue('notifications');
+//        $this->onQueue('notifications');
     }
 
     /**
