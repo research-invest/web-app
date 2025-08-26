@@ -193,6 +193,10 @@ class MathHelper
             return $sign . number_format($number, 2, '.', ' ');
         }
 
+        if ($number >= 0.000001) {
+            return $sign . number_format($number, 6, '.', '');
+        }
+
         if ($number >= 0.0001) {
             return $sign . number_format($number, 4, '.', '');
         }
