@@ -40,12 +40,10 @@ class ListLayout extends Table
             TD::make('currency', 'Пара')
                 ->render(function(Trade $trade) {
                     $route = route('platform.trading.deal.edit', $trade);
-                    $text = $trade->currency->name;
+                    $text = $trade->currency_name_format;
                     if ($trade->is_fake) {
-                        $text .= Trade::FAKE_TRADE_TEXT;
                         return "<a data-turbo=\"false\" href='{$route}' class='text-danger'>{$text}</a>";
                     }
-                    $text .= ($trade->is_spot ? ' [Spot]' : ' [Fut]');
                     return "<a data-turbo=\"false\" href='{$route}'>{$text}</a>";
                 }),
 

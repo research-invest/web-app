@@ -498,7 +498,8 @@ class Trade extends BaseModel
      */
     public function getCurrencyNameFormatAttribute(): string
     {
-        return $this->is_fake ? ($this->currency->name . self::FAKE_TRADE_TEXT) : $this->currency->name;
+        $type = $this->is_spot ? ' [S]' : ' [F]';
+        return $this->is_fake ? ($this->currency->name . self::FAKE_TRADE_TEXT . $type) : $this->currency->name . $type;
     }
 
     /**
