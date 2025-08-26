@@ -154,7 +154,7 @@ class CurrencyEditScreen extends Screen
                     Layout::rows([
                         Group::make([
                             Select::make('currency.source_price')
-                                ->title('Статус')
+                                ->title('Источник цены')
                                 ->options(Currency::getPriceSources())
                                 ->required(),
 
