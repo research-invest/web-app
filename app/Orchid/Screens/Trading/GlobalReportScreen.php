@@ -57,12 +57,12 @@ class GlobalReportScreen extends Screen
 
     public function name(): ?string
     {
-        return 'Глобальный отчет по торговле';
+        return 'Глобальный отчет';
     }
 
     public function description(): ?string
     {
-        return 'Общая статистика по всем торговым сделкам без привязки к периодам';
+        return 'Общая статистика по всем торговым сделкам';
     }
 
     public function layout(): array

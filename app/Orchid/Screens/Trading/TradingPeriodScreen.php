@@ -38,8 +38,9 @@ class TradingPeriodScreen extends Screen
                 ->icon('plus')
                 ->class('btn btn-primary'),
 
-            Link::make('Глобальный отчет')
+            Link::make('Отчет')
                 ->route('platform.trading.global-report')
+                ->rawClick()
                 ->icon('bs.bar-chart')
                 ->class('btn btn-info'),
         ];
