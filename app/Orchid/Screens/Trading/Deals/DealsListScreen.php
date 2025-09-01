@@ -45,7 +45,7 @@ class DealsListScreen extends Screen
                     'value' => number_format($this->todayMetrics['today_pnl'], 2) . '$',
                 ],
                 'max_today_pnl' => [
-                    'value' => number_format($this->todayMetrics['max_today_pnl'], 2) . '$',
+                    'value' => ($this->todayMetrics['max_today_pnl']) . '$',
                 ],
                 'trades_count' => [
                     'value' => (string)$this->todayMetrics['trades_count'],
