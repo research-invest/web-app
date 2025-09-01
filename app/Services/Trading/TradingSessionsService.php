@@ -298,7 +298,7 @@ class TradingSessionsService
                 continue;
             }
 
-            $roi = ($trade->unrealized_pnl / $trade->size) * 100;
+            $roi = ($trade->unrealized_pnl / $trade->position_size) * 100;
 
             if ($roi > $bestROI) {
                 $bestROI = $roi;
@@ -306,7 +306,7 @@ class TradingSessionsService
                     'trade' => $trade,
                     'roi' => $roi,
                     'pnl' => $trade->unrealized_pnl,
-                    'size' => $trade->size,
+                    'size' => $trade->position_size,
                 ];
             }
         }
@@ -330,7 +330,7 @@ class TradingSessionsService
             if ($trade->position_size <= 0) { // Пропускаем сделки с нулевым размером
                 continue;
             }
-            $roi = ($trade->unrealized_pnl / $trade->size) * 100;
+            $roi = ($trade->unrealized_pnl / $trade->position_size) * 100;
 
             if ($roi < $worstROI) {
                 $worstROI = $roi;
@@ -338,7 +338,7 @@ class TradingSessionsService
                     'trade' => $trade,
                     'roi' => $roi,
                     'pnl' => $trade->unrealized_pnl,
-                    'size' => $trade->size,
+                    'size' => $trade->position_size,
                 ];
             }
         }
