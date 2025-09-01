@@ -24,15 +24,15 @@ class Handler
 {
     public function __invoke(Schedule $schedule): void
     {
-        $schedule->command(FundingDealsConfig::class)
-//            ->withoutOverlapping()
-            ->runInBackground()
-            ->hourly();
+//        $schedule->command(FundingDealsConfig::class)
+////            ->withoutOverlapping()
+//            ->runInBackground()
+//            ->hourly();
 
-        $schedule->command(FundingDealsDelete::class)
-//            ->withoutOverlapping()
-            ->runInBackground()
-            ->everyTwoMinutes();
+//        $schedule->command(FundingDealsDelete::class)
+////            ->withoutOverlapping()
+//            ->runInBackground()
+//            ->everyTwoMinutes();
 
 //        $schedule->command(FundingDeals::class)
 //            ->runInBackground()
@@ -90,10 +90,10 @@ class Handler
             ->everyTenMinutes()
             ->withoutOverlapping();
 
-        $schedule->command(CollectFundingRates::class)
-            ->runInBackground()
-//            ->withoutOverlapping()
-            ->hourlyAt(50);
+//        $schedule->command(CollectFundingRates::class)
+//            ->runInBackground()
+////            ->withoutOverlapping()
+//            ->hourlyAt(50);
 
         $schedule->command(UpdateWalletBalances::class)
             ->runInBackground()
