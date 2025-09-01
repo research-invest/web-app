@@ -294,7 +294,9 @@ class TradingSessionsService
         $bestROI = -999999;
 
         foreach ($trades as $trade) {
-            if ($trade->size <= 0) continue; // Пропускаем сделки с нулевым размером
+            if ($trade->position_size <= 0) { // Пропускаем сделки с нулевым размером
+                continue;
+            }
 
             $roi = ($trade->unrealized_pnl / $trade->size) * 100;
 
@@ -325,8 +327,9 @@ class TradingSessionsService
         $worstROI = 999999;
 
         foreach ($trades as $trade) {
-            if ($trade->size <= 0) continue; // Пропускаем сделки с нулевым размером
-
+            if ($trade->position_size <= 0) { // Пропускаем сделки с нулевым размером
+                continue;
+            }
             $roi = ($trade->unrealized_pnl / $trade->size) * 100;
 
             if ($roi < $worstROI) {
