@@ -284,7 +284,7 @@ class TradingSessionsService
     /**
      * Найти лучшую сделку по ROI (процент прибыли от вложенных средств)
      */
-    private function getBestTradeByROI($trades)
+    private function getBestTradeByROI($trades): ?array
     {
         if ($trades->isEmpty()) {
             return null;
@@ -315,7 +315,7 @@ class TradingSessionsService
     /**
      * Найти худшую сделку по ROI (процент убытка от вложенных средств)
      */
-    private function getWorstTradeByROI($trades)
+    private function getWorstTradeByROI($trades): ?array
     {
         if ($trades->isEmpty()) {
             return null;
