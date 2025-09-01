@@ -256,9 +256,9 @@ class TradingSessionsService
         $todayTrades = Trade::where('user_id', UserHelper::getId())
             ->where('created_at', '>=', $today)
             ->where('created_at', '<', $tomorrow)
-            ->whereIn('status', [Trade::STATUS_CLOSED, Trade::STATUS_LIQUIDATED])
-            ->whereNotNull('closed_at')
-            ->whereNull('deleted_at')
+//            ->whereIn('status', [Trade::STATUS_CLOSED, Trade::STATUS_LIQUIDATED])
+//            ->whereNotNull('closed_at')
+//            ->whereNull('deleted_at')
             ->where('is_fake', 0)
             ->get();
 
@@ -297,7 +297,7 @@ class TradingSessionsService
             if ($trade->size <= 0) continue; // Пропускаем сделки с нулевым размером
 
             $roi = ($trade->realized_pnl / $trade->size) * 100;
-            
+
             if ($roi > $bestROI) {
                 $bestROI = $roi;
                 $bestTrade = [
@@ -328,7 +328,7 @@ class TradingSessionsService
             if ($trade->size <= 0) continue; // Пропускаем сделки с нулевым размером
 
             $roi = ($trade->realized_pnl / $trade->size) * 100;
-            
+
             if ($roi < $worstROI) {
                 $worstROI = $roi;
                 $worstTrade = [
