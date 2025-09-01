@@ -31,6 +31,27 @@ class TradingAnalyticsService
         ];
     }
 
+    public function analyzeGlobal(): array
+    {
+        $trades = Trade::whereIn('status', [
+                Trade::STATUS_CLOSED,
+                Trade::STATUS_LIQUIDATED,
+            ])
+            ->where('user_id', UserHelper::getId())
+            ->whereNotNull('closed_at')
+            ->whereNull('deleted_at')
+            ->where('is_fake', 0)
+            ->with('currency')
+            ->get();
+
+        return [
+            'summary' => $this->getSummary($trades),
+            'positions' => $this->getPositionsAnalysis($trades),
+            'topTrades' => $this->getTopTrades($trades),
+            'lossTrades' => $this->getLossTrades($trades),
+        ];
+    }
+
     private function getSummary(Collection $trades): array
     {
         $totalProfit = $trades->sum('realized_pnl');

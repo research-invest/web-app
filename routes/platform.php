@@ -36,6 +36,7 @@ use App\Orchid\Screens\Trading\FundingSimalations\FundingSimulationsDealsListScr
 use App\Orchid\Screens\Trading\StrategiesScreen;
 use App\Orchid\Screens\Trading\TradingPeriodScreen;
 use App\Orchid\Screens\Trading\TradingReportScreen;
+use App\Orchid\Screens\Trading\GlobalReportScreen;
 use App\Orchid\Screens\TradingView\WebhookListScreen;
 use App\Orchid\Screens\User\UserEditScreen;
 use App\Orchid\Screens\User\UserListScreen;
@@ -96,6 +97,9 @@ Route::screen('/trading/futures-calculator', \App\Orchid\Screens\Trading\Futures
 
 Route::screen('/trading/deals/periods', TradingPeriodScreen::class)
     ->name('platform.trading.periods');
+
+Route::screen('/trading/global-report', GlobalReportScreen::class)
+    ->name('platform.trading.global-report');
 
 Route::screen('/trading/deals/strategies', StrategiesScreen::class)
     ->name('platform.trading.strategies');
