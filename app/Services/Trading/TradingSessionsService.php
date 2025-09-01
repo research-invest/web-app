@@ -263,10 +263,10 @@ class TradingSessionsService
             ->get();
 
         // Суммарный PnL за сегодня
-        $todayPnl = $todayTrades->sum('realized_pnl');
+        $todayPnl = $todayTrades->sum('unrealized_pnl');
 
         // Максимальный PnL за сегодня
-        $maxTodayPnl = $todayTrades->max('realized_pnl') ?? 0;
+        $maxTodayPnl = $todayTrades->max('unrealized_pnl') ?? 0;
 
         // Лучшая и худшая сделка по ROI
         $bestTrade = $this->getBestTradeByROI($todayTrades);
@@ -296,14 +296,14 @@ class TradingSessionsService
         foreach ($trades as $trade) {
             if ($trade->size <= 0) continue; // Пропускаем сделки с нулевым размером
 
-            $roi = ($trade->realized_pnl / $trade->size) * 100;
+            $roi = ($trade->unrealized_pnl / $trade->size) * 100;
 
             if ($roi > $bestROI) {
                 $bestROI = $roi;
                 $bestTrade = [
                     'trade' => $trade,
                     'roi' => $roi,
-                    'pnl' => $trade->realized_pnl,
+                    'pnl' => $trade->unrealized_pnl,
                     'size' => $trade->size,
                 ];
             }
@@ -327,14 +327,14 @@ class TradingSessionsService
         foreach ($trades as $trade) {
             if ($trade->size <= 0) continue; // Пропускаем сделки с нулевым размером
 
-            $roi = ($trade->realized_pnl / $trade->size) * 100;
+            $roi = ($trade->unrealized_pnl / $trade->size) * 100;
 
             if ($roi < $worstROI) {
                 $worstROI = $roi;
                 $worstTrade = [
                     'trade' => $trade,
                     'roi' => $roi,
-                    'pnl' => $trade->realized_pnl,
+                    'pnl' => $trade->unrealized_pnl,
                     'size' => $trade->size,
                 ];
             }
