@@ -2,6 +2,8 @@
 
 namespace App\Services\Trading;
 
+use App\Helpers\UserHelper;
+use App\Models\Trade;
 use Carbon\Carbon;
 
 class TradingSessionsService
@@ -240,5 +242,104 @@ class TradingSessionsService
                 ]
             ],
         ];
+    }
+
+    /**
+     * Получить метрики PnL для текущего дня
+     */
+    public function getTodayMetrics(): array
+    {
+        $today = Carbon::now()->startOfDay();
+        $tomorrow = $today->copy()->addDay();
+
+        // Все сделки за сегодня
+        $todayTrades = Trade::where('user_id', UserHelper::getId())
+            ->where('created_at', '>=', $today)
+            ->where('created_at', '<', $tomorrow)
+            ->whereIn('status', [Trade::STATUS_CLOSED, Trade::STATUS_LIQUIDATED])
+            ->whereNotNull('closed_at')
+            ->whereNull('deleted_at')
+            ->where('is_fake', 0)
+            ->get();
+
+        // Суммарный PnL за сегодня
+        $todayPnl = $todayTrades->sum('realized_pnl');
+
+        // Максимальный PnL за сегодня
+        $maxTodayPnl = $todayTrades->max('realized_pnl') ?? 0;
+
+        // Лучшая и худшая сделка по ROI
+        $bestTrade = $this->getBestTradeByROI($todayTrades);
+        $worstTrade = $this->getWorstTradeByROI($todayTrades);
+
+        return [
+            'today_pnl' => $todayPnl,
+            'max_today_pnl' => $maxTodayPnl,
+            'best_trade' => $bestTrade,
+            'worst_trade' => $worstTrade,
+            'trades_count' => $todayTrades->count(),
+        ];
+    }
+
+    /**
+     * Найти лучшую сделку по ROI (процент прибыли от вложенных средств)
+     */
+    private function getBestTradeByROI($trades)
+    {
+        if ($trades->isEmpty()) {
+            return null;
+        }
+
+        $bestTrade = null;
+        $bestROI = -999999;
+
+        foreach ($trades as $trade) {
+            if ($trade->size <= 0) continue; // Пропускаем сделки с нулевым размером
+
+            $roi = ($trade->realized_pnl / $trade->size) * 100;
+            
+            if ($roi > $bestROI) {
+                $bestROI = $roi;
+                $bestTrade = [
+                    'trade' => $trade,
+                    'roi' => $roi,
+                    'pnl' => $trade->realized_pnl,
+                    'size' => $trade->size,
+                ];
+            }
+        }
+
+        return $bestTrade;
+    }
+
+    /**
+     * Найти худшую сделку по ROI (процент убытка от вложенных средств)
+     */
+    private function getWorstTradeByROI($trades)
+    {
+        if ($trades->isEmpty()) {
+            return null;
+        }
+
+        $worstTrade = null;
+        $worstROI = 999999;
+
+        foreach ($trades as $trade) {
+            if ($trade->size <= 0) continue; // Пропускаем сделки с нулевым размером
+
+            $roi = ($trade->realized_pnl / $trade->size) * 100;
+            
+            if ($roi < $worstROI) {
+                $worstROI = $roi;
+                $worstTrade = [
+                    'trade' => $trade,
+                    'roi' => $roi,
+                    'pnl' => $trade->realized_pnl,
+                    'size' => $trade->size,
+                ];
+            }
+        }
+
+        return $worstTrade;
     }
 }

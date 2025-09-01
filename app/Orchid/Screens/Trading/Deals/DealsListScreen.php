@@ -18,6 +18,7 @@ use Orchid\Support\Facades\Layout;
 class DealsListScreen extends Screen
 {
     private TradingSessionsService $tradingSessionsService;
+    public array $todayMetrics = [];
 
     public function __construct(TradingSessionsService $tradingSessionsService)
     {
@@ -31,11 +32,28 @@ class DealsListScreen extends Screen
      */
     public function query(): iterable
     {
+        $this->todayMetrics = $this->tradingSessionsService->getTodayMetrics();
+
         return [
             'trades' => Trade::filters(FiltersLayout::class)
                 ->byCreator()
                 ->latest()
                 ->paginate(25),
+            'today_metrics' => $this->todayMetrics,
+            'metrics' => [
+                'today_pnl' => [
+                    'value' => number_format($this->todayMetrics['today_pnl'], 2) . '$',
+                ],
+                'max_today_pnl' => [
+                    'value' => number_format($this->todayMetrics['max_today_pnl'], 2) . '$',
+                ],
+                'trades_count' => [
+                    'value' => (string)$this->todayMetrics['trades_count'],
+                ],
+                'best_roi' => [
+                    'value' => $this->todayMetrics['best_trade'] ? number_format($this->todayMetrics['best_trade']['roi'], 2) . '%' : 'N/A',
+                ],
+            ],
         ];
     }
 
@@ -84,6 +102,19 @@ class DealsListScreen extends Screen
     public function layout(): iterable
     {
         return [
+            Layout::metrics([
+                'PnL за сегодня' => 'metrics.today_pnl',
+                'Макс. PnL за день' => 'metrics.max_today_pnl',
+                'Сделок сегодня' => 'metrics.trades_count',
+                'Лучшая сделка (ROI)' => 'metrics.best_roi',
+            ]),
+
+            Layout::block([
+                Layout::view('trading.today-metrics', [
+                    'todayMetrics' => $this->todayMetrics
+                ])
+            ])->title('Детализация по сделкам за сегодня'),
+
             FiltersLayout::class,
             ListLayout::class,
             Layout::view('trading.sessions-info', [
